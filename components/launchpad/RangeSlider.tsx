@@ -57,8 +57,6 @@ export default function RangeSlider({
   }, [dragging]);
 
   function handleTrackClick(event: React.MouseEvent<HTMLDivElement>) {
-    // Clicks that land directly on a thumb are handled natively by that
-    // range input already — only react to clicks on the bare track.
     if ((event.target as HTMLElement).tagName === "INPUT") return;
 
     const track = trackRef.current;
