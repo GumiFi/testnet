@@ -152,3 +152,72 @@ export async function fetchGumiCustomNftHoldings(
 
   return { balance, items };
 }
+
+function utf8ToHex(value: string): string {
+  const bytes = new TextEncoder().encode(value);
+  let hex = "";
+  for (let i = 0; i < bytes.length; i += 1) {
+    hex += bytes[i].toString(16).padStart(2, "0");
+  }
+  return hex;
+}
+
+function encodeDynamicString(value: string): string {
+  const dataHex = utf8ToHex(value);
+  const byteLength = dataHex.length / 2;
+  const lengthWord = uintToPadded(BigInt(byteLength));
+  const paddedLength = Math.ceil(dataHex.length / 64) * 64;
+  const dataWord = dataHex.padEnd(paddedLength, "0");
+  return lengthWord + dataWord;
+}
+
+export function createCollectionCalldata(
+  name: string,
+  symbol: string,
+  baseURI: string,
+  mintPriceWei: bigint,
+  maxSupply: bigint
+): string {
+  const nameEncoded = encodeDynamicString(name);
+  const symbolEncoded = encodeDynamicString(symbol);
+  const baseUriEncoded = encodeDynamicString(baseURI);
+  const headBytes = 5 * 32;
+  const nameOffset = uintToPadded(BigInt(headBytes));
+  const nameBytes = nameEncoded.length / 2;
+  const symbolOffset = uintToPadded(BigInt(headBytes + nameBytes));
+  const symbolBytes = symbolEncoded.length / 2;
+  const baseUriOffset = uintToPadded(BigInt(headBytes + nameBytes + symbolBytes));
+  const mintPriceWord = uintToPadded(mintPriceWei);
+  const maxSupplyWord = uintToPadded(maxSupply);
+  return `0x7ad3e1cf${nameOffset}${symbolOffset}${baseUriOffset}${mintPriceWord}${maxSupplyWord}${nameEncoded}${symbolEncoded}${baseUriEncoded}`;
+}
+
+export const COLLECTION_CREATED_TOPIC0 =
+  "0x8b191557afa6a02003a58f9c53041c9704d06bbad5df81dbaa8ddcf35ccdf1b0";
+
+export type TransactionLog = {
+  address: string;
+  topics: string[];
+  data: string;
+};
+
+export type TransactionReceipt = {
+  status: string;
+  transactionHash: string;
+  blockNumber: string;
+  logs: TransactionLog[];
+};
+
+export function extractCreatedCollectionAddress(
+  receipt: TransactionReceipt,
+  factoryAddress: string
+): string | null {
+  const factory = factoryAddress.toLowerCase();
+  const log = receipt.logs.find(
+    (entry) =>
+      entry.address.toLowerCase() === factory &&
+      entry.topics[0]?.toLowerCase() === COLLECTION_CREATED_TOPIC0
+  );
+  if (!log || !log.topics[1]) return null;
+  return `0x${log.topics[1].slice(-40)}`;
+}

@@ -3,8 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { BoltIcon, GearIcon, GlobeIcon, GridIcon, ImageIcon } from "@/components/icons";
+import { GearIcon, GlobeIcon, GridIcon, ImageIcon } from "@/components/icons";
 import { useWallet } from "@/lib/wallet-context";
+import { uploadImageToPinata } from "@/lib/pinata";
+import {
+  createCollectionCalldata,
+  extractCreatedCollectionAddress,
+} from "@/lib/nft-onchain";
+import {
+  parseEtherToWei,
+  sendLaunchpadTransaction,
+  waitForTransactionReceipt,
+} from "@/lib/launchpad-onchain";
+import { CONTRACT_ADDRESSES, NETWORK } from "@/config/contracts.config";
 import CreateNftHeader from "./CreateNftHeader";
 import AdvancedNftSettings, { type AdvancedNftSettingsValue } from "./AdvancedNftSettings";
 import TraitsSection, { type TraitRow } from "./TraitsSection";
@@ -26,6 +37,23 @@ type CropRequest = {
   src: string;
 };
 
+type CreateStage =
+  | "idle"
+  | "switching-network"
+  | "uploading-images"
+  | "awaiting-signature"
+  | "confirming"
+  | "saving-record";
+
+const STAGE_LABELS: Record<CreateStage, string> = {
+  idle: "",
+  "switching-network": "Switching To Giwa Sepolia...",
+  "uploading-images": "Uploading Images To Ipfs...",
+  "awaiting-signature": "Confirm In Your Wallet...",
+  confirming: "Waiting For Confirmation...",
+  "saving-record": "Saving Collection Record...",
+};
+
 const DEFAULT_ADVANCED: AdvancedNftSettingsValue = {
   tokenStandard: "ERC721",
   royaltyPct: 5,
@@ -39,9 +67,16 @@ const DEFAULT_ADVANCED: AdvancedNftSettingsValue = {
   freezeMetadata: true,
 };
 
+function generateMetadataId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID().replace(/-/g, "");
+  }
+  return `${Date.now().toString(16)}${Math.random().toString(16).slice(2)}`;
+}
+
 export default function CreateNftApp() {
   const router = useRouter();
-  const { isConnected, connect } = useWallet();
+  const { isConnected, connect, address, provider, chainId } = useWallet();
 
   const [collectionName, setCollectionName] = useState("");
   const [collectionSymbol, setCollectionSymbol] = useState("");
@@ -57,7 +92,9 @@ export default function CreateNftApp() {
   const [advanced, setAdvanced] = useState<AdvancedNftSettingsValue>(DEFAULT_ADVANCED);
   const [traits, setTraits] = useState<TraitRow[]>([]);
   const [cropRequest, setCropRequest] = useState<CropRequest | null>(null);
-  const [created, setCreated] = useState<{ name: string; symbol: string } | null>(null);
+  const [created, setCreated] = useState<{ name: string; symbol: string; address: string } | null>(null);
+  const [stage, setStage] = useState<CreateStage>("idle");
+  const [createError, setCreateError] = useState<string | null>(null);
 
   function handleCropConfirm(result: string) {
     if (!cropRequest) return;
@@ -69,18 +106,128 @@ export default function CreateNftApp() {
     setCropRequest(null);
   }
 
-  function handleCreate() {
-    setCreated({ name: collectionName.trim(), symbol: collectionSymbol.trim().toUpperCase() });
+  async function ensureGiwaNetwork() {
+    if (!provider) return;
+    if (chainId === NETWORK.chainIdHex) return;
+    setStage("switching-network");
+    try {
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: NETWORK.chainIdHex }],
+      });
+    } catch (switchError) {
+      const code = (switchError as { code?: number })?.code;
+      if (code === 4902) {
+        await provider.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: NETWORK.chainIdHex,
+              chainName: NETWORK.name,
+              rpcUrls: [NETWORK.rpcUrl],
+              blockExplorerUrls: [NETWORK.explorerUrl],
+              nativeCurrency: NETWORK.nativeCurrency,
+            },
+          ],
+        });
+      } else {
+        throw switchError;
+      }
+    }
+  }
+
+  async function handleCreate() {
+    if (!provider || !address) {
+      connect();
+      return;
+    }
+
+    setCreateError(null);
+
+    try {
+      await ensureGiwaNetwork();
+
+      setStage("uploading-images");
+      const uploadedImage = collectionImage ? await uploadImageToPinata(collectionImage, "collection.png") : null;
+      const uploadedBanner = bannerImage ? await uploadImageToPinata(bannerImage, "banner.png") : null;
+
+      const trimmedName = collectionName.trim();
+      const trimmedSymbol = collectionSymbol.trim().toUpperCase();
+      const metadataId = generateMetadataId();
+      const baseURI = `${window.location.origin}/api/nft/metadata/${metadataId}/`;
+      const mintPriceWei = freeMint ? 0n : parseEtherToWei(mintPrice);
+      const maxSupply = BigInt(sizeNum);
+
+      setStage("awaiting-signature");
+      const data = createCollectionCalldata(trimmedName, trimmedSymbol, baseURI, mintPriceWei, maxSupply);
+      const txHash = await sendLaunchpadTransaction(
+        provider,
+        address,
+        CONTRACT_ADDRESSES.nftFactory,
+        data,
+        0n
+      );
+
+      setStage("confirming");
+      const receipt = await waitForTransactionReceipt(provider, txHash);
+      if (!receipt || receipt.status !== "0x1") {
+        throw new Error("Transaction failed or timed out");
+      }
+
+      const collectionAddress = extractCreatedCollectionAddress(receipt, CONTRACT_ADDRESSES.nftFactory);
+      if (!collectionAddress) {
+        throw new Error("Could not determine the created collection address");
+      }
+
+      setStage("saving-record");
+      const createResponse = await fetch("/api/nft/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          metadataId,
+          address: collectionAddress,
+          creator: address,
+          name: trimmedName,
+          symbol: trimmedSymbol,
+          description,
+          image: uploadedImage?.url ?? null,
+          bannerImage: uploadedBanner?.url ?? null,
+          mintPriceWei: mintPriceWei.toString(),
+          maxSupply: sizeNum,
+          website: website || null,
+          twitter: twitter || null,
+          telegram: telegram || null,
+          txHash,
+          advanced,
+          traits: traits.map(({ traitType, values }) => ({ traitType, values })),
+        }),
+      });
+
+      if (!createResponse.ok) {
+        const errorPayload = await createResponse.json().catch(() => null);
+        throw new Error(errorPayload?.error ?? "Failed to save collection record");
+      }
+
+      setStage("idle");
+      setCreated({ name: trimmedName, symbol: trimmedSymbol, address: collectionAddress });
+    } catch (caughtError) {
+      setStage("idle");
+      setCreateError(caughtError instanceof Error ? caughtError.message : "Failed to create collection");
+    }
   }
 
   const sizeNum = parseInt(collectionSize, 10) || 0;
   const priceNum = freeMint ? 0 : parseFloat(mintPrice) || 0;
+  const isBusy = stage !== "idle";
 
-  let ctaLabel = "Create Collection (Mock)";
+  let ctaLabel = "Create Collection";
   let ctaDisabled = false;
   let ctaAction: () => void = handleCreate;
 
-  if (!isConnected) {
+  if (isBusy) {
+    ctaLabel = STAGE_LABELS[stage];
+    ctaDisabled = true;
+  } else if (!isConnected) {
     ctaLabel = "Connect Wallet";
     ctaAction = connect;
   } else if (!collectionName.trim()) {
@@ -103,19 +250,6 @@ export default function CreateNftApp() {
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-8 md:py-12">
       <CreateNftHeader />
-
-      <div className="mb-6 flex items-start gap-3 border border-gold/30 bg-panel2 px-4 py-3">
-        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center border border-gold/40 text-goldLight">
-          <BoltIcon className="h-4 w-4" />
-        </span>
-        <div>
-          <p className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Mock Preview</p>
-          <p className="mt-1 font-body text-xs text-bronze">
-            No smart contract is connected yet — this only builds a local mock of your collection, nothing is
-            deployed on-chain.
-          </p>
-        </div>
-      </div>
 
       <div className="rounded-2xl border border-gold/40 bg-panel px-5 py-6 md:px-6">
         <div>
@@ -248,8 +382,13 @@ export default function CreateNftApp() {
         >
           {ctaLabel}
         </button>
+        {createError && (
+          <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+            {createError}
+          </p>
+        )}
         <p className="mt-3 text-center font-mono text-[9px] uppercase tracking-wider2 text-bronze">
-          Mock Only • No Smart Contract Deployed
+          Deploys On Giwa Chain • Takes A Few Seconds
         </p>
       </div>
 
@@ -268,7 +407,7 @@ export default function CreateNftApp() {
           title="Collection Created"
           message={`${created.name || "Your collection"}${
             created.symbol ? ` ($${created.symbol})` : ""
-          } was created as a local mock. Connect a smart contract to deploy it for real.`}
+          } is live on-chain at ${created.address}.`}
           primaryLabel="View My Collections"
           onPrimary={() => router.push("/profile")}
           onClose={() => setCreated(null)}
