@@ -17,6 +17,10 @@ export type LaunchpadCoin = {
   isNew: boolean;
   tagline?: string;
   boost: number | null;
+  image?: string | null;
+  bannerImage?: string | null;
+  description?: string;
+  isLive?: boolean;
 };
 
 export const COINS_PER_PAGE = 24;
@@ -239,6 +243,9 @@ function generateLaunchpadCoins(count: number): LaunchpadCoin[] {
       isNew: ageBucket.isNew,
       tagline,
       boost,
+      image: null,
+      bannerImage: null,
+      isLive: false,
     });
   }
 
@@ -325,6 +332,19 @@ export const trendingLaunchpadCoins: LaunchpadCoin[] = [...launchpadCoins]
   .slice(0, 10);
 
 const launchpadCoinsById = new Map(launchpadCoins.map((coin) => [coin.id, coin]));
+
+export function registerLiveLaunchpadCoins(coins: LaunchpadCoin[]): void {
+  for (const coin of coins) {
+    if (launchpadCoinsById.has(coin.id)) continue;
+    launchpadCoinsById.set(coin.id, coin);
+    launchpadCoins.unshift(coin);
+    coinDetailCache.delete(coin.id);
+  }
+}
+
+export function getTrendingLaunchpadCoins(): LaunchpadCoin[] {
+  return [...launchpadCoins].sort((a, b) => b.trendScore - a.trendScore).slice(0, 10);
+}
 
 const ETH_USD_PRICE = 3200;
 
@@ -493,19 +513,21 @@ function buildLaunchpadCoinDetail(coin: LaunchpadCoin): LaunchpadCoinDetail {
   const change1h = Math.round((rng() * 40 - 15) * 10) / 10;
   const change6h = Math.round((rng() * 80 - 28) * 10) / 10;
 
-  const votesUp = Math.round(4 + rng() * 60);
-  const votesDown = Math.round(rng() * votesUp * 0.6);
-  const commentCount = rng() < 0.35 ? 0 : Math.round(1 + rng() * 40);
-  const contractAddress = `0x${randomHex(rng, 40)}`;
-  const description = descriptionTemplates[Math.floor(rng() * descriptionTemplates.length)](coin);
+  const votesUp = coin.isLive ? 0 : Math.round(4 + rng() * 60);
+  const votesDown = coin.isLive ? 0 : Math.round(rng() * votesUp * 0.6);
+  const commentCount = coin.isLive ? 0 : rng() < 0.35 ? 0 : Math.round(1 + rng() * 40);
+  const contractAddress = coin.isLive ? coin.id : `0x${randomHex(rng, 40)}`;
+  const description = coin.isLive
+    ? coin.description ?? ""
+    : descriptionTemplates[Math.floor(rng() * descriptionTemplates.length)](coin);
 
   return {
     ...coin,
-    athMarketCap,
+    athMarketCap: coin.isLive ? coin.marketCap : athMarketCap,
     contractAddress,
     description,
-    holders: buildHolders(rng, coin),
-    trades: buildTrades(rng, coin),
+    holders: coin.isLive ? [] : buildHolders(rng, coin),
+    trades: coin.isLive ? [] : buildTrades(rng, coin),
     commentCount,
     votesUp,
     votesDown,

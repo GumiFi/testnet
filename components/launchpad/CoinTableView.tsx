@@ -51,7 +51,7 @@ export default function CoinTableView({
               >
                 <td className="px-3 py-2.5">
                   <div className="flex items-center gap-2.5">
-                    <Avatar label={coin.monogram} accent={coin.accent} shape="square" className="h-8 w-8 shrink-0 text-[10px]" />
+                    <Avatar label={coin.monogram} accent={coin.accent} shape="square" className="h-8 w-8 shrink-0 text-[10px]" src={coin.image ?? undefined} />
                     <div className="min-w-0">
                       <p className="truncate font-display text-xs uppercase tracking-wider2 text-ivory">{coin.name}</p>
                       <p className="truncate font-mono text-[9px] uppercase tracking-wider2 text-bronze">${coin.symbol}</p>

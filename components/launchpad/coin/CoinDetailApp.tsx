@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Avatar from "@/components/discover/Avatar";
 import BoosterBadge from "@/components/BoosterBadge";
@@ -25,17 +25,42 @@ import {
   getLaunchpadCoinChanges,
   getLaunchpadCoinSparkline,
   isGumiHandle,
+  registerLiveLaunchpadCoins,
   type LaunchpadDetailTimeframe,
 } from "@/lib/launchpad-data";
+import { useLiveLaunchpadCoins } from "@/lib/launchpad-live";
+import { fetchRealLaunchpadCoin } from "@/lib/launchpad-realtime";
 import { formatCompactUsd, formatPrice } from "@/lib/format";
 
+const ADDRESS_PATTERN = /^0x[0-9a-fA-F]{40}$/;
+
 export default function CoinDetailApp({ id }: { id: string }) {
-  const detail = getLaunchpadCoinDetail(id);
+  const liveReady = useLiveLaunchpadCoins();
+  const [detail, setDetail] = useState(() => getLaunchpadCoinDetail(id));
   const [timeframe, setTimeframe] = useState<LaunchpadDetailTimeframe>("24H");
   const [comingSoon, setComingSoon] = useState<string | null>(null);
   const [watchlisted, setWatchlisted] = useState(false);
   const [activityTab, setActivityTab] = useState<CoinActivityTab>("Trades");
   const activityRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const existing = getLaunchpadCoinDetail(id);
+    if (existing) {
+      setDetail(existing);
+      return;
+    }
+    if (!ADDRESS_PATTERN.test(id)) return;
+
+    let cancelled = false;
+    fetchRealLaunchpadCoin(id).then((coin) => {
+      if (cancelled || !coin) return;
+      registerLiveLaunchpadCoins([coin]);
+      setDetail(getLaunchpadCoinDetail(id));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [id, liveReady]);
 
   const changes = useMemo(() => {
     if (!detail) {
@@ -88,6 +113,7 @@ export default function CoinDetailApp({ id }: { id: string }) {
           accent={detail.accent}
           shape="square"
           className="h-16 w-16 shrink-0 rounded-2xl text-lg"
+          src={detail.image ?? undefined}
         />
         <div className="min-w-0 flex-1 pt-0.5">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">

@@ -5,7 +5,18 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { ImageIcon, GlobeIcon } from "@/components/icons";
 import { useWallet } from "@/lib/wallet-context";
-import { useLiquidity } from "@/lib/liquidity-context";
+import { registerLiveLaunchpadCoins } from "@/lib/launchpad-data";
+import { buildLaunchpadCoinFromRecord, type LaunchpadCoinRecord } from "@/lib/launchpad-realtime";
+import { uploadImageToPinata } from "@/lib/pinata";
+import {
+  createCoinCalldata,
+  extractCreatedCoinAddress,
+  parseEtherToWei,
+  sendLaunchpadTransaction,
+  waitForTransactionReceipt,
+} from "@/lib/launchpad-onchain";
+import { createProviderCaller } from "@/lib/nft-onchain";
+import { CONTRACT_ADDRESSES, NETWORK } from "@/config/contracts.config";
 import LiquiditySuccessModal from "@/components/liquidity/LiquiditySuccessModal";
 import CreateCoinHeader from "./CreateCoinHeader";
 import ImageUploadField from "./ImageUploadField";
@@ -26,10 +37,26 @@ type CropRequest = {
   src: string;
 };
 
+type LaunchStage =
+  | "idle"
+  | "switching-network"
+  | "uploading-images"
+  | "awaiting-signature"
+  | "confirming"
+  | "saving-record";
+
+const STAGE_LABELS: Record<LaunchStage, string> = {
+  idle: "",
+  "switching-network": "Switching To Giwa Sepolia...",
+  "uploading-images": "Uploading Images To Ipfs...",
+  "awaiting-signature": "Confirm In Your Wallet...",
+  confirming: "Waiting For Confirmation...",
+  "saving-record": "Saving Coin Record...",
+};
+
 export default function CreateCoinApp() {
   const router = useRouter();
-  const { isConnected, connect } = useWallet();
-  const { launchToken } = useLiquidity();
+  const { isConnected, connect, address, provider, chainId } = useWallet();
 
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
@@ -41,7 +68,9 @@ export default function CreateCoinApp() {
   const [telegram, setTelegram] = useState("");
   const [buyInEth, setBuyInEth] = useState("0.5");
   const [cropRequest, setCropRequest] = useState<CropRequest | null>(null);
-  const [launched, setLaunched] = useState<{ symbol: string } | null>(null);
+  const [launched, setLaunched] = useState<{ symbol: string; address: string } | null>(null);
+  const [stage, setStage] = useState<LaunchStage>("idle");
+  const [launchError, setLaunchError] = useState<string | null>(null);
 
   function handleCropConfirm(result: string) {
     if (!cropRequest) return;
@@ -53,19 +82,123 @@ export default function CreateCoinApp() {
     setCropRequest(null);
   }
 
-  function handleLaunch() {
-    const buyInEthNum = parseFloat(buyInEth) || 0;
-    launchToken({ name: tokenName, symbol: tokenSymbol, buyInEth: buyInEthNum });
-    setLaunched({ symbol: tokenSymbol.trim().toUpperCase() });
+  async function ensureGiwaNetwork() {
+    if (!provider) return;
+    if (chainId === NETWORK.chainIdHex) return;
+    setStage("switching-network");
+    try {
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: NETWORK.chainIdHex }],
+      });
+    } catch (switchError) {
+      const code = (switchError as { code?: number })?.code;
+      if (code === 4902) {
+        await provider.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: NETWORK.chainIdHex,
+              chainName: NETWORK.name,
+              rpcUrls: [NETWORK.rpcUrl],
+              blockExplorerUrls: [NETWORK.explorerUrl],
+              nativeCurrency: NETWORK.nativeCurrency,
+            },
+          ],
+        });
+      } else {
+        throw switchError;
+      }
+    }
+  }
+
+  async function handleLaunch() {
+    if (!provider || !address) {
+      connect();
+      return;
+    }
+
+    setLaunchError(null);
+
+    try {
+      await ensureGiwaNetwork();
+
+      setStage("uploading-images");
+      const uploadedImage = tokenImage ? await uploadImageToPinata(tokenImage, "token.png") : null;
+      const uploadedBanner = bannerImage ? await uploadImageToPinata(bannerImage, "banner.png") : null;
+
+      setStage("awaiting-signature");
+      const trimmedName = tokenName.trim();
+      const trimmedSymbol = tokenSymbol.trim().toUpperCase();
+      const data = createCoinCalldata(trimmedName, trimmedSymbol);
+      const valueWei = parseEtherToWei(buyInEth);
+
+      const txHash = await sendLaunchpadTransaction(
+        provider,
+        address,
+        CONTRACT_ADDRESSES.launchpadFactory,
+        data,
+        valueWei
+      );
+
+      setStage("confirming");
+      const receipt = await waitForTransactionReceipt(provider, txHash);
+      if (!receipt || receipt.status !== "0x1") {
+        throw new Error("Transaction failed or timed out");
+      }
+
+      const tokenAddress = extractCreatedCoinAddress(receipt, CONTRACT_ADDRESSES.launchpadFactory);
+      if (!tokenAddress) {
+        throw new Error("Could not determine the created token address");
+      }
+
+      setStage("saving-record");
+      const createResponse = await fetch("/api/launchpad/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          address: tokenAddress,
+          creator: address,
+          name: trimmedName,
+          symbol: trimmedSymbol,
+          description,
+          image: uploadedImage?.url ?? null,
+          bannerImage: uploadedBanner?.url ?? null,
+          website: website || null,
+          twitter: twitter || null,
+          telegram: telegram || null,
+          txHash,
+        }),
+      });
+
+      if (!createResponse.ok) {
+        const errorPayload = await createResponse.json().catch(() => null);
+        throw new Error(errorPayload?.error ?? "Failed to save coin record");
+      }
+
+      const { record } = (await createResponse.json()) as { record: LaunchpadCoinRecord };
+      const liveCoin = await buildLaunchpadCoinFromRecord(record, createProviderCaller(provider));
+      registerLiveLaunchpadCoins([liveCoin]);
+
+      setStage("idle");
+      setLaunched({ symbol: trimmedSymbol, address: tokenAddress });
+    } catch (caughtError) {
+      setStage("idle");
+      setLaunchError(caughtError instanceof Error ? caughtError.message : "Failed to launch token");
+    }
   }
 
   const buyInEthNum = parseFloat(buyInEth) || 0;
+  const isBusy = stage !== "idle";
 
   let ctaLabel = "Launch Token";
   let ctaDisabled = false;
   let ctaAction: () => void = handleLaunch;
 
-  if (!isConnected) {
+  if (isBusy) {
+    ctaLabel = STAGE_LABELS[stage];
+    ctaDisabled = true;
+  } else if (!isConnected) {
     ctaLabel = "Connect Wallet";
     ctaAction = connect;
   } else if (!tokenName.trim()) {
@@ -186,6 +319,11 @@ export default function CreateCoinApp() {
         >
           {ctaLabel}
         </button>
+        {launchError && (
+          <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+            {launchError}
+          </p>
+        )}
         <p className="mt-3 text-center font-mono text-[9px] uppercase tracking-wider2 text-bronze">
           Deploys On Giwa Chain • Takes A Few Seconds
         </p>
@@ -204,9 +342,9 @@ export default function CreateCoinApp() {
       {launched && (
         <LiquiditySuccessModal
           title="Token Launched"
-          message={`$${launched.symbol} is live with its initial liquidity pool. Lock it now to boost your APR.`}
-          primaryLabel="Lock Your Liquidity"
-          onPrimary={() => router.push("/liquidity?tab=lock")}
+          message={`$${launched.symbol} is live on-chain with its bonding curve seeded.`}
+          primaryLabel="View Your Coin"
+          onPrimary={() => router.push(`/launchpad/coin/${launched.address}`)}
           onClose={() => setLaunched(null)}
         />
       )}

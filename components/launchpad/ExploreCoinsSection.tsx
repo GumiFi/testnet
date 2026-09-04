@@ -29,6 +29,7 @@ import {
   queryLaunchpadCoins,
   type LaunchpadExploreFilter as ExploreFilter,
 } from "@/lib/launchpad-data";
+import { useLiveLaunchpadCoins } from "@/lib/launchpad-live";
 import { formatCompactUsd, formatPct, formatPrice } from "@/lib/format";
 import { buildSearchString, pageHref, resolvePageFromPathname } from "@/lib/pagination";
 
@@ -51,6 +52,7 @@ export default function ExploreCoinsSection() {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
   const [openPanel, setOpenPanel] = useState<"filter" | "display" | null>(null);
+  const liveReady = useLiveLaunchpadCoins();
 
   const { coins: pageCoins, total, totalPages } = useMemo(
     () =>
@@ -64,7 +66,7 @@ export default function ExploreCoinsSection() {
         volMin: range.volMin,
         volMax: range.volMax,
       }),
-    [filter, query, page, range]
+    [filter, query, page, range, liveReady]
   );
 
   const search = buildSearchString({
@@ -201,6 +203,7 @@ export default function ExploreCoinsSection() {
                         accent={coin.accent}
                         shape="square"
                         className="h-full w-full text-2xl"
+                        src={coin.image ?? undefined}
                       />
                       <span className="absolute left-1 top-1 border border-gold/50 bg-void/90 px-1 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
                         {formatCompactUsd(coin.marketCap)}

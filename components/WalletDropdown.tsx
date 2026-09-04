@@ -5,17 +5,65 @@ import Link from "next/link";
 import Avatar from "@/components/discover/Avatar";
 import { CheckIcon, CopyIcon, EyeIcon, EyeOffIcon } from "@/components/icons";
 import { useWallet, truncateAddress } from "@/lib/wallet-context";
-import { getAssetsWithValue, getPortfolioSummary } from "@/lib/portfolio-data";
+import { portfolioAssets, type PortfolioAssetWithValue } from "@/lib/portfolio-data";
 import { formatBalance, formatUsd } from "@/lib/format";
+import { CONTRACT_ADDRESSES, NETWORK } from "@/config/contracts.config";
+import { createRpcCaller } from "@/lib/nft-onchain";
+import { fetchErc20Balance, fetchNativeBalance } from "@/lib/token-onchain";
+
+const ON_CHAIN_ASSET_IDS = ["eth", "gumi"] as const;
 
 export default function WalletDropdown({ onClose }: { onClose: () => void }) {
-  const { address, monogram } = useWallet();
-  const assets = getAssetsWithValue();
-  const { totalValueUsd } = getPortfolioSummary(assets);
+  const { address, monogram, avatarUrl } = useWallet();
+  const [assets, setAssets] = useState<PortfolioAssetWithValue[]>([]);
+  const [holdingsLoading, setHoldingsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [valueHidden, setValueHidden] = useState(false);
   const scrollLockPrev = useRef<string | null>(null);
   const scrollLockTimer = useRef<number | null>(null);
+
+  const totalValueUsd = assets.reduce((sum, asset) => sum + asset.valueUsd, 0);
+
+  useEffect(() => {
+    if (!address) {
+      setAssets([]);
+      return;
+    }
+    let cancelled = false;
+    setHoldingsLoading(true);
+    const call = createRpcCaller(NETWORK.rpcUrl);
+    Promise.all([
+      fetchNativeBalance(null, NETWORK.rpcUrl, address),
+      fetchErc20Balance(call, CONTRACT_ADDRESSES.gumiToken, address),
+    ])
+      .then(([ethBalance, gumiBalance]) => {
+        if (cancelled) return;
+        const balances: Record<(typeof ON_CHAIN_ASSET_IDS)[number], number> = {
+          eth: ethBalance,
+          gumi: gumiBalance,
+        };
+        const onChainAssets = portfolioAssets
+          .filter((asset): asset is typeof asset & { id: (typeof ON_CHAIN_ASSET_IDS)[number] } =>
+            (ON_CHAIN_ASSET_IDS as readonly string[]).includes(asset.id)
+          )
+          .map((asset) => {
+            const balance = balances[asset.id];
+            return { ...asset, balance, valueUsd: asset.priceUsd * balance };
+          })
+          .sort((a, b) => b.valueUsd - a.valueUsd);
+        setAssets(onChainAssets);
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setAssets([]);
+      })
+      .finally(() => {
+        if (!cancelled) setHoldingsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [address]);
 
   function lockPageScroll() {
     if (scrollLockPrev.current === null) {
@@ -63,7 +111,7 @@ export default function WalletDropdown({ onClose }: { onClose: () => void }) {
     <div className="absolute right-0 top-full z-40 mt-2 w-full border border-gold/40 bg-panel shadow-[0_20px_40px_rgba(0,0,0,0.55)]">
       <div className="flex items-center gap-2.5 border-b border-line bg-gradient-to-b from-gold/10 to-transparent px-3.5 py-3">
         <Link href="/profile" onClick={onClose} aria-label="View profile">
-          <Avatar label={monogram ?? ""} accent="gold" className="h-8 w-8 shrink-0 text-[10px]" />
+          <Avatar label={monogram ?? ""} accent="gold" src={avatarUrl} className="h-8 w-8 shrink-0 text-[10px]" />
         </Link>
 
         <div className="min-w-0 flex-1">
@@ -71,7 +119,7 @@ export default function WalletDropdown({ onClose }: { onClose: () => void }) {
             <button
               type="button"
               onClick={handleCopyAddress}
-              className="min-w-0 truncate font-mono text-xs uppercase tracking-wider2 text-ivory transition-colors hover:text-goldLight"
+              className="min-w-0 flex-1 truncate text-left font-mono text-xs uppercase tracking-wider2 text-ivory transition-colors hover:text-goldLight"
             >
               {truncateAddress(address ?? "")}
             </button>
@@ -110,6 +158,11 @@ export default function WalletDropdown({ onClose }: { onClose: () => void }) {
       </p>
 
       <div className="max-h-28 overflow-y-auto overscroll-contain" onScroll={handleHoldingsScroll}>
+        {holdingsLoading && assets.length === 0 && (
+          <p className="px-3.5 py-3 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+            Loading on-chain holdings…
+          </p>
+        )}
         {assets.map((asset) => (
           <div
             key={asset.id}

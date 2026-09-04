@@ -1,18 +1,20 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import Link from "next/link";
 import { FlameIcon, ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
 import Avatar from "@/components/discover/Avatar";
 import BoosterBadge from "@/components/BoosterBadge";
 import GumiTag from "@/components/GumiTag";
 import WalletTag from "@/components/WalletTag";
-import { isGumiHandle, trendingLaunchpadCoins } from "@/lib/launchpad-data";
+import { isGumiHandle, getTrendingLaunchpadCoins } from "@/lib/launchpad-data";
+import { useLiveLaunchpadCoins } from "@/lib/launchpad-live";
 import { formatCompactUsd, formatPct, formatPrice } from "@/lib/format";
 
 export default function TrendingLaunchesSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const trending = trendingLaunchpadCoins;
+  const liveReady = useLiveLaunchpadCoins();
+  const trending = useMemo(() => getTrendingLaunchpadCoins(), [liveReady]);
 
   function scrollBy(direction: 1 | -1) {
     scrollRef.current?.scrollBy({ left: direction * 320, behavior: "smooth" });
@@ -64,6 +66,7 @@ export default function TrendingLaunchesSection() {
                     accent={coin.accent}
                     shape="square"
                     className="h-full w-full text-5xl"
+                    src={coin.image ?? undefined}
                   />
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-void via-void/20 to-transparent" />
                   <span className="absolute left-3 top-3 font-display text-xl text-ivory text-shadow-gold">

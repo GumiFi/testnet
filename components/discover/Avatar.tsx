@@ -11,19 +11,25 @@ export default function Avatar({
   accent,
   className = "h-10 w-10 text-[11px]",
   shape = "circle",
+  src,
 }: {
   label: string;
   accent: Accent;
   className?: string;
   shape?: "circle" | "square";
+  src?: string | null;
 }) {
   return (
     <div
-      className={`flex shrink-0 items-center justify-center border font-display uppercase tracking-wider2 ${
+      className={`flex shrink-0 items-center justify-center overflow-hidden border font-display uppercase tracking-wider2 ${
         shape === "circle" ? "rounded-full" : ""
       } ${accentStyles[accent]} ${className}`}
     >
-      {label}
+      {src ? (
+        <img src={src} alt="" className="h-full w-full object-cover" />
+      ) : (
+        label
+      )}
     </div>
   );
 }

@@ -11,6 +11,12 @@ import {
   type ReactNode,
 } from "react";
 import WalletConnectModal from "@/components/WalletConnectModal";
+import { CONTRACT_ADDRESSES } from "@/config/contracts.config";
+import {
+  createProviderCaller,
+  fetchGumiCustomNftHoldings,
+  type OwnedNft,
+} from "./nft-onchain";
 
 export type EIP1193Provider = {
   request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
@@ -30,7 +36,7 @@ export type EIP6963ProviderDetail = {
   provider: EIP1193Provider;
 };
 
-const GUMI_NFT_CONTRACT_ADDRESS = "";
+const GUMI_NFT_CONTRACT_ADDRESS = CONTRACT_ADDRESSES.gumiCustomNFT;
 const STORAGE_KEY = "gumifi.wallet.rdns";
 
 type WalletContextValue = {
@@ -42,7 +48,12 @@ type WalletContextValue = {
   monogram: string | null;
   chainId: string | null;
   isGumiHolder: boolean;
+  gumiNftBalance: number;
+  ownedGumiNfts: OwnedNft[];
+  gumiNftsLoading: boolean;
+  avatarUrl: string | null;
   providers: EIP6963ProviderDetail[];
+  provider: EIP1193Provider | null;
   pickerOpen: boolean;
   error: string | null;
   connect: () => void;
@@ -53,16 +64,15 @@ type WalletContextValue = {
 
 const WalletContext = createContext<WalletContextValue | null>(null);
 
-function toBalanceOfCalldata(address: string): string {
-  return `0x70a08231000000000000000000000000${address.slice(2).toLowerCase()}`;
-}
-
 export function WalletProvider({ children }: { children: ReactNode }) {
   const [providers, setProviders] = useState<EIP6963ProviderDetail[]>([]);
   const [activeUuid, setActiveUuid] = useState<string | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [chainId, setChainId] = useState<string | null>(null);
   const [isGumiHolder, setIsGumiHolder] = useState(false);
+  const [gumiNftBalance, setGumiNftBalance] = useState(0);
+  const [ownedGumiNfts, setOwnedGumiNfts] = useState<OwnedNft[]>([]);
+  const [gumiNftsLoading, setGumiNftsLoading] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -173,26 +183,37 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!address || !activeProvider || !GUMI_NFT_CONTRACT_ADDRESS) {
       setIsGumiHolder(false);
+      setGumiNftBalance(0);
+      setOwnedGumiNfts([]);
       return;
     }
     let cancelled = false;
-    activeProvider
-      .request({
-        method: "eth_call",
-        params: [{ to: GUMI_NFT_CONTRACT_ADDRESS, data: toBalanceOfCalldata(address) }, "latest"],
-      })
-      .then((result) => {
+    setGumiNftsLoading(true);
+    fetchGumiCustomNftHoldings(createProviderCaller(activeProvider), GUMI_NFT_CONTRACT_ADDRESS, address)
+      .then((holdings) => {
         if (cancelled) return;
-        const raw = result as string;
-        setIsGumiHolder(Boolean(raw) && raw !== "0x" && BigInt(raw) > BigInt(0));
+        setIsGumiHolder(holdings.balance > 0);
+        setGumiNftBalance(holdings.balance);
+        setOwnedGumiNfts(holdings.items);
       })
       .catch(() => {
-        if (!cancelled) setIsGumiHolder(false);
+        if (cancelled) return;
+        setIsGumiHolder(false);
+        setGumiNftBalance(0);
+        setOwnedGumiNfts([]);
+      })
+      .finally(() => {
+        if (!cancelled) setGumiNftsLoading(false);
       });
     return () => {
       cancelled = true;
     };
   }, [address, activeProvider]);
+
+  const avatarUrl = useMemo(
+    () => (isGumiHolder ? ownedGumiNfts[0]?.image ?? null : null),
+    [isGumiHolder, ownedGumiNfts]
+  );
 
   const connect = useCallback(() => {
     setError(null);
@@ -234,6 +255,8 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setActiveUuid(null);
     setChainId(null);
     setIsGumiHolder(false);
+    setGumiNftBalance(0);
+    setOwnedGumiNfts([]);
     window.localStorage.removeItem(STORAGE_KEY);
   }, []);
 
@@ -252,7 +275,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       monogram,
       chainId,
       isGumiHolder,
+      gumiNftBalance,
+      ownedGumiNfts,
+      gumiNftsLoading,
+      avatarUrl,
       providers,
+      provider: activeProvider,
       pickerOpen,
       error,
       connect,
@@ -269,7 +297,12 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       monogram,
       chainId,
       isGumiHolder,
+      gumiNftBalance,
+      ownedGumiNfts,
+      gumiNftsLoading,
+      avatarUrl,
       providers,
+      activeProvider,
       pickerOpen,
       error,
       connect,
