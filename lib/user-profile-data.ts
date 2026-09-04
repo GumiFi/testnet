@@ -48,9 +48,3 @@ export function getWalletProfile(address: string): UserProfile {
     accent: accentFor(normalized),
   };
 }
-
-export type UserActivityItem = {
-  id: string;
-  description: string;
-  timeAgo: string;
-};

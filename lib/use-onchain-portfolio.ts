@@ -151,12 +151,8 @@ export function useOnchainPortfolio(address: string | null): OnchainPortfolio {
       const ownLaunchRecords = allLaunchpadRecords.filter(
         (record) => record.creator.toLowerCase() === (address as string).toLowerCase()
       );
-      const otherLaunchRecords = allLaunchpadRecords.filter(
-        (record) => record.creator.toLowerCase() !== (address as string).toLowerCase()
-      );
-
       const [heldAssets, launches] = await Promise.all([
-        buildHeldLaunchpadAssets(call, address as string, otherLaunchRecords),
+        buildHeldLaunchpadAssets(call, address as string, allLaunchpadRecords),
         buildMyLaunches(call, ownLaunchRecords),
       ]);
       if (cancelled) return;
