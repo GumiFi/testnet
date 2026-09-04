@@ -32,6 +32,11 @@ async function rpcCall(method: string, params: unknown[]): Promise<unknown> {
   return payload.result;
 }
 
+type RawReceipt = {
+  status: string;
+  logs: { address: string; topics: string[]; data: string }[];
+} | null;
+
 export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => null)) as CreatePayload | null;
 
@@ -42,13 +47,10 @@ export async function POST(request: NextRequest) {
   const tokenAddress = body.address.toLowerCase();
   const creatorAddress = body.creator.toLowerCase();
 
-  let receipt: {
-    status: string;
-    logs: { address: string; topics: string[]; data: string }[];
-  } | null = null;
+  let receipt: RawReceipt = null;
 
   try {
-    receipt = (await rpcCall("eth_getTransactionReceipt", [body.txHash])) as typeof receipt;
+    receipt = (await rpcCall("eth_getTransactionReceipt", [body.txHash])) as RawReceipt;
   } catch {
     return NextResponse.json({ error: "Failed to verify transaction" }, { status: 502 });
   }
