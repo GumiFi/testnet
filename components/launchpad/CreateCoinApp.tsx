@@ -24,6 +24,7 @@ import CollapsibleSection from "./CollapsibleSection";
 import SocialLinksFields from "./SocialLinksFields";
 import PairWithGumiRow from "./PairWithGumiRow";
 import BuyAtLaunchRow from "./BuyAtLaunchRow";
+import InitialBuyModal from "./InitialBuyModal";
 import ModalSkeleton from "@/components/skeletons/ModalSkeleton";
 
 const ImageCropModal = dynamic(() => import("./ImageCropModal"), {
@@ -67,6 +68,7 @@ export default function CreateCoinApp() {
   const [twitter, setTwitter] = useState("");
   const [telegram, setTelegram] = useState("");
   const [buyInEth, setBuyInEth] = useState("0.5");
+  const [buyModalOpen, setBuyModalOpen] = useState(false);
   const [cropRequest, setCropRequest] = useState<CropRequest | null>(null);
   const [launched, setLaunched] = useState<{ symbol: string; address: string } | null>(null);
   const [stage, setStage] = useState<LaunchStage>("idle");
@@ -290,22 +292,7 @@ export default function CreateCoinApp() {
         </CollapsibleSection>
 
         <PairWithGumiRow />
-        <BuyAtLaunchRow />
-
-        <div className="mt-3">
-          <FieldHeader label="Initial Buy (ETH)" counter="Seeds Your Liquidity" />
-          <input
-            value={buyInEth}
-            onChange={(event) => setBuyInEth(event.target.value.replace(/[^0-9.]/g, ""))}
-            type="text"
-            inputMode="decimal"
-            placeholder="0.5"
-            className="mt-2 w-full rounded-lg border border-line bg-panel2 px-4 py-3 font-display text-base text-ivory placeholder:text-bronze/50 focus:border-gold/60 focus:outline-none"
-          />
-          <p className="mt-2 font-body text-xs text-bronze">
-            This creates your token's initial liquidity pool — you can lock it right after launch.
-          </p>
-        </div>
+        <BuyAtLaunchRow amount={buyInEth} onOpen={() => setBuyModalOpen(true)} />
 
         <button
           type="button"
@@ -328,6 +315,14 @@ export default function CreateCoinApp() {
           Deploys On Giwa Chain • Takes A Few Seconds
         </p>
       </div>
+
+      {buyModalOpen && (
+        <InitialBuyModal
+          value={buyInEth}
+          onConfirm={setBuyInEth}
+          onClose={() => setBuyModalOpen(false)}
+        />
+      )}
 
       {cropRequest && (
         <ImageCropModal

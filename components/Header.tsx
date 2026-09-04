@@ -69,6 +69,8 @@ export default function Header() {
   const walletRef = useRef<HTMLDivElement>(null);
   const nftMenuRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     function handleOutsideClick(event: MouseEvent) {
@@ -82,6 +84,13 @@ export default function Header() {
       if (notifPanelOpen && !notifRef.current?.contains(target)) {
         setNotifPanelOpen(false);
       }
+      if (
+        open &&
+        !mobileMenuRef.current?.contains(target) &&
+        !mobileMenuButtonRef.current?.contains(target)
+      ) {
+        setOpen(false);
+      }
     }
     function handleEscape(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -89,6 +98,7 @@ export default function Header() {
         setWalletMenuOpen(false);
         setNftMenuOpen(false);
         setNotifPanelOpen(false);
+        setOpen(false);
       }
     }
     document.addEventListener("mousedown", handleOutsideClick);
@@ -97,7 +107,7 @@ export default function Header() {
       document.removeEventListener("mousedown", handleOutsideClick);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [walletMenuOpen, nftMenuOpen, notifPanelOpen]);
+  }, [walletMenuOpen, nftMenuOpen, notifPanelOpen, open]);
 
   useEffect(() => {
     if (!open) setMobileNftOpen(false);
@@ -137,8 +147,9 @@ export default function Header() {
         <div className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
             <button
+              ref={mobileMenuButtonRef}
               className="group flex h-9 w-9 items-center justify-center border border-gold/40 bg-panel/60 transition-all duration-300 hover:border-gold hover:bg-gold/10 md:hidden"
-              onClick={() => setOpen(true)}
+              onClick={() => setOpen((value) => !value)}
               aria-label="Open menu"
             >
               <span className="flex flex-col items-end gap-[5px]">
@@ -278,9 +289,12 @@ export default function Header() {
         <div className="fixed inset-0 z-50 md:hidden">
           <div
             className="absolute inset-0 animate-fadeIn bg-void/80 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
+            aria-hidden="true"
           />
-          <div className="relative flex h-full w-[280px] animate-slideInLeft flex-col border-r border-line bg-panel">
+          <div
+            ref={mobileMenuRef}
+            className="relative flex h-full w-[280px] animate-slideInLeft flex-col border-r border-line bg-panel"
+          >
             <div className="flex items-center justify-between border-b border-line px-6 py-5">
               <Link
                 href="/"

@@ -5,55 +5,142 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { GlobeIcon, BoltIcon } from "@/components/icons";
 import { useWallet } from "@/lib/wallet-context";
-import ToggleSwitch from "@/components/nft/ToggleSwitch";
 import ImageUploadField from "@/components/launchpad/ImageUploadField";
 import CollapsibleSection from "@/components/launchpad/CollapsibleSection";
 import SocialLinksFields from "@/components/launchpad/SocialLinksFields";
 import ModalSkeleton from "@/components/skeletons/ModalSkeleton";
 import SimpleTokenGeneratorHeader from "./SimpleTokenGeneratorHeader";
-import Stepper from "./Stepper";
 import TokenDeploySuccessModal from "./TokenDeploySuccessModal";
-import { generateMockContractAddress } from "@/lib/token-generator-data";
+import {
+  createSimpleTokenCalldata,
+  extractCreatedSimpleTokenAddress,
+  parseWholeUnitsToBaseUnits,
+} from "@/lib/token-onchain";
+import { sendLaunchpadTransaction, waitForTransactionReceipt } from "@/lib/launchpad-onchain";
+import { CONTRACT_ADDRESSES, NETWORK, getExplorerAddressUrl } from "@/config/contracts.config";
 
 const ImageCropModal = dynamic(() => import("@/components/launchpad/ImageCropModal"), {
   loading: () => <ModalSkeleton />,
 });
 
+const SIMPLE_TOKEN_DECIMALS = 18;
+
+type DeployStage = "idle" | "switching-network" | "awaiting-signature" | "confirming";
+
+const STAGE_LABELS: Record<DeployStage, string> = {
+  idle: "",
+  "switching-network": "Switching To Giwa Sepolia...",
+  "awaiting-signature": "Confirm In Your Wallet...",
+  confirming: "Waiting For Confirmation...",
+};
+
 export default function SimpleTokenGeneratorApp() {
   const router = useRouter();
-  const { isConnected, connect } = useWallet();
+  const { isConnected, connect, address, provider, chainId } = useWallet();
 
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
-  const [decimals, setDecimals] = useState(18);
   const [totalSupply, setTotalSupply] = useState("1000000");
   const [description, setDescription] = useState("");
   const [tokenImage, setTokenImage] = useState<string | null>(null);
-  const [mintable, setMintable] = useState(false);
-  const [burnable, setBurnable] = useState(true);
   const [website, setWebsite] = useState("");
   const [twitter, setTwitter] = useState("");
   const [telegram, setTelegram] = useState("");
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [deployed, setDeployed] = useState<{ symbol: string; address: string } | null>(null);
+  const [stage, setStage] = useState<DeployStage>("idle");
+  const [generateError, setGenerateError] = useState<string | null>(null);
 
   function handleCropConfirm(result: string) {
     setTokenImage(result);
     setCropSrc(null);
   }
 
-  function handleGenerate() {
-    const address = generateMockContractAddress(`${tokenSymbol}-${tokenName}`);
-    setDeployed({ symbol: tokenSymbol.trim().toUpperCase(), address });
+  async function ensureGiwaNetwork() {
+    if (!provider) return;
+    if (chainId === NETWORK.chainIdHex) return;
+    setStage("switching-network");
+    try {
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: NETWORK.chainIdHex }],
+      });
+    } catch (switchError) {
+      const code = (switchError as { code?: number })?.code;
+      if (code === 4902) {
+        await provider.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: NETWORK.chainIdHex,
+              chainName: NETWORK.name,
+              rpcUrls: [NETWORK.rpcUrl],
+              blockExplorerUrls: [NETWORK.explorerUrl],
+              nativeCurrency: NETWORK.nativeCurrency,
+            },
+          ],
+        });
+      } else {
+        throw switchError;
+      }
+    }
+  }
+
+  async function handleGenerate() {
+    if (!provider || !address) {
+      connect();
+      return;
+    }
+
+    setGenerateError(null);
+
+    try {
+      await ensureGiwaNetwork();
+
+      setStage("awaiting-signature");
+      const trimmedName = tokenName.trim();
+      const trimmedSymbol = tokenSymbol.trim().toUpperCase();
+      const totalSupplyBaseUnits = parseWholeUnitsToBaseUnits(totalSupply, SIMPLE_TOKEN_DECIMALS);
+      const data = createSimpleTokenCalldata(trimmedName, trimmedSymbol, totalSupplyBaseUnits);
+
+      const txHash = await sendLaunchpadTransaction(
+        provider,
+        address,
+        CONTRACT_ADDRESSES.simpleTokenFactory,
+        data,
+        0n
+      );
+
+      setStage("confirming");
+      const receipt = await waitForTransactionReceipt(provider, txHash);
+      if (!receipt || receipt.status !== "0x1") {
+        throw new Error("Transaction failed or timed out");
+      }
+
+      const tokenAddress = extractCreatedSimpleTokenAddress(receipt, CONTRACT_ADDRESSES.simpleTokenFactory);
+      if (!tokenAddress) {
+        throw new Error("Could not determine the created token address");
+      }
+
+      setStage("idle");
+      setDeployed({ symbol: trimmedSymbol, address: tokenAddress });
+    } catch (caughtError) {
+      setStage("idle");
+      setGenerateError(caughtError instanceof Error ? caughtError.message : "Failed to generate token");
+    }
   }
 
   const supplyNum = parseFloat(totalSupply.replace(/,/g, "")) || 0;
+  const isBusy = stage !== "idle";
 
   let ctaLabel = "Generate Token";
   let ctaDisabled = false;
   let ctaAction: () => void = handleGenerate;
 
-  if (!isConnected) {
+  if (isBusy) {
+    ctaLabel = STAGE_LABELS[stage];
+    ctaDisabled = true;
+  } else if (!isConnected) {
     ctaLabel = "Connect Wallet";
     ctaAction = connect;
   } else if (!tokenName.trim()) {
@@ -79,10 +166,10 @@ export default function SimpleTokenGeneratorApp() {
           <BoltIcon className="h-4 w-4" />
         </span>
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Mock Preview</p>
+          <p className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Live On-Chain Deploy</p>
           <p className="mt-1 font-body text-xs text-bronze">
-            No smart contract is connected yet — this only builds a local mock of your token, nothing is
-            deployed on-chain.
+            Deploys a real ERC-20 contract on {NETWORK.name} via the Gumifi Simple Token Factory. Supply is
+            minted once to your wallet at generation — fixed at 18 decimals, no mint or burn functions.
           </p>
         </div>
       </div>
@@ -123,24 +210,16 @@ export default function SimpleTokenGeneratorApp() {
           />
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Decimals</p>
-            <div className="mt-2">
-              <Stepper value={decimals} min={0} max={18} step={1} onChange={setDecimals} />
-            </div>
-          </div>
-          <div>
-            <FieldHeader label="Total Supply" counter="Units" />
-            <input
-              value={totalSupply}
-              onChange={(event) => setTotalSupply(event.target.value.replace(/[^0-9]/g, ""))}
-              type="text"
-              inputMode="numeric"
-              placeholder="1000000"
-              className="mt-2 w-full border border-line bg-panel2 px-4 py-3 font-display text-base text-ivory placeholder:text-bronze/50 focus:border-gold/60 focus:outline-none"
-            />
-          </div>
+        <div className="mt-5">
+          <FieldHeader label="Total Supply" counter="Units" />
+          <input
+            value={totalSupply}
+            onChange={(event) => setTotalSupply(event.target.value.replace(/[^0-9]/g, ""))}
+            type="text"
+            inputMode="numeric"
+            placeholder="1000000"
+            className="mt-2 w-full border border-line bg-panel2 px-4 py-3 font-display text-base text-ivory placeholder:text-bronze/50 focus:border-gold/60 focus:outline-none"
+          />
         </div>
 
         <div className="mt-5">
@@ -153,22 +232,6 @@ export default function SimpleTokenGeneratorApp() {
             placeholder="Tell the world about your token..."
             className="mt-2 w-full resize-none border border-line bg-panel2 px-4 py-3 font-body text-sm text-ivory placeholder:text-bronze/50 focus:border-gold/60 focus:outline-none"
           />
-        </div>
-
-        <div className="mt-5 flex items-center justify-between border-t border-line pt-4">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Mintable</p>
-            <p className="mt-1 font-body text-[11px] text-bronze">Allow the owner to mint new supply later.</p>
-          </div>
-          <ToggleSwitch checked={mintable} onChange={setMintable} label="Toggle mintable" />
-        </div>
-
-        <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
-          <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Burnable</p>
-            <p className="mt-1 font-body text-[11px] text-bronze">Let holders permanently burn their own tokens.</p>
-          </div>
-          <ToggleSwitch checked={burnable} onChange={setBurnable} label="Toggle burnable" />
         </div>
 
         <CollapsibleSection icon={GlobeIcon} label="Add Social Links">
@@ -194,8 +257,13 @@ export default function SimpleTokenGeneratorApp() {
         >
           {ctaLabel}
         </button>
+        {generateError && (
+          <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+            {generateError}
+          </p>
+        )}
         <p className="mt-3 text-center font-mono text-[9px] uppercase tracking-wider2 text-bronze">
-          Mock Only • No Smart Contract Deployed
+          Deploys On {NETWORK.name} • Takes A Few Seconds
         </p>
       </div>
 
@@ -212,8 +280,10 @@ export default function SimpleTokenGeneratorApp() {
       {deployed && (
         <TokenDeploySuccessModal
           title="Token Generated"
-          message={`$${deployed.symbol} was generated as a local mock. Connect a smart contract to deploy it for real.`}
+          message={`$${deployed.symbol} was deployed on-chain and the full supply was minted to your wallet.`}
           contractAddress={deployed.address}
+          addressLabel="Contract Address"
+          explorerUrl={getExplorerAddressUrl(deployed.address)}
           primaryLabel="View My Tokens"
           onPrimary={() => router.push("/profile")}
           onClose={() => setDeployed(null)}

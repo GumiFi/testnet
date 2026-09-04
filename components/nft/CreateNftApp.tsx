@@ -312,7 +312,7 @@ export default function CreateNftApp() {
             />
           </div>
           <div>
-            <div className="flex items-center justify-between">
+            <div className="flex h-5 items-center justify-between">
               <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Unit Price</p>
               <div className="flex items-center gap-1.5">
                 <span className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Free</span>
@@ -419,7 +419,7 @@ export default function CreateNftApp() {
 
 function FieldHeader({ label, counter }: { label: string; counter: string }) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex h-5 items-center justify-between">
       <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">{label}</p>
       <span className="font-mono text-[9px] text-bronze">{counter}</span>
     </div>

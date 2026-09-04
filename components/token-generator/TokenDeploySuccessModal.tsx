@@ -7,6 +7,8 @@ export default function TokenDeploySuccessModal({
   title,
   message,
   contractAddress,
+  addressLabel = "Mock Contract Address",
+  explorerUrl,
   primaryLabel,
   onPrimary,
   onClose,
@@ -14,6 +16,8 @@ export default function TokenDeploySuccessModal({
   title: string;
   message: string;
   contractAddress: string;
+  addressLabel?: string;
+  explorerUrl?: string;
   primaryLabel?: string;
   onPrimary?: () => void;
   onClose: () => void;
@@ -29,8 +33,19 @@ export default function TokenDeploySuccessModal({
         <p className="mt-2 font-body text-xs text-bronze">{message}</p>
 
         <div className="mt-5 border border-line bg-panel2 text-left">
-          <CopyField label="Mock Contract Address" value={contractAddress} isLast />
+          <CopyField label={addressLabel} value={contractAddress} isLast />
         </div>
+
+        {explorerUrl && (
+          <a
+            href={explorerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 block w-full border border-line px-4 py-2 text-center font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
+          >
+            View On Explorer
+          </a>
+        )}
 
         {primaryLabel && onPrimary && (
           <button
