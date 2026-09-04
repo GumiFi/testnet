@@ -10,7 +10,6 @@ import type { SwapSettings } from "./SwapSettingsModal";
 import TokenInfoSection from "./TokenInfoSection";
 import RecentSwapsSection from "./RecentSwapsSection";
 import ModalSkeleton from "@/components/skeletons/ModalSkeleton";
-import { useTransactions } from "@/lib/transaction-context";
 
 const TokenSearchModal = dynamic(() => import("./TokenSearchModal"), {
   loading: () => <ModalSkeleton />,
@@ -34,7 +33,6 @@ export default function SwapApp() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settings, setSettings] = useState<SwapSettings>(DEFAULT_SETTINGS);
   const [comingSoon, setComingSoon] = useState<string | null>(null);
-  const { submitTransaction } = useTransactions();
 
   const payToken = getSwapTokenById(payTokenId, customTokens)!;
   const receiveToken = getSwapTokenById(receiveTokenId, customTokens)!;
@@ -54,15 +52,6 @@ export default function SwapApp() {
     setTokenSearchSide(null);
   }
 
-  function handleSubmitSwap() {
-    submitTransaction({
-      kind: "swap",
-      title: `Swap ${payToken.symbol} → ${receiveToken.symbol}`,
-      subtitle: payAmount ? `${payAmount} ${payToken.symbol}` : undefined,
-    });
-    setPayAmount("");
-  }
-
   return (
     <div className="mx-auto flex max-w-md flex-col items-center px-4 py-8 md:py-12">
       <SwapHeader />
@@ -76,7 +65,6 @@ export default function SwapApp() {
           onFlip={handleFlip}
           onOpenTokenSearch={setTokenSearchSide}
           onOpenSettings={() => setSettingsOpen(true)}
-          onSubmit={handleSubmitSwap}
           settings={settings}
         />
       </div>

@@ -32,6 +32,7 @@ import {
 import { useLiveLaunchpadCoins } from "@/lib/launchpad-live";
 import { formatCompactUsd, formatPct, formatPrice } from "@/lib/format";
 import { buildSearchString, pageHref, resolvePageFromPathname } from "@/lib/pagination";
+import Skel from "@/components/skeletons/Skel";
 
 const LAUNCHPAD_BASE_PATH = "/launchpad";
 
@@ -172,10 +173,16 @@ export default function ExploreCoinsSection() {
         </div>
 
         <p className="mt-4 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
-          {total} coins · Page {page} of {totalPages}
+          {liveReady ? `${total} coins · Page ${page} of ${totalPages}` : "Loading live coins..."}
         </p>
 
-        {viewMode === "table" ? (
+        {!liveReady ? (
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:gap-4">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Skel key={index} className="h-56 w-full" />
+            ))}
+          </div>
+        ) : viewMode === "table" ? (
           <div className="mt-3">
             <CoinTableView coins={pageCoins} animationsEnabled={animationsEnabled} />
           </div>

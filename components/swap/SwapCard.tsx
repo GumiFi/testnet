@@ -1,16 +1,64 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { ArrowDownIcon, GearIcon } from "@/components/icons";
 import { formatBalance } from "@/lib/format";
 import { useWallet } from "@/lib/wallet-context";
+import { CONTRACT_ADDRESSES, NETWORK } from "@/config/contracts.config";
+import { createProviderCaller, createRpcCaller, type EthCaller } from "@/lib/nft-onchain";
+import { fetchErc20Balance, fetchNativeBalance } from "@/lib/token-onchain";
+import { sendLaunchpadTransaction as sendOnchainTransaction, waitForTransactionReceipt } from "@/lib/launchpad-onchain";
 import {
-  getSwapBalance,
-  getSwapRoute,
-  computeSwapQuote,
-  type SwapToken,
-} from "@/lib/swap-data";
+  applySlippageToRaw,
+  approveCalldata,
+  fetchAllowance,
+  fetchDecimals,
+  fetchGasPriceWei,
+  fetchSwapQuote,
+  formatBaseUnitsToNumber,
+  FALLBACK_GAS_UNITS_DIRECT,
+  FALLBACK_GAS_UNITS_MULTIHOP,
+  getDeadlineTimestamp,
+  getWethAddress,
+  parseAmountToBaseUnits,
+  resolveTokenContract,
+  swapExactETHForTokensCalldata,
+  swapExactTokensForETHCalldata,
+  swapExactTokensForTokensCalldata,
+  type SwapQuote,
+} from "@/lib/swap-onchain";
+import type { SwapToken } from "@/lib/swap-data";
 import type { SwapSettings } from "./SwapSettingsModal";
 import TokenSelectButton from "./TokenSelectButton";
+import ModalSkeleton from "@/components/skeletons/ModalSkeleton";
+
+const SwapSuccessModal = dynamic(() => import("./SwapSuccessModal"), {
+  loading: () => <ModalSkeleton />,
+});
+
+type SwapStage =
+  | "idle"
+  | "switching-network"
+  | "awaiting-approval-signature"
+  | "approval-confirming"
+  | "awaiting-signature"
+  | "confirming";
+
+const STAGE_LABELS: Record<SwapStage, string> = {
+  idle: "",
+  "switching-network": "Switching To Giwa Sepolia...",
+  "awaiting-approval-signature": "Confirm Approval In Wallet...",
+  "approval-confirming": "Approving...",
+  "awaiting-signature": "Confirm In Your Wallet...",
+  confirming: "Confirming Swap...",
+};
+
+function describeHop(index: number, path: string[], payToken: SwapToken, receiveToken: SwapToken): string {
+  if (index === 0) return payToken.symbol;
+  if (index === path.length - 1) return receiveToken.symbol;
+  return "WETH";
+}
 
 export default function SwapCard({
   payToken,
@@ -20,7 +68,6 @@ export default function SwapCard({
   onFlip,
   onOpenTokenSearch,
   onOpenSettings,
-  onSubmit,
   settings,
 }: {
   payToken: SwapToken;
@@ -30,45 +77,278 @@ export default function SwapCard({
   onFlip: () => void;
   onOpenTokenSearch: (side: "pay" | "receive") => void;
   onOpenSettings: () => void;
-  onSubmit: () => void;
   settings: SwapSettings;
 }) {
-  const { isConnected, connect } = useWallet();
+  const { isConnected, connect, address, provider, chainId } = useWallet();
+
+  const [payBalance, setPayBalance] = useState(0);
+  const [receiveBalance, setReceiveBalance] = useState(0);
+  const [balancesLoading, setBalancesLoading] = useState(false);
+  const [payDecimals, setPayDecimals] = useState(18);
+  const [receiveDecimals, setReceiveDecimals] = useState(18);
+  const [quote, setQuote] = useState<SwapQuote | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [needsApproval, setNeedsApproval] = useState(false);
+  const [gasFeeEth, setGasFeeEth] = useState<number | null>(null);
+  const [stage, setStage] = useState<SwapStage>("idle");
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [successTx, setSuccessTx] = useState<{ txHash: string; message: string } | null>(null);
 
   const payAmountNum = parseFloat(payAmount) || 0;
-  const payBalance = isConnected ? getSwapBalance(payToken.id) : 0;
-  const receiveBalance = isConnected ? getSwapBalance(receiveToken.id) : 0;
-
-  const route = getSwapRoute(payToken, receiveToken);
-  const quote = computeSwapQuote(payToken, receiveToken, payAmountNum, settings.slippagePct, route);
-
   const hasAmount = payAmountNum > 0;
-  const insufficientBalance = isConnected && hasAmount && payAmountNum > payBalance;
+  const payResolved = resolveTokenContract(payToken);
+  const receiveResolved = resolveTokenContract(receiveToken);
+  const pairResolvable = !!payResolved && !!receiveResolved && payToken.id !== receiveToken.id;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function run() {
+      const call: EthCaller = provider ? createProviderCaller(provider) : createRpcCaller(NETWORK.rpcUrl);
+
+      if (isConnected && address) {
+        setBalancesLoading(true);
+        const [pb, rb] = await Promise.all([
+          payResolved
+            ? payResolved.isNative
+              ? fetchNativeBalance(provider, NETWORK.rpcUrl, address)
+              : fetchErc20Balance(call, payResolved.address, address)
+            : Promise.resolve(0),
+          receiveResolved
+            ? receiveResolved.isNative
+              ? fetchNativeBalance(provider, NETWORK.rpcUrl, address)
+              : fetchErc20Balance(call, receiveResolved.address, address)
+            : Promise.resolve(0),
+        ]);
+        if (!cancelled) {
+          setPayBalance(pb);
+          setReceiveBalance(rb);
+          setBalancesLoading(false);
+        }
+      } else if (!cancelled) {
+        setPayBalance(0);
+        setReceiveBalance(0);
+        setBalancesLoading(false);
+      }
+
+      if (!payResolved || !receiveResolved || payToken.id === receiveToken.id || !hasAmount) {
+        if (!cancelled) {
+          setQuote(null);
+          setNeedsApproval(false);
+          setQuoteLoading(false);
+          setGasFeeEth(null);
+        }
+        return;
+      }
+
+      setQuoteLoading(true);
+      const [payDec, receiveDec] = await Promise.all([
+        fetchDecimals(call, payResolved.address, payResolved.isNative),
+        fetchDecimals(call, receiveResolved.address, receiveResolved.isNative),
+      ]);
+      if (cancelled) return;
+      setPayDecimals(payDec);
+      setReceiveDecimals(receiveDec);
+
+      const payAmountRaw = parseAmountToBaseUnits(payAmount, payDec);
+      const wethAddress = await getWethAddress(call);
+      if (!wethAddress) {
+        if (!cancelled) {
+          setQuote(null);
+          setQuoteLoading(false);
+          setGasFeeEth(null);
+        }
+        return;
+      }
+
+      const [result, gasPriceWei] = await Promise.all([
+        fetchSwapQuote({
+          call,
+          wethAddress,
+          payResolved,
+          receiveResolved,
+          payAmountRaw,
+          payDecimals: payDec,
+          receiveDecimals: receiveDec,
+        }),
+        fetchGasPriceWei(NETWORK.rpcUrl),
+      ]);
+      if (cancelled) return;
+      setQuote(result);
+      setQuoteLoading(false);
+      if (result && gasPriceWei) {
+        const gasUnits = result.path.length > 2 ? FALLBACK_GAS_UNITS_MULTIHOP : FALLBACK_GAS_UNITS_DIRECT;
+        setGasFeeEth(Number(gasPriceWei * gasUnits) / 1e18);
+      } else {
+        setGasFeeEth(null);
+      }
+
+      if (isConnected && address && !payResolved.isNative) {
+        const allowance = await fetchAllowance(call, payResolved.address, address, CONTRACT_ADDRESSES.gumiRouter);
+        if (!cancelled) setNeedsApproval(allowance < payAmountRaw);
+      } else if (!cancelled) {
+        setNeedsApproval(false);
+      }
+    }
+
+    const timer = window.setTimeout(run, 350);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [payToken.id, receiveToken.id, payAmount, isConnected, address, provider]);
+
+  async function ensureGiwaNetwork() {
+    if (!provider) return;
+    if (chainId === NETWORK.chainIdHex) return;
+    setStage("switching-network");
+    try {
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: NETWORK.chainIdHex }],
+      });
+    } catch (switchError) {
+      const code = (switchError as { code?: number })?.code;
+      if (code === 4902) {
+        await provider.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: NETWORK.chainIdHex,
+              chainName: NETWORK.name,
+              rpcUrls: [NETWORK.rpcUrl],
+              blockExplorerUrls: [NETWORK.explorerUrl],
+              nativeCurrency: NETWORK.nativeCurrency,
+            },
+          ],
+        });
+      } else {
+        throw switchError;
+      }
+    }
+  }
+
+  async function handleApprove() {
+    if (!provider || !address || !payResolved || payResolved.isNative) return;
+    setActionError(null);
+    try {
+      await ensureGiwaNetwork();
+      const amountRaw = parseAmountToBaseUnits(payAmount, payDecimals);
+      setStage("awaiting-approval-signature");
+      const txHash = await sendOnchainTransaction(
+        provider,
+        address,
+        payResolved.address,
+        approveCalldata(CONTRACT_ADDRESSES.gumiRouter, amountRaw),
+        0n
+      );
+      setStage("approval-confirming");
+      const receipt = await waitForTransactionReceipt(provider, txHash);
+      if (!receipt || receipt.status !== "0x1") {
+        throw new Error("Approval failed or timed out");
+      }
+      setNeedsApproval(false);
+      setStage("idle");
+    } catch (caughtError) {
+      setStage("idle");
+      setActionError(caughtError instanceof Error ? caughtError.message : "Failed to approve token");
+    }
+  }
+
+  async function handleSwap() {
+    if (!provider || !address || !payResolved || !receiveResolved || !quote || quote.amountOutRaw <= 0n) return;
+    setActionError(null);
+    try {
+      await ensureGiwaNetwork();
+      const amountOutMinRaw = applySlippageToRaw(quote.amountOutRaw, settings.slippagePct);
+      const deadline = getDeadlineTimestamp(settings.deadlineMinutes);
+      const payAmountRaw = parseAmountToBaseUnits(payAmount, payDecimals);
+
+      let data: string;
+      let valueWei = 0n;
+      if (payResolved.isNative) {
+        data = swapExactETHForTokensCalldata(amountOutMinRaw, quote.path, address, deadline);
+        valueWei = payAmountRaw;
+      } else if (receiveResolved.isNative) {
+        data = swapExactTokensForETHCalldata(payAmountRaw, amountOutMinRaw, quote.path, address, deadline);
+      } else {
+        data = swapExactTokensForTokensCalldata(payAmountRaw, amountOutMinRaw, quote.path, address, deadline);
+      }
+
+      setStage("awaiting-signature");
+      const txHash = await sendOnchainTransaction(provider, address, CONTRACT_ADDRESSES.gumiRouter, data, valueWei);
+
+      setStage("confirming");
+      const receipt = await waitForTransactionReceipt(provider, txHash);
+      if (!receipt || receipt.status !== "0x1") {
+        throw new Error("Swap failed or timed out");
+      }
+
+      const receiveAmountLabel = formatBalance(quote.receiveAmount);
+      const swappedAmountLabel = payAmount;
+      const paySymbol = payToken.symbol;
+      const receiveSymbol = receiveToken.symbol;
+
+      setStage("idle");
+      onPayAmountChange("");
+      setSuccessTx({
+        txHash,
+        message: `Swapped ${swappedAmountLabel} ${paySymbol} for approximately ${receiveAmountLabel} ${receiveSymbol}.`,
+      });
+    } catch (caughtError) {
+      setStage("idle");
+      setActionError(caughtError instanceof Error ? caughtError.message : "Swap failed");
+    }
+  }
+
+  const insufficientBalance = isConnected && hasAmount && !balancesLoading && payAmountNum > payBalance;
+  const busy = stage !== "idle";
 
   const impactColor =
-    quote.priceImpactPct > 3
-      ? "text-garnetLight"
-      : quote.priceImpactPct > 1
-        ? "text-goldLight"
-        : "text-ivory";
+    quote && quote.priceImpactPct !== null
+      ? quote.priceImpactPct > 3
+        ? "text-garnetLight"
+        : quote.priceImpactPct > 1
+          ? "text-goldLight"
+          : "text-ivory"
+      : "text-ivory";
 
   let ctaLabel = "Swap";
   let ctaDisabled = false;
-  let ctaAction: () => void = onSubmit;
+  let ctaAction: () => void = handleSwap;
 
-  if (!isConnected) {
+  if (busy) {
+    ctaLabel = STAGE_LABELS[stage];
+    ctaDisabled = true;
+  } else if (!isConnected) {
     ctaLabel = "Connect Wallet";
     ctaAction = connect;
   } else if (!hasAmount) {
     ctaLabel = "Enter an Amount";
     ctaDisabled = true;
+  } else if (!pairResolvable) {
+    ctaLabel = "Pair Not Available On-Chain";
+    ctaDisabled = true;
   } else if (insufficientBalance) {
     ctaLabel = `Insufficient ${payToken.symbol} Balance`;
     ctaDisabled = true;
-  } else if (quote.unknownPrice) {
+  } else if (quoteLoading) {
+    ctaLabel = "Fetching Quote...";
+    ctaDisabled = true;
+  } else if (!quote || quote.amountOutRaw <= 0n) {
     ctaLabel = "Price Unavailable";
     ctaDisabled = true;
+  } else if (needsApproval) {
+    ctaLabel = `Approve ${payToken.symbol}`;
+    ctaAction = handleApprove;
   }
+
+  const minimumReceivedLabel =
+    hasAmount && quote
+      ? `${formatBalance(
+          formatBaseUnitsToNumber(applySlippageToRaw(quote.amountOutRaw, settings.slippagePct), receiveDecimals)
+        )} ${receiveToken.symbol}`
+      : "—";
 
   return (
     <div className="rounded-2xl border border-gold/40 bg-panel px-5 py-6 md:px-6">
@@ -131,7 +411,7 @@ export default function SwapCard({
         <div className="mt-2 rounded-xl border border-line bg-panel2 px-4 py-3">
           <div className="flex items-center gap-3">
             <p className="w-full min-w-0 truncate font-display text-2xl text-ivory">
-              {hasAmount && !quote.unknownPrice ? formatBalance(quote.receiveAmount) : "0.0"}
+              {hasAmount && quote ? formatBalance(quote.receiveAmount) : "0.0"}
             </p>
             <TokenSelectButton token={receiveToken} onClick={() => onOpenTokenSearch("receive")} />
           </div>
@@ -145,39 +425,27 @@ export default function SwapCard({
         <DetailRow
           label="Rate"
           value={
-            hasAmount && !quote.unknownPrice
+            hasAmount && quote
               ? `1 ${payToken.symbol} = ${formatBalance(quote.rate)} ${receiveToken.symbol}`
               : "—"
           }
         />
         <DetailRow
           label="Price Impact"
-          value={hasAmount && !quote.unknownPrice ? `${quote.priceImpactPct.toFixed(2)}%` : "—"}
-          valueClassName={hasAmount && !quote.unknownPrice ? impactColor : "text-ivory"}
+          value={hasAmount && quote && quote.priceImpactPct !== null ? `${quote.priceImpactPct.toFixed(2)}%` : "—"}
+          valueClassName={hasAmount && quote ? impactColor : "text-ivory"}
         />
-        <DetailRow
-          label="Minimum Received"
-          value={
-            hasAmount && !quote.unknownPrice
-              ? `${formatBalance(quote.minimumReceived)} ${receiveToken.symbol}`
-              : "—"
-          }
-        />
-        <DetailRow
-          label="Network Fee"
-          value={hasAmount && !quote.unknownPrice ? `~$${quote.networkFeeUsd.toFixed(2)}` : "—"}
-        />
+        <DetailRow label="Minimum Received" value={minimumReceivedLabel} />
+        <DetailRow label="Network Fee" value={hasAmount && quote && gasFeeEth !== null ? `~${gasFeeEth.toFixed(6)} ETH` : "—"} />
       </div>
 
-      {hasAmount && !quote.unknownPrice && route.via.length > 0 && (
+      {hasAmount && quote && (
         <div className="mt-4 rounded-xl border border-line bg-panel2 px-4 py-3">
           <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Route</p>
           <p className="mt-2 font-display text-xs uppercase tracking-wider2 text-ivory">
-            {route.hops
-              .map((id) => (id === payToken.id ? payToken.symbol : id === receiveToken.id ? receiveToken.symbol : id.toUpperCase()))
-              .join(" → ")}
+            {quote.path.map((_, index) => describeHop(index, quote.path, payToken, receiveToken)).join(" → ")}
           </p>
-          <p className="mt-1 font-mono text-[10px] text-bronze">Via {route.via.join(", ")}</p>
+          {quote.path.length > 2 && <p className="mt-1 font-mono text-[10px] text-bronze">Via WETH</p>}
         </div>
       )}
 
@@ -193,6 +461,21 @@ export default function SwapCard({
       >
         {ctaLabel}
       </button>
+
+      {actionError && (
+        <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+          {actionError}
+        </p>
+      )}
+
+      {successTx && (
+        <SwapSuccessModal
+          message={successTx.message}
+          txHash={successTx.txHash}
+          explorerUrl={`${NETWORK.explorerUrl}/tx/${successTx.txHash}`}
+          onClose={() => setSuccessTx(null)}
+        />
+      )}
     </div>
   );
 }

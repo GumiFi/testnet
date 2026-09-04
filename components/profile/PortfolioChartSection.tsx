@@ -1,13 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Sparkline from "@/components/Sparkline";
-import { portfolioChartSeries, portfolioRanges, type PortfolioRange } from "@/lib/portfolio-data";
+import { filterHistoryByRange, type PortfolioSnapshot } from "@/lib/portfolio-history";
 import { formatPct } from "@/lib/format";
 
-export default function PortfolioChartSection() {
+const portfolioRanges = ["1D", "1W", "1M", "1Y", "ALL"] as const;
+type PortfolioRange = (typeof portfolioRanges)[number];
+
+const RANGE_MS: Record<PortfolioRange, number | null> = {
+  "1D": 24 * 60 * 60 * 1000,
+  "1W": 7 * 24 * 60 * 60 * 1000,
+  "1M": 30 * 24 * 60 * 60 * 1000,
+  "1Y": 365 * 24 * 60 * 60 * 1000,
+  ALL: null,
+};
+
+export default function PortfolioChartSection({
+  currentValueUsd,
+  history,
+  loading,
+}: {
+  currentValueUsd: number;
+  history: PortfolioSnapshot[];
+  loading: boolean;
+}) {
   const [range, setRange] = useState<PortfolioRange>("1D");
-  const series = portfolioChartSeries[range];
+
+  const points = useMemo(() => filterHistoryByRange(history, RANGE_MS[range]), [history, range]);
+  const hasTrend = points.length > 1;
+  const series = hasTrend ? points.map((point) => point.valueUsd) : [currentValueUsd, currentValueUsd];
   const positive = series[series.length - 1] >= series[0];
   const deltaPct = series[0] === 0 ? 0 : ((series[series.length - 1] - series[0]) / series[0]) * 100;
 
@@ -20,7 +42,7 @@ export default function PortfolioChartSection() {
             positive ? "text-emeraldLight" : "text-garnetLight"
           }`}
         >
-          {formatPct(deltaPct)} ({range})
+          {hasTrend ? `${formatPct(deltaPct)} (${range})` : loading ? "Loading" : "Collecting data"}
         </p>
       </div>
 

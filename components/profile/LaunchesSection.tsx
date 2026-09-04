@@ -1,21 +1,43 @@
 import Avatar from "@/components/discover/Avatar";
 import { CrownIcon } from "@/components/icons";
-import { myLaunches } from "@/lib/portfolio-data";
-import { formatCompactNumber, formatCompactUsd } from "@/lib/format";
+import { formatCompactUsd } from "@/lib/format";
+import type { OnchainLaunch } from "@/lib/use-onchain-portfolio";
 
-export default function LaunchesSection() {
+export default function LaunchesSection({
+  launches,
+  loading,
+}: {
+  launches: OnchainLaunch[];
+  loading: boolean;
+}) {
+  if (loading && launches.length === 0) {
+    return (
+      <div className="border border-line bg-panel px-4 py-8 text-center">
+        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Loading launches…</p>
+      </div>
+    );
+  }
+
+  if (launches.length === 0) {
+    return (
+      <div className="border border-line bg-panel px-4 py-8 text-center">
+        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
+      </div>
+    );
+  }
+
   return (
     <div className="border border-line bg-panel">
-      {myLaunches.map((launch, index) => (
+      {launches.map((launch, index) => (
         <div
           key={launch.id}
           className={`flex items-center gap-3 px-4 py-3 ${
-            index === myLaunches.length - 1 ? "" : "border-b border-line"
+            index === launches.length - 1 ? "" : "border-b border-line"
           }`}
         >
           <Avatar
             label={launch.monogram}
-            accent={launch.accent}
+            accent="gold"
             className="h-8 w-8 shrink-0 text-[9px]"
             shape="square"
           />
@@ -30,15 +52,12 @@ export default function LaunchesSection() {
               </span>
             ) : (
               <p className="mt-0.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
-                {launch.bondingCurvePct}% Bonding Curve
+                {launch.bondingProgress}% Bonding Curve
               </p>
             )}
           </div>
           <div className="shrink-0 text-right">
-            <p className="font-mono text-xs text-ivory">{formatCompactUsd(launch.marketCap)}</p>
-            <p className="mt-0.5 font-mono text-[10px] text-bronze">
-              {formatCompactNumber(launch.holders)} Holders
-            </p>
+            <p className="font-mono text-xs text-ivory">{formatCompactUsd(launch.marketCapUsd)}</p>
           </div>
         </div>
       ))}

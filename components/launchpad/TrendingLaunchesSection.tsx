@@ -10,6 +10,7 @@ import WalletTag from "@/components/WalletTag";
 import { isGumiHandle, getTrendingLaunchpadCoins } from "@/lib/launchpad-data";
 import { useLiveLaunchpadCoins } from "@/lib/launchpad-live";
 import { formatCompactUsd, formatPct, formatPrice } from "@/lib/format";
+import Skel from "@/components/skeletons/Skel";
 
 export default function TrendingLaunchesSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -48,6 +49,17 @@ export default function TrendingLaunchesSection() {
           </div>
         </div>
 
+        {!liveReady ? (
+          <div className="mt-5 flex gap-4 overflow-x-hidden pb-2">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <Skel key={index} className="h-64 w-[75%] shrink-0 sm:w-[320px]" />
+            ))}
+          </div>
+        ) : trending.length === 0 ? (
+          <p className="mt-5 px-1 py-10 text-center font-mono text-xs uppercase tracking-wider2 text-bronze">
+            No coins launched yet
+          </p>
+        ) : (
         <div
           ref={scrollRef}
           className="no-scrollbar mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2"
@@ -123,6 +135,7 @@ export default function TrendingLaunchesSection() {
             );
           })}
         </div>
+        )}
       </div>
     </section>
   );

@@ -4,13 +4,22 @@ import Avatar from "@/components/discover/Avatar";
 import CopyField from "@/components/swap/CopyField";
 import { CrownIcon } from "@/components/icons";
 import { useWallet } from "@/lib/wallet-context";
-import { getAssetsWithValue, getPortfolioSummary } from "@/lib/portfolio-data";
+import { computeChangePct, type PortfolioSnapshot } from "@/lib/portfolio-history";
 import { formatPct, formatUsd } from "@/lib/format";
 
-export default function ProfileHero() {
+export default function ProfileHero({
+  totalValueUsd,
+  history,
+  loading,
+}: {
+  totalValueUsd: number;
+  history: PortfolioSnapshot[];
+  loading: boolean;
+}) {
   const { name, handle, address, monogram, isGumiHolder, avatarUrl } = useWallet();
-  const { totalValueUsd, changePctToday } = getPortfolioSummary(getAssetsWithValue());
+  const changePctToday = computeChangePct(history, totalValueUsd);
   const positive = changePctToday >= 0;
+  const showPlaceholder = loading && totalValueUsd === 0 && history.length === 0;
 
   return (
     <div className="relative border border-line bg-panel p-5">
@@ -38,14 +47,18 @@ export default function ProfileHero() {
       <div className="mt-5 border-t border-line pt-4">
         <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Portfolio Value</p>
         <div className="mt-1 flex items-baseline gap-2">
-          <p className="font-display text-2xl text-ivory text-shadow-gold">{formatUsd(totalValueUsd)}</p>
-          <span
-            className={`font-mono text-[10px] uppercase tracking-wider2 ${
-              positive ? "text-emeraldLight" : "text-garnetLight"
-            }`}
-          >
-            {formatPct(changePctToday)} today
-          </span>
+          <p className="font-display text-2xl text-ivory text-shadow-gold">
+            {showPlaceholder ? "—" : formatUsd(totalValueUsd)}
+          </p>
+          {!showPlaceholder && (
+            <span
+              className={`font-mono text-[10px] uppercase tracking-wider2 ${
+                positive ? "text-emeraldLight" : "text-garnetLight"
+              }`}
+            >
+              {formatPct(changePctToday)} today
+            </span>
+          )}
         </div>
       </div>
 

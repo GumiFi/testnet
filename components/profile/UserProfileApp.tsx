@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
 import {
   ActivityIcon,
@@ -10,18 +9,12 @@ import {
   RocketIcon,
   type IconProps,
 } from "@/components/icons";
+import { useOnchainPortfolio } from "@/lib/use-onchain-portfolio";
 import UserProfileHero from "./UserProfileHero";
-import UserAssetsSection from "./UserAssetsSection";
-import UserLaunchesSection from "./UserLaunchesSection";
+import AssetsSection from "./AssetsSection";
+import LaunchesSection from "./LaunchesSection";
 import UserNftsSection from "./UserNftsSection";
-import UserActivitySection from "./UserActivitySection";
-import {
-  getUserActivity,
-  getUserAssets,
-  getUserLaunches,
-  getUserNfts,
-  getUserProfile,
-} from "@/lib/user-profile-data";
+import ActivitySection from "./ActivitySection";
 
 function SectionHeading({
   icon: Icon,
@@ -38,27 +31,8 @@ function SectionHeading({
   );
 }
 
-export default function UserProfileApp({ handle }: { handle: string }) {
-  const profile = useMemo(() => getUserProfile(handle), [handle]);
-  const assets = useMemo(() => getUserAssets(handle), [handle]);
-  const launches = useMemo(() => getUserLaunches(handle), [handle]);
-  const nfts = useMemo(() => getUserNfts(handle), [handle]);
-  const activity = useMemo(() => getUserActivity(handle), [handle]);
-
-  if (!profile) {
-    return (
-      <div className="mx-auto max-w-md px-4 py-16 text-center">
-        <p className="font-display text-sm uppercase tracking-wider2 text-ivory">Profile Not Found</p>
-        <Link
-          href="/"
-          className="mt-4 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-goldLight hover:text-goldLight"
-        >
-          <ChevronLeftIcon className="h-3 w-3" />
-          Back to Discover
-        </Link>
-      </div>
-    );
-  }
+export default function UserProfileApp({ address }: { address: string }) {
+  const portfolio = useOnchainPortfolio(address);
 
   return (
     <div className="mx-auto max-w-xl space-y-8 px-4 pt-6 pb-10 md:pt-10 md:pb-14">
@@ -70,26 +44,36 @@ export default function UserProfileApp({ handle }: { handle: string }) {
         Back to Discover
       </Link>
 
-      <UserProfileHero profile={profile} />
+      <UserProfileHero
+        address={address}
+        totalValueUsd={portfolio.totalValueUsd}
+        launchesCount={portfolio.myLaunches.length}
+        collectionsCount={portfolio.myCollections.length}
+        loading={portfolio.loading}
+      />
 
       <div className="space-y-3">
         <SectionHeading icon={CoinIcon} label="Holdings" />
-        <UserAssetsSection assets={assets} />
+        <AssetsSection assets={portfolio.assets} loading={portfolio.loading} />
       </div>
 
       <div className="space-y-3">
         <SectionHeading icon={RocketIcon} label="Launches" />
-        <UserLaunchesSection launches={launches} />
+        <LaunchesSection launches={portfolio.myLaunches} loading={portfolio.loading} />
       </div>
 
       <div className="space-y-3">
         <SectionHeading icon={FrameIcon} label="NFTs" />
-        <UserNftsSection nfts={nfts} />
+        <UserNftsSection
+          address={address}
+          collections={portfolio.myCollections}
+          collectionsLoading={portfolio.loading}
+        />
       </div>
 
       <div className="space-y-3">
         <SectionHeading icon={ActivityIcon} label="Recent Activity" />
-        <UserActivitySection activity={activity} />
+        <ActivitySection activity={portfolio.activity} loading={portfolio.loading} />
       </div>
     </div>
   );

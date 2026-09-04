@@ -2,27 +2,36 @@
 
 import { useEffect, useState } from "react";
 import Avatar from "@/components/discover/Avatar";
-import GumiTag from "@/components/GumiTag";
 import CopyField from "@/components/swap/CopyField";
 import ComingSoonModal from "@/components/ComingSoonModal";
 import { CrownIcon } from "@/components/icons";
-import { CONTRACT_ADDRESSES, NETWORK } from "@/config/contracts.config";
+import { CONTRACT_ADDRESSES, NETWORK, getExplorerAddressUrl } from "@/config/contracts.config";
 import { createRpcCaller, fetchGumiCustomNftBalance } from "@/lib/nft-onchain";
-import { formatCompactNumber, formatCompactUsd } from "@/lib/format";
-import type { UserProfile } from "@/lib/user-profile-data";
+import { formatUsd } from "@/lib/format";
+import { getWalletProfile } from "@/lib/user-profile-data";
 
-export default function UserProfileHero({ profile }: { profile: UserProfile }) {
+export default function UserProfileHero({
+  address,
+  totalValueUsd,
+  launchesCount,
+  collectionsCount,
+  loading,
+}: {
+  address: string;
+  totalValueUsd: number;
+  launchesCount: number;
+  collectionsCount: number;
+  loading: boolean;
+}) {
   const [following, setFollowing] = useState(false);
   const [comingSoon, setComingSoon] = useState<string | null>(null);
   const [isPremium, setIsPremium] = useState(false);
+  const profile = getWalletProfile(address);
+  const showPlaceholder = loading && totalValueUsd === 0;
 
   useEffect(() => {
     let cancelled = false;
-    fetchGumiCustomNftBalance(
-      createRpcCaller(NETWORK.rpcUrl),
-      CONTRACT_ADDRESSES.gumiCustomNFT,
-      profile.address
-    )
+    fetchGumiCustomNftBalance(createRpcCaller(NETWORK.rpcUrl), CONTRACT_ADDRESSES.gumiCustomNFT, address)
       .then((balance) => {
         if (!cancelled) setIsPremium(balance > 0);
       })
@@ -32,7 +41,7 @@ export default function UserProfileHero({ profile }: { profile: UserProfile }) {
     return () => {
       cancelled = true;
     };
-  }, [profile.address]);
+  }, [address]);
 
   return (
     <div className="border border-line bg-panel p-5">
@@ -47,9 +56,14 @@ export default function UserProfileHero({ profile }: { profile: UserProfile }) {
           <p className="truncate font-display text-lg uppercase tracking-wider2 text-ivory">
             {profile.name}
           </p>
-          <div className="mt-1">
-            <GumiTag handle={profile.handle} className="max-w-full" />
-          </div>
+          <a
+            href={getExplorerAddressUrl(address)}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-1 inline-block font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
+          >
+            View on Explorer ↗
+          </a>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1.5">
           <span
@@ -76,27 +90,25 @@ export default function UserProfileHero({ profile }: { profile: UserProfile }) {
         </div>
       </div>
 
-      <p className="mt-4 border-l-2 border-emeraldLight/50 pl-3 font-body text-xs leading-relaxed text-ivory/80">
-        {profile.bio}
-      </p>
-
       <div className="mt-4 grid grid-cols-3 gap-1 border-t border-line pt-4">
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Volume</p>
-          <p className="mt-1 font-display text-sm text-ivory">{formatCompactUsd(profile.volumeUsd)}</p>
+          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Portfolio Value</p>
+          <p className="mt-1 font-display text-sm text-ivory">
+            {showPlaceholder ? "—" : formatUsd(totalValueUsd)}
+          </p>
         </div>
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Tokens</p>
-          <p className="mt-1 font-display text-sm text-ivory">{profile.tokensCount}</p>
+          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Launches</p>
+          <p className="mt-1 font-display text-sm text-ivory">{launchesCount}</p>
         </div>
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Followers</p>
-          <p className="mt-1 font-display text-sm text-ivory">{formatCompactNumber(profile.followers)}</p>
+          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">NFT Collections</p>
+          <p className="mt-1 font-display text-sm text-ivory">{collectionsCount}</p>
         </div>
       </div>
 
       <div className="mt-4 flex items-center gap-3 border-t border-line pt-4 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
-        <span>Joined {profile.joined}</span>
+        <span>{NETWORK.name}</span>
         <button
           type="button"
           onClick={() => setComingSoon("Share Profile")}
@@ -107,7 +119,7 @@ export default function UserProfileHero({ profile }: { profile: UserProfile }) {
       </div>
 
       <div className="mt-4 border border-line">
-        <CopyField label="Wallet Address" value={profile.address} isLast />
+        <CopyField label="Wallet Address" value={address} isLast />
       </div>
 
       {comingSoon && <ComingSoonModal label={comingSoon} onClose={() => setComingSoon(null)} />}

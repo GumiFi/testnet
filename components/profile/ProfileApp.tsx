@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   ActivityIcon,
   CoinIcon,
@@ -10,6 +11,12 @@ import {
   type IconProps,
 } from "@/components/icons";
 import { useWallet } from "@/lib/wallet-context";
+import { useOnchainPortfolio } from "@/lib/use-onchain-portfolio";
+import {
+  loadPortfolioHistory,
+  recordPortfolioSnapshot,
+  type PortfolioSnapshot,
+} from "@/lib/portfolio-history";
 import ProfileHero from "./ProfileHero";
 import PortfolioChartSection from "./PortfolioChartSection";
 import AssetsSection from "./AssetsSection";
@@ -34,7 +41,18 @@ function SectionHeading({
 }
 
 export default function ProfileApp() {
-  const { isConnected, connect } = useWallet();
+  const { isConnected, connect, address } = useWallet();
+  const portfolio = useOnchainPortfolio(address);
+  const [history, setHistory] = useState<PortfolioSnapshot[]>([]);
+
+  useEffect(() => {
+    setHistory(address ? loadPortfolioHistory(address) : []);
+  }, [address]);
+
+  useEffect(() => {
+    if (!address || portfolio.loading) return;
+    setHistory(recordPortfolioSnapshot(address, portfolio.totalValueUsd));
+  }, [address, portfolio.loading, portfolio.totalValueUsd]);
 
   if (!isConnected) {
     return (
@@ -59,17 +77,21 @@ export default function ProfileApp() {
 
   return (
     <div className="mx-auto max-w-xl space-y-8 px-4 py-8 md:py-12">
-      <ProfileHero />
-      <PortfolioChartSection />
+      <ProfileHero totalValueUsd={portfolio.totalValueUsd} history={history} loading={portfolio.loading} />
+      <PortfolioChartSection
+        currentValueUsd={portfolio.totalValueUsd}
+        history={history}
+        loading={portfolio.loading}
+      />
 
       <div className="space-y-3">
         <SectionHeading icon={CoinIcon} label="Assets" />
-        <AssetsSection />
+        <AssetsSection assets={portfolio.assets} loading={portfolio.loading} />
       </div>
 
       <div className="space-y-3">
         <SectionHeading icon={RocketIcon} label="My Launches" />
-        <LaunchesSection />
+        <LaunchesSection launches={portfolio.myLaunches} loading={portfolio.loading} />
       </div>
 
       <div className="space-y-3">
@@ -79,12 +101,12 @@ export default function ProfileApp() {
 
       <div className="space-y-3">
         <SectionHeading icon={FrameIcon} label="My NFTs" />
-        <NftsSection />
+        <NftsSection collections={portfolio.myCollections} collectionsLoading={portfolio.loading} />
       </div>
 
       <div className="space-y-3">
         <SectionHeading icon={ActivityIcon} label="Recent Activity" />
-        <ActivitySection />
+        <ActivitySection activity={portfolio.activity} loading={portfolio.loading} />
       </div>
     </div>
   );

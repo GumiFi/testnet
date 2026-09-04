@@ -1,25 +1,33 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { launchpadCoins, getLaunchpadCoinDetail } from "@/lib/launchpad-data";
+import { getLaunchpadCoinDetail } from "@/lib/launchpad-data";
+import { fetchRealLaunchpadCoin } from "@/lib/launchpad-realtime";
 import LaunchpadCoinDetailSkeleton from "@/components/skeletons/LaunchpadCoinDetailSkeleton";
 
 const CoinDetailApp = dynamic(() => import("@/components/launchpad/coin/CoinDetailApp"), {
   loading: () => <LaunchpadCoinDetailSkeleton />,
 });
 
-export const dynamicParams = false;
+const ADDRESS_PATTERN = /^0x[0-9a-fA-F]{40}$/;
+
+export const dynamicParams = true;
 
 export function generateStaticParams() {
-  return launchpadCoins.map((coin) => ({ id: coin.id }));
+  return [];
 }
 
-export function generateMetadata({ params }: { params: { id: string } }): Metadata {
-  const detail = getLaunchpadCoinDetail(params.id);
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  let detail = getLaunchpadCoinDetail(params.id);
+
+  if (!detail && ADDRESS_PATTERN.test(params.id)) {
+    const coin = await fetchRealLaunchpadCoin(params.id).catch(() => null);
+    if (coin) detail = getLaunchpadCoinDetail(coin.id, coin);
+  }
+
   if (!detail) {
     return {
-      title: "Coin Not Found — Gumifi Ecosystem",
+      title: "Gumifi Launchpad — Gumifi Ecosystem",
     };
   }
 
@@ -30,10 +38,6 @@ export function generateMetadata({ params }: { params: { id: string } }): Metada
 }
 
 export default function LaunchpadCoinPage({ params }: { params: { id: string } }) {
-  if (!getLaunchpadCoinDetail(params.id)) {
-    notFound();
-  }
-
   return (
     <Suspense fallback={<LaunchpadCoinDetailSkeleton />}>
       <CoinDetailApp id={params.id} />

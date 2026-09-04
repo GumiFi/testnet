@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Avatar from "@/components/discover/Avatar";
-import { nftPortfolioItems, type NftCategory } from "@/lib/portfolio-data";
-import { formatEth } from "@/lib/format";
 import { useWallet } from "@/lib/wallet-context";
+import type { NftCollectionRecord } from "@/lib/nft-collections-realtime";
+
+type NftCategory = "owned" | "created" | "listed";
 
 const tabs: { id: NftCategory; label: string }[] = [
   { id: "owned", label: "Owned" },
@@ -12,11 +13,22 @@ const tabs: { id: NftCategory; label: string }[] = [
   { id: "listed", label: "Listed" },
 ];
 
-export default function NftsSection() {
+function monogramFor(symbol: string): string {
+  const clean = symbol.trim().toUpperCase();
+  return clean.slice(0, 2).padEnd(2, clean.charAt(0) || "T");
+}
+
+export default function NftsSection({
+  collections,
+  collectionsLoading,
+}: {
+  collections: NftCollectionRecord[];
+  collectionsLoading: boolean;
+}) {
   const [category, setCategory] = useState<NftCategory>("owned");
   const { ownedGumiNfts, gumiNftBalance, gumiNftsLoading } = useWallet();
   const isOwnedTab = category === "owned";
-  const mockItems = nftPortfolioItems.filter((item) => item.category === category);
+  const isCreatedTab = category === "created";
 
   return (
     <div>
@@ -73,26 +85,41 @@ export default function NftsSection() {
             <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
           </div>
         )
-      ) : mockItems.length === 0 ? (
+      ) : isCreatedTab ? (
+        collectionsLoading && collections.length === 0 ? (
+          <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
+            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+              Loading collections...
+            </p>
+          </div>
+        ) : collections.length === 0 ? (
+          <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
+            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
+          </div>
+        ) : (
+          <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {collections.map((collection) => (
+              <div key={collection.metadataId} className="border border-line bg-panel p-3">
+                <Avatar
+                  label={monogramFor(collection.symbol)}
+                  accent="gold"
+                  src={collection.image}
+                  className="h-12 w-12 text-[10px]"
+                  shape="square"
+                />
+                <p className="mt-2 truncate font-display text-[11px] uppercase tracking-wider2 text-ivory">
+                  {collection.name}
+                </p>
+                <p className="mt-0.5 truncate font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+                  {collection.symbol}
+                </p>
+              </div>
+            ))}
+          </div>
+        )
+      ) : (
         <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
           <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
-        </div>
-      ) : (
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {mockItems.map((item) => (
-            <div key={item.id} className="border border-line bg-panel p-3">
-              <Avatar label={item.monogram} accent={item.accent} className="h-12 w-12 text-[10px]" shape="square" />
-              <p className="mt-2 truncate font-display text-[11px] uppercase tracking-wider2 text-ivory">
-                {item.name}
-              </p>
-              <p className="mt-0.5 truncate font-mono text-[9px] uppercase tracking-wider2 text-bronze">
-                {item.collection}
-              </p>
-              {item.priceEth !== undefined && (
-                <p className="mt-1 font-mono text-[10px] text-goldLight">{formatEth(item.priceEth)}</p>
-              )}
-            </div>
-          ))}
         </div>
       )}
     </div>
