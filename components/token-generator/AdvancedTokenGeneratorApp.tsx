@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import {
@@ -22,7 +22,6 @@ import ModalSkeleton from "@/components/skeletons/ModalSkeleton";
 import AdvancedTokenGeneratorHeader from "./AdvancedTokenGeneratorHeader";
 import StepProgress from "./StepProgress";
 import SectionCard from "./SectionCard";
-import Stepper from "./Stepper";
 import TokenStandardSelector from "./TokenStandardSelector";
 import SupplyAllocationFields from "./SupplyAllocationFields";
 import SupplyControlsFields from "./SupplyControlsFields";
@@ -35,27 +34,52 @@ import TeamAllocationFields from "./TeamAllocationFields";
 import TokenDeploySuccessModal from "./TokenDeploySuccessModal";
 import {
   DEFAULT_ADVANCED_TOKEN,
-  generateMockContractAddress,
   teamAllocationTotalPct,
   type AdvancedTokenGeneratorValue,
 } from "@/lib/token-generator-data";
+import {
+  ADVANCED_TOKEN_DECIMALS,
+  ADVANCED_VARIANT_INDEX,
+  isValidAddress,
+  pctToBps,
+  parseWholeUnitsToBaseUnits,
+  createAdvancedTokenCalldata,
+  extractCreatedAdvancedTokenAddress,
+  fetchAdvancedFactoryDefaults,
+  secondsToDaysLabel,
+  secondsToHoursLabel,
+  type AdvancedFactoryDefaults,
+} from "@/lib/advanced-token-onchain";
+import { createRpcCaller } from "@/lib/nft-onchain";
+import { sendLaunchpadTransaction, waitForTransactionReceipt, parseEtherToWei } from "@/lib/launchpad-onchain";
+import { CONTRACT_ADDRESSES, NETWORK, getExplorerAddressUrl } from "@/config/contracts.config";
 
 const ImageCropModal = dynamic(() => import("@/components/launchpad/ImageCropModal"), {
   loading: () => <ModalSkeleton />,
 });
 
 const TOTAL_STEPS = 4;
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const TREASURY_VARIANTS = new Set(["standard", "antiWhale", "liquidityGenerator"]);
+
+type DeployStage = "idle" | "switching-network" | "awaiting-signature" | "confirming";
+
+const STAGE_LABELS: Record<DeployStage, string> = {
+  idle: "",
+  "switching-network": "Switching To Giwa Sepolia...",
+  "awaiting-signature": "Confirm In Your Wallet...",
+  confirming: "Waiting For Confirmation...",
+};
 
 export default function AdvancedTokenGeneratorApp() {
   const router = useRouter();
-  const { isConnected, connect } = useWallet();
+  const { isConnected, connect, address, provider, chainId } = useWallet();
 
   const [step, setStep] = useState(1);
   const [furthestStep, setFurthestStep] = useState(1);
 
   const [tokenName, setTokenName] = useState("");
   const [tokenSymbol, setTokenSymbol] = useState("");
-  const [decimals, setDecimals] = useState(18);
   const [totalSupply, setTotalSupply] = useState("1000000000");
   const [description, setDescription] = useState("");
   const [tokenImage, setTokenImage] = useState<string | null>(null);
@@ -65,6 +89,24 @@ export default function AdvancedTokenGeneratorApp() {
   const [advanced, setAdvanced] = useState<AdvancedTokenGeneratorValue>(DEFAULT_ADVANCED_TOKEN);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [deployed, setDeployed] = useState<{ symbol: string; address: string } | null>(null);
+  const [stage, setStage] = useState<DeployStage>("idle");
+  const [deployError, setDeployError] = useState<string | null>(null);
+  const [factoryDefaults, setFactoryDefaults] = useState<AdvancedFactoryDefaults | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const call = createRpcCaller(NETWORK.rpcUrl);
+    fetchAdvancedFactoryDefaults(call, CONTRACT_ADDRESSES.advancedTokenFactory)
+      .then((defaults) => {
+        if (!cancelled) setFactoryDefaults(defaults);
+      })
+      .catch(() => {
+        /* leave as null — UI shows a fallback label */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function setAdvancedField<K extends keyof AdvancedTokenGeneratorValue>(
     key: K,
@@ -78,24 +120,170 @@ export default function AdvancedTokenGeneratorApp() {
     setCropSrc(null);
   }
 
-  function handleDeploy() {
-    const address = generateMockContractAddress(`${tokenSymbol}-${tokenName}`);
-    setDeployed({ symbol: tokenSymbol.trim().toUpperCase(), address });
+  async function ensureGiwaNetwork() {
+    if (!provider) return;
+    if (chainId === NETWORK.chainIdHex) return;
+    setStage("switching-network");
+    try {
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: NETWORK.chainIdHex }],
+      });
+    } catch (switchError) {
+      const code = (switchError as { code?: number })?.code;
+      if (code === 4902) {
+        await provider.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: NETWORK.chainIdHex,
+              chainName: NETWORK.name,
+              rpcUrls: [NETWORK.rpcUrl],
+              blockExplorerUrls: [NETWORK.explorerUrl],
+              nativeCurrency: NETWORK.nativeCurrency,
+            },
+          ],
+        });
+      } else {
+        throw switchError;
+      }
+    }
   }
 
   const supplyNum = parseFloat(totalSupply.replace(/,/g, "")) || 0;
-  const feeShareTotal =
-    advanced.liquidityFeeShare +
-    advanced.marketingFeeShare +
-    advanced.reflectionFeeShare +
-    advanced.burnFeeShare +
-    advanced.devFeeShare;
   const teamTotalPct = teamAllocationTotalPct(advanced.team);
   const founderRow = advanced.supplyAllocation.find((row) => row.id === "founder");
+  const liquidityRow = advanced.supplyAllocation.find((row) => row.id === "liquidity");
+  const isAntiWhaleStandard = advanced.tokenStandard === "antiWhale";
+  const treasuryApplies = TREASURY_VARIANTS.has(advanced.tokenStandard);
+  const team0 = advanced.team[0];
+  const team0PercentNum = team0 ? parseFloat(team0.percent) || 0 : 0;
+  const hasTeamAllocation = !!team0 && team0PercentNum > 0;
 
   const step1Valid = tokenName.trim() !== "" && tokenSymbol.trim() !== "" && !!tokenImage && supplyNum > 0;
-  const step2Valid = feeShareTotal === 100;
+  const step2Valid = true;
   const step3Valid = true;
+
+  function getDeployBlocker(): string | null {
+    if (!tokenName.trim()) return "Enter Token Name";
+    if (!tokenSymbol.trim()) return "Enter Token Symbol";
+    if (!tokenImage) return "Upload Token Image";
+    if (supplyNum <= 0) return "Enter Total Supply";
+    if (isAntiWhaleStandard && (advanced.maxTxPct <= 0 || advanced.maxWalletPct <= 0)) {
+      return "Set Anti-Whale Limits Above 0%";
+    }
+    if (treasuryApplies && advanced.treasuryWallet.trim() && !isValidAddress(advanced.treasuryWallet)) {
+      return "Fix Treasury Wallet Address";
+    }
+    if (teamTotalPct > 100) return "Fix Team Allocation";
+    if (hasTeamAllocation) {
+      if (!team0!.wallet.trim() || !isValidAddress(team0!.wallet)) return "Enter A Valid Team Wallet";
+      if (team0PercentNum > 100) return "Fix Team Wallet Percent";
+      const vestingDaysNum = parseInt(team0!.vestingDays || "0", 10) || 0;
+      if (vestingDaysNum <= 0) return "Set Team Vesting Days Above 0";
+    }
+    if (advanced.timelockEnabled) {
+      const cliffDaysNum = team0 ? parseInt(team0.cliffDays || "0", 10) || 0 : 0;
+      const vestingDaysNum = team0 ? parseInt(team0.vestingDays || "0", 10) || 0 : 0;
+      if (!hasTeamAllocation || (cliffDaysNum <= 0 && vestingDaysNum <= 0)) {
+        return "Timelock Needs A Team Cliff Or Vesting Period";
+      }
+    }
+    if (advanced.autoLiquidity && (liquidityRow?.pct ?? 0) <= 0) {
+      return "Set A Liquidity Pool Share Above 0%";
+    }
+    return null;
+  }
+
+  async function handleDeploy() {
+    if (!provider || !address) {
+      connect();
+      return;
+    }
+
+    setDeployError(null);
+
+    const blocker = getDeployBlocker();
+    if (blocker) {
+      setDeployError(blocker);
+      return;
+    }
+
+    try {
+      await ensureGiwaNetwork();
+
+      setStage("awaiting-signature");
+
+      const trimmedName = tokenName.trim();
+      const trimmedSymbol = tokenSymbol.trim().toUpperCase();
+      const totalSupplyBaseUnits = parseWholeUnitsToBaseUnits(totalSupply, ADVANCED_TOKEN_DECIMALS);
+
+      const cliffDaysNum = team0 ? parseInt(team0.cliffDays || "0", 10) || 0 : 0;
+      const vestingDaysNum = hasTeamAllocation ? parseInt(team0!.vestingDays || "0", 10) || 0 : 0;
+      const teamAllocationBps = hasTeamAllocation ? pctToBps(team0PercentNum) : 0n;
+
+      const liquidityPct = advanced.autoLiquidity ? liquidityRow?.pct ?? 0 : 0;
+      const liquidityTokenAmount = (totalSupplyBaseUnits * BigInt(Math.round(liquidityPct * 100))) / 10000n;
+
+      const treasuryAddress =
+        treasuryApplies && advanced.treasuryWallet.trim() ? advanced.treasuryWallet.trim() : address;
+
+      const params = {
+        variant: ADVANCED_VARIANT_INDEX[advanced.tokenStandard],
+        name: trimmedName,
+        symbol: trimmedSymbol,
+        totalSupply: totalSupplyBaseUnits,
+        config: {
+          buyTaxBps: pctToBps(advanced.buyTaxPct),
+          sellTaxBps: pctToBps(advanced.sellTaxPct),
+          maxWalletBps: advanced.limitsEnabled || isAntiWhaleStandard ? pctToBps(advanced.maxWalletPct) : 0n,
+          maxTxBps: advanced.limitsEnabled || isAntiWhaleStandard ? pctToBps(advanced.maxTxPct) : 0n,
+          cooldownSeconds: advanced.antiBotEnabled ? BigInt(advanced.cooldownSeconds) : 0n,
+          launchProtectionBlocks: advanced.antiBotEnabled ? BigInt(advanced.launchProtectionBlocks) : 0n,
+          blacklistEnabled: advanced.blacklistFunction,
+          timelockEnabled: advanced.timelockEnabled,
+          cliffDays: BigInt(cliffDaysNum),
+          vestingDays: BigInt(vestingDaysNum),
+          teamAllocationBps,
+        },
+        treasury: treasuryApplies ? treasuryAddress : ZERO_ADDRESS,
+        teamBeneficiary: hasTeamAllocation ? team0!.wallet.trim() : ZERO_ADDRESS,
+        teamRevocable: advanced.teamRevocable,
+        autoLiquidity: advanced.autoLiquidity,
+        liquidityTokenAmount,
+        liquidityTokenMin: 0n,
+        liquidityEthMin: 0n,
+      };
+
+      const data = createAdvancedTokenCalldata(params);
+      const valueWei = advanced.autoLiquidity && liquidityTokenAmount > 0n ? parseEtherToWei(advanced.initialLiquidityEth) : 0n;
+
+      const txHash = await sendLaunchpadTransaction(
+        provider,
+        address,
+        CONTRACT_ADDRESSES.advancedTokenFactory,
+        data,
+        valueWei
+      );
+
+      setStage("confirming");
+      const receipt = await waitForTransactionReceipt(provider, txHash);
+      if (!receipt || receipt.status !== "0x1") {
+        throw new Error("Transaction failed or timed out");
+      }
+
+      const tokenAddress = extractCreatedAdvancedTokenAddress(receipt, CONTRACT_ADDRESSES.advancedTokenFactory);
+      if (!tokenAddress) {
+        throw new Error("Could not determine the created token address");
+      }
+
+      setStage("idle");
+      setDeployed({ symbol: trimmedSymbol, address: tokenAddress });
+    } catch (caughtError) {
+      setStage("idle");
+      setDeployError(caughtError instanceof Error ? caughtError.message : "Failed to deploy token");
+    }
+  }
 
   function goToStep(target: number) {
     if (target <= furthestStep) setStep(target);
@@ -111,32 +299,31 @@ export default function AdvancedTokenGeneratorApp() {
     setStep((current) => Math.max(1, current - 1));
   }
 
+  const isBusy = stage !== "idle";
   let ctaLabel = "Deploy Token";
   let ctaDisabled = false;
   let ctaAction: () => void = handleDeploy;
 
-  if (!isConnected) {
+  if (isBusy) {
+    ctaLabel = STAGE_LABELS[stage];
+    ctaDisabled = true;
+  } else if (!isConnected) {
     ctaLabel = "Connect Wallet";
     ctaAction = connect;
-  } else if (!tokenName.trim()) {
-    ctaLabel = "Enter Token Name";
-    ctaDisabled = true;
-  } else if (!tokenSymbol.trim()) {
-    ctaLabel = "Enter Token Symbol";
-    ctaDisabled = true;
-  } else if (!tokenImage) {
-    ctaLabel = "Upload Token Image";
-    ctaDisabled = true;
-  } else if (supplyNum <= 0) {
-    ctaLabel = "Enter Total Supply";
-    ctaDisabled = true;
-  } else if (feeShareTotal !== 100) {
-    ctaLabel = "Fix Fee Allocation";
-    ctaDisabled = true;
-  } else if (teamTotalPct > 100) {
-    ctaLabel = "Fix Team Allocation";
-    ctaDisabled = true;
+  } else {
+    const blocker = getDeployBlocker();
+    if (blocker) {
+      ctaLabel = blocker;
+      ctaDisabled = true;
+    }
   }
+
+  const timelockMinDelayLabel = factoryDefaults
+    ? `${secondsToHoursLabel(factoryDefaults.timelockMinDelaySeconds)} Minimum Delay`
+    : undefined;
+  const autoLiquidityLockDurationLabel = factoryDefaults
+    ? secondsToDaysLabel(factoryDefaults.autoLiquidityLockDurationSeconds)
+    : undefined;
 
   return (
     <div className="mx-auto flex max-w-md flex-col px-4 py-8 md:py-12">
@@ -147,10 +334,11 @@ export default function AdvancedTokenGeneratorApp() {
           <BoltIcon className="h-4 w-4" />
         </span>
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Mock Preview</p>
+          <p className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Live On-Chain Deploy</p>
           <p className="mt-1 font-body text-xs text-bronze">
-            No smart contract is connected yet — this only builds a local mock of your token, nothing is
-            deployed on-chain.
+            Deploys a real ERC-20 contract on {NETWORK.name} via the Gumifi Advanced Token Factory. Fields
+            marked <span className="text-bronze">Soon</span> aren&apos;t supported by any deployed Advanced
+            token contract yet and won&apos;t be sent on-chain.
           </p>
         </div>
       </div>
@@ -195,10 +383,13 @@ export default function AdvancedTokenGeneratorApp() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Decimals</p>
-                <div className="mt-2">
-                  <Stepper value={decimals} min={0} max={18} step={1} onChange={setDecimals} />
+                <span className="flex items-center gap-1.5">
+                  <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Decimals</p>
+                </span>
+                <div className="mt-2 flex h-11 items-center rounded-lg border border-line bg-panel2 px-4 font-display text-base text-ivory">
+                  {ADVANCED_TOKEN_DECIMALS}
                 </div>
+                <p className="mt-1 font-body text-[10px] text-bronze">Fixed on-chain, not adjustable.</p>
               </div>
               <div>
                 <FieldHeader label="Total Supply" counter="Units" />
@@ -261,7 +452,11 @@ export default function AdvancedTokenGeneratorApp() {
               <AntiBotFields value={advanced} onChange={setAdvanced} />
             </SectionCard>
             <SectionCard icon={LockIcon} label="Ownership & Security" optional>
-              <OwnershipSecurityFields value={advanced} onChange={setAdvanced} />
+              <OwnershipSecurityFields
+                value={advanced}
+                onChange={setAdvanced}
+                timelockMinDelayLabel={timelockMinDelayLabel}
+              />
             </SectionCard>
           </div>
         )}
@@ -269,13 +464,19 @@ export default function AdvancedTokenGeneratorApp() {
         {step === 4 && (
           <div className="space-y-4">
             <SectionCard icon={DropletIcon} label="Liquidity & Launch">
-              <LiquiditySettingsFields value={advanced} onChange={setAdvanced} />
+              <LiquiditySettingsFields
+                value={advanced}
+                onChange={setAdvanced}
+                autoLiquidityLockDurationLabel={autoLiquidityLockDurationLabel}
+              />
             </SectionCard>
             <SectionCard icon={TableIcon} label="Team & Vesting Allocation" optional>
               <TeamAllocationFields
                 team={advanced.team}
                 onChange={(next) => setAdvancedField("team", next)}
                 founderTargetPct={founderRow?.pct}
+                teamRevocable={advanced.teamRevocable}
+                onTeamRevocableChange={(next) => setAdvancedField("teamRevocable", next)}
               />
             </SectionCard>
             <SectionCard icon={GlobeIcon} label="Add Social Links" optional>
@@ -305,11 +506,13 @@ export default function AdvancedTokenGeneratorApp() {
                 </div>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2 font-mono text-[10px] uppercase tracking-wider2">
-                <span className={feeShareTotal === 100 ? "text-emeraldLight" : "text-garnetLight"}>
-                  Fee Split {feeShareTotal.toFixed(0)}%
-                </span>
+                <span className="text-emeraldLight">Buy Tax {advanced.buyTaxPct.toFixed(1)}%</span>
+                <span className="text-emeraldLight">Sell Tax {advanced.sellTaxPct.toFixed(1)}%</span>
                 <span className={teamTotalPct <= 100 ? "text-emeraldLight" : "text-garnetLight"}>
                   Team {teamTotalPct.toFixed(1)}%
+                </span>
+                <span className="text-emeraldLight">
+                  Liquidity {advanced.autoLiquidity ? `${(liquidityRow?.pct ?? 0).toFixed(1)}%` : "Off"}
                 </span>
               </div>
             </div>
@@ -326,8 +529,13 @@ export default function AdvancedTokenGeneratorApp() {
             >
               {ctaLabel}
             </button>
+            {deployError && (
+              <p className="text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+                {deployError}
+              </p>
+            )}
             <p className="text-center font-mono text-[9px] uppercase tracking-wider2 text-bronze">
-              Mock Only • No Smart Contract Deployed
+              Deploys On {NETWORK.name} • Takes A Few Seconds
             </p>
           </div>
         )}
@@ -374,10 +582,12 @@ export default function AdvancedTokenGeneratorApp() {
       {deployed && (
         <TokenDeploySuccessModal
           title="Token Deployed"
-          message={`$${deployed.symbol} was generated as a local mock with your full tokenomics configuration. Connect a smart contract to deploy it for real.`}
+          message={`$${deployed.symbol} was deployed on-chain with your Advanced tokenomics configuration.`}
           contractAddress={deployed.address}
-          primaryLabel={advanced.lockLiquidity ? "View My Tokens" : "Lock Your Liquidity"}
-          onPrimary={() => router.push(advanced.lockLiquidity ? "/profile" : "/liquidity?tab=lock")}
+          addressLabel="Contract Address"
+          explorerUrl={getExplorerAddressUrl(deployed.address)}
+          primaryLabel="View My Tokens"
+          onPrimary={() => router.push("/profile")}
           onClose={() => setDeployed(null)}
         />
       )}

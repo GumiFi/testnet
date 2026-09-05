@@ -34,6 +34,7 @@ export type AdvancedTokenGeneratorValue = {
   devFeeShare: number;
   marketingWallet: string;
   devWallet: string;
+  treasuryWallet: string;
   autoLiquidity: boolean;
   antiBotEnabled: boolean;
   blacklistBots: boolean;
@@ -46,6 +47,7 @@ export type AdvancedTokenGeneratorValue = {
   initialLiquidityEth: string;
   lockLiquidity: boolean;
   lockDurationDays: number;
+  teamRevocable: boolean;
   team: TeamAllocationRow[];
   supplyAllocation: AllocationRow[];
 };
@@ -113,6 +115,7 @@ export const DEFAULT_ADVANCED_TOKEN: AdvancedTokenGeneratorValue = {
   devFeeShare: 20,
   marketingWallet: "",
   devWallet: "",
+  treasuryWallet: "",
   autoLiquidity: true,
   antiBotEnabled: false,
   blacklistBots: false,
@@ -125,6 +128,7 @@ export const DEFAULT_ADVANCED_TOKEN: AdvancedTokenGeneratorValue = {
   initialLiquidityEth: "0.5",
   lockLiquidity: true,
   lockDurationDays: 180,
+  teamRevocable: true,
   team: [],
   supplyAllocation: DEFAULT_SUPPLY_ALLOCATION,
 };

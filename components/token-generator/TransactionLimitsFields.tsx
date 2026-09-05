@@ -14,23 +14,31 @@ export default function TransactionLimitsFields({
     onChange({ ...value, [key]: next });
   }
 
+  const isAntiWhaleStandard = value.tokenStandard === "antiWhale";
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Anti-Whale Limits</p>
           <p className="mt-1 font-body text-[11px] text-bronze">
-            Cap how much supply a single wallet can hold or move.
+            Cap how much supply a single wallet can hold or move. Enforced on-chain on every trade.
           </p>
+          {isAntiWhaleStandard && (
+            <p className="mt-1 font-body text-[11px] text-goldLight">
+              Required by the Anti-Whale token standard — both limits must be above 0% to deploy.
+            </p>
+          )}
         </div>
         <ToggleSwitch
-          checked={value.limitsEnabled}
+          checked={value.limitsEnabled || isAntiWhaleStandard}
           onChange={(next) => set("limitsEnabled", next)}
           label="Toggle transaction limits"
+          disabled={isAntiWhaleStandard}
         />
       </div>
 
-      {value.limitsEnabled && (
+      {(value.limitsEnabled || isAntiWhaleStandard) && (
         <>
           <div className="border-t border-line pt-4">
             <div className="flex items-center justify-between">

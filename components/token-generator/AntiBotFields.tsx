@@ -2,6 +2,7 @@
 
 import ToggleSwitch from "@/components/nft/ToggleSwitch";
 import Stepper from "./Stepper";
+import SoonTag from "./SoonTag";
 import type { AdvancedTokenGeneratorValue } from "@/lib/token-generator-data";
 
 export default function AntiBotFields({
@@ -21,7 +22,7 @@ export default function AntiBotFields({
         <div>
           <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Anti-Bot Protection</p>
           <p className="mt-1 font-body text-[11px] text-bronze">
-            Blocks known bot patterns during the launch window.
+            Enforces a trading cooldown and extra limits for the first blocks after launch, on-chain.
           </p>
         </div>
         <ToggleSwitch
@@ -35,16 +36,16 @@ export default function AntiBotFields({
         <>
           <div className="flex items-center justify-between border-t border-line pt-4">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Blacklist Bots</p>
+              <span className="flex items-center gap-2">
+                <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Blacklist Bots</p>
+                <SoonTag />
+              </span>
               <p className="mt-1 font-body text-[11px] text-bronze">
-                Auto-blacklist wallets flagged as bots at launch.
+                Auto-detecting and blacklisting bot wallets at launch isn't supported by any deployed
+                Advanced token contract. Use the manual Blacklist Function in Ownership & Security instead.
               </p>
             </div>
-            <ToggleSwitch
-              checked={value.blacklistBots}
-              onChange={(next) => set("blacklistBots", next)}
-              label="Toggle blacklist bots"
-            />
+            <ToggleSwitch checked={false} onChange={() => {}} label="Toggle blacklist bots" disabled />
           </div>
 
           <div className="border-t border-line pt-4">

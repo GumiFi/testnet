@@ -1,43 +1,45 @@
 "use client";
 
 import ToggleSwitch from "@/components/nft/ToggleSwitch";
-import Stepper from "./Stepper";
+import SoonTag from "./SoonTag";
 import type { AdvancedTokenGeneratorValue } from "@/lib/token-generator-data";
 
 export default function OwnershipSecurityFields({
   value,
   onChange,
+  timelockMinDelayLabel,
 }: {
   value: AdvancedTokenGeneratorValue;
   onChange: (next: AdvancedTokenGeneratorValue) => void;
+  timelockMinDelayLabel?: string;
 }) {
   function set<K extends keyof AdvancedTokenGeneratorValue>(key: K, next: AdvancedTokenGeneratorValue[K]) {
     onChange({ ...value, [key]: next });
   }
 
-  const showRenounceNote = value.renounceOwnership && (value.mintable || value.pausable || value.blacklistFunction);
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Renounce Ownership</p>
+          <span className="flex items-center gap-2">
+            <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Renounce Ownership</p>
+            <SoonTag />
+          </span>
           <p className="mt-1 font-body text-[11px] text-bronze">
-            Give up admin control right after deploy, permanently.
+            Give up admin control right after deploy, permanently. Not yet supported — every deployed
+            Advanced token contract requires ownership to transfer to a non-zero address, so it can&apos;t
+            be renounced on-chain today.
           </p>
         </div>
-        <ToggleSwitch
-          checked={value.renounceOwnership}
-          onChange={(next) => set("renounceOwnership", next)}
-          label="Toggle renounce ownership"
-        />
+        <ToggleSwitch checked={false} onChange={() => {}} label="Toggle renounce ownership" disabled />
       </div>
 
       <div className="flex items-center justify-between border-t border-line pt-4">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Timelock Controller</p>
           <p className="mt-1 font-body text-[11px] text-bronze">
-            Delays every admin action so holders can react in time.
+            Routes ownership through a timelock so admin actions are delayed on-chain. Requires a team
+            allocation with a cliff or vesting period below.
           </p>
         </div>
         <ToggleSwitch
@@ -48,17 +50,14 @@ export default function OwnershipSecurityFields({
       </div>
       {value.timelockEnabled && (
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Timelock Delay</p>
-          <div className="mt-2">
-            <Stepper
-              value={value.timelockDelayHours}
-              min={1}
-              max={168}
-              step={1}
-              onChange={(next) => set("timelockDelayHours", next)}
-              suffix="h"
-            />
-          </div>
+          <span className="flex items-center gap-2">
+            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Timelock Delay</p>
+            <SoonTag label="Network Default" />
+          </span>
+          <p className="mt-2 font-mono text-xs text-goldLight">{timelockMinDelayLabel ?? "Reading network default…"}</p>
+          <p className="mt-1 font-body text-[11px] text-bronze">
+            The delay is a network-wide setting on the factory contract, not customizable per token yet.
+          </p>
         </div>
       )}
 
@@ -66,7 +65,7 @@ export default function OwnershipSecurityFields({
         <div>
           <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Blacklist Function</p>
           <p className="mt-1 font-body text-[11px] text-bronze">
-            Lets the owner block malicious wallets from trading.
+            Lets the owner manually block a wallet from trading after launch, enforced on-chain.
           </p>
         </div>
         <ToggleSwitch
@@ -75,12 +74,6 @@ export default function OwnershipSecurityFields({
           label="Toggle blacklist function"
         />
       </div>
-
-      {showRenounceNote && (
-        <p className="border-t border-line pt-4 font-body text-[11px] text-bronze">
-          Renouncing ownership also permanently disables mint, pause, and blacklist controls.
-        </p>
-      )}
     </div>
   );
 }

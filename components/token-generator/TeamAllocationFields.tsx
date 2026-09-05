@@ -1,16 +1,22 @@
 "use client";
 
 import { CloseIcon, PlusIcon } from "@/components/icons";
+import ToggleSwitch from "@/components/nft/ToggleSwitch";
+import SoonTag from "./SoonTag";
 import { teamAllocationTotalPct, type TeamAllocationRow } from "@/lib/token-generator-data";
 
 export default function TeamAllocationFields({
   team,
   onChange,
   founderTargetPct,
+  teamRevocable,
+  onTeamRevocableChange,
 }: {
   team: TeamAllocationRow[];
   onChange: (next: TeamAllocationRow[]) => void;
   founderTargetPct?: number;
+  teamRevocable: boolean;
+  onTeamRevocableChange: (next: boolean) => void;
 }) {
   function updateRow(id: string, patch: Partial<TeamAllocationRow>) {
     onChange(team.map((row) => (row.id === id ? { ...row, ...patch } : row)));
@@ -29,7 +35,9 @@ export default function TeamAllocationFields({
   return (
     <div className="space-y-4">
       <p className="font-body text-[11px] text-bronze">
-        Reserve a share of total supply for team and advisor wallets, released on a vesting schedule.
+        Reserve a share of total supply for team and advisor wallets, released on a vesting schedule. Only
+        the first wallet below is enforced on-chain — the deployed factory supports a single team vesting
+        schedule per token.
         {typeof founderTargetPct === "number" && (
           <> Your tokenomics circle sets Founder & Treasury at {founderTargetPct.toFixed(1)}%.</>
         )}
@@ -37,9 +45,18 @@ export default function TeamAllocationFields({
 
       {team.length > 0 && (
         <div className="space-y-3">
-          {team.map((row) => (
+          {team.map((row, index) => (
             <div key={row.id} className="rounded-xl border border-line bg-panel p-3">
               <div className="flex items-center gap-2">
+                {index === 0 ? (
+                  <span className="shrink-0 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
+                    On-Chain
+                  </span>
+                ) : (
+                  <span className="shrink-0">
+                    <SoonTag label="Local Only" />
+                  </span>
+                )}
                 <input
                   value={row.wallet}
                   onChange={(event) => updateRow(row.id, { wallet: event.target.value })}
@@ -93,6 +110,21 @@ export default function TeamAllocationFields({
                   />
                 </div>
               </div>
+              {index === 0 && (
+                <div className="mt-3 flex items-center justify-between border-t border-line pt-3">
+                  <div>
+                    <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Revocable</p>
+                    <p className="mt-0.5 font-body text-[10px] text-bronze">
+                      Lets you cancel unvested tokens back to yourself later.
+                    </p>
+                  </div>
+                  <ToggleSwitch
+                    checked={teamRevocable}
+                    onChange={onTeamRevocableChange}
+                    label="Toggle team vesting revocable"
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>
