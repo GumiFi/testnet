@@ -1,22 +1,74 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SearchIcon, CloseIcon } from "@/components/icons";
 import FilterChips from "@/components/discover/FilterChips";
-import { filterPools, poolFilters, type PoolFilter } from "@/lib/liquidity-data";
-import { useLiquidity } from "@/lib/liquidity-context";
+import { useWallet } from "@/lib/wallet-context";
+import { NETWORK } from "@/config/contracts.config";
+import { createProviderCaller, createRpcCaller, type EthCaller } from "@/lib/nft-onchain";
+import {
+  classifyPool,
+  fetchExplorePools,
+  filterOnchainPools,
+  poolFilters,
+  type OnchainPool,
+  type PoolCategory,
+  type PoolFilter,
+} from "@/lib/pools-onchain";
 import PoolRow from "./PoolRow";
 
 export default function ExplorePoolsSection({
   onSelectPool,
 }: {
-  onSelectPool: (poolId: string) => void;
+  onSelectPool: (pool: OnchainPool) => void;
 }) {
-  const { pools: allPools } = useLiquidity();
+  const { provider } = useWallet();
+  const [pools, setPools] = useState<OnchainPool[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [refreshTick, setRefreshTick] = useState(0);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<PoolFilter>("All");
 
-  const pools = useMemo(() => filterPools(allPools, filter, query), [allPools, filter, query]);
+  useEffect(() => {
+    let cancelled = false;
+
+    async function run() {
+      setLoading(true);
+      setLoadError(null);
+      try {
+        const call: EthCaller = provider ? createProviderCaller(provider) : createRpcCaller(NETWORK.rpcUrl);
+        const fetched = await fetchExplorePools(call);
+        if (!cancelled) {
+          setPools(fetched);
+          setLoading(false);
+        }
+      } catch (caughtError) {
+        if (!cancelled) {
+          setLoadError(caughtError instanceof Error ? caughtError.message : "Failed to load pools");
+          setLoading(false);
+        }
+      }
+    }
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [provider, refreshTick]);
+
+  const categoriesByPair = useMemo(() => {
+    const map = new Map<string, PoolCategory[]>();
+    pools.forEach((pool) => {
+      map.set(pool.pairAddress.toLowerCase(), classifyPool(pool, pools));
+    });
+    return map;
+  }, [pools]);
+
+  const filteredPools = useMemo(
+    () => filterOnchainPools(pools, filter, query, categoriesByPair),
+    [pools, filter, query, categoriesByPair]
+  );
 
   return (
     <section className="px-6 py-10">
@@ -42,12 +94,34 @@ export default function ExplorePoolsSection({
           )}
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 flex items-center justify-between gap-3">
           <FilterChips options={poolFilters} active={filter} onChange={setFilter} />
+          <button
+            type="button"
+            onClick={() => setRefreshTick((tick) => tick + 1)}
+            className="shrink-0 font-mono text-[10px] uppercase tracking-wider2 text-bronze hover:text-ivory"
+          >
+            Refresh
+          </button>
         </div>
 
         <div className="mt-5">
-          {pools.length === 0 ? (
+          {loading ? (
+            <p className="border border-line bg-panel px-4 py-10 text-center font-mono text-xs uppercase tracking-wider2 text-bronze">
+              Reading Pools On-Chain...
+            </p>
+          ) : loadError ? (
+            <div className="flex flex-col items-center border border-line bg-panel px-4 py-10 text-center">
+              <p className="font-mono text-xs uppercase tracking-wider2 text-garnetLight">{loadError}</p>
+              <button
+                type="button"
+                onClick={() => setRefreshTick((tick) => tick + 1)}
+                className="mt-4 border border-gold px-5 py-2.5 font-mono text-[11px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+              >
+                Retry
+              </button>
+            </div>
+          ) : filteredPools.length === 0 ? (
             <p className="border border-line bg-panel px-4 py-10 text-center font-mono text-xs uppercase tracking-wider2 text-bronze">
               No pools match your search
             </p>
@@ -60,13 +134,13 @@ export default function ExplorePoolsSection({
                   <span className="text-right">Volume 24H</span>
                   <span className="text-right">APR</span>
                 </div>
-                {pools.map((pool) => (
-                  <PoolRow key={pool.id} pool={pool} variant="row" onClick={() => onSelectPool(pool.id)} />
+                {filteredPools.map((pool) => (
+                  <PoolRow key={pool.pairAddress} pool={pool} variant="row" onClick={() => onSelectPool(pool)} />
                 ))}
               </div>
               <div className="grid grid-cols-1 gap-3 sm:hidden">
-                {pools.map((pool) => (
-                  <PoolRow key={pool.id} pool={pool} variant="card" onClick={() => onSelectPool(pool.id)} />
+                {filteredPools.map((pool) => (
+                  <PoolRow key={pool.pairAddress} pool={pool} variant="card" onClick={() => onSelectPool(pool)} />
                 ))}
               </div>
             </>

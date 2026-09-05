@@ -9,6 +9,8 @@ import LiquidityHeader from "./LiquidityHeader";
 import LiquidityTabs, { type LiquidityTab } from "./LiquidityTabs";
 import SectionSkeleton from "@/components/skeletons/SectionSkeleton";
 import ModalSkeleton from "@/components/skeletons/ModalSkeleton";
+import type { OnchainPosition } from "@/lib/positions-onchain";
+import type { OnchainPool } from "@/lib/pools-onchain";
 
 const CreateLiquiditySection = dynamic(() => import("./CreateLiquiditySection"), {
   loading: () => <SectionSkeleton />,
@@ -46,8 +48,8 @@ export default function LiquidityApp() {
     : "positions";
 
   const [tab, setTab] = useState<LiquidityTab>(initialTab);
-  const [selectedPoolId, setSelectedPoolId] = useState<string | null>(null);
-  const [managePositionId, setManagePositionId] = useState<string | null>(null);
+  const [selectedPool, setSelectedPool] = useState<OnchainPool | null>(null);
+  const [managePosition, setManagePosition] = useState<OnchainPosition | null>(null);
   const [comingSoon, setComingSoon] = useState<string | null>(null);
   const [success, setSuccess] = useState<SuccessState | null>(null);
 
@@ -88,22 +90,22 @@ export default function LiquidityApp() {
         />
       )}
       {tab === "positions" && (
-        <PositionsSection onManage={setManagePositionId} onExplore={() => setTab("explore")} />
+        <PositionsSection onManage={setManagePosition} onExplore={() => setTab("explore")} />
       )}
-      {tab === "explore" && <ExplorePoolsSection onSelectPool={setSelectedPoolId} />}
+      {tab === "explore" && <ExplorePoolsSection onSelectPool={setSelectedPool} />}
 
-      {selectedPoolId && (
+      {selectedPool && (
         <PoolDetailModal
-          poolId={selectedPoolId}
-          onClose={() => setSelectedPoolId(null)}
+          pool={selectedPool}
+          onClose={() => setSelectedPool(null)}
           onAction={setComingSoon}
         />
       )}
 
-      {managePositionId && (
+      {managePosition && (
         <ManagePositionModal
-          positionId={managePositionId}
-          onClose={() => setManagePositionId(null)}
+          position={managePosition}
+          onClose={() => setManagePosition(null)}
           onAction={setComingSoon}
         />
       )}

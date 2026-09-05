@@ -1,18 +1,22 @@
 "use client";
 
 import { useEffect } from "react";
-import { CloseIcon, PlusIcon, MinusIcon, CoinIcon, LockIcon } from "@/components/icons";
+import { BoltIcon, CloseIcon, CoinIcon, LockIcon, MinusIcon, PlusIcon } from "@/components/icons";
 import Avatar from "@/components/discover/Avatar";
-import { useLiquidity } from "@/lib/liquidity-context";
-import { poolPairLabel } from "@/lib/liquidity-data";
-import { formatCompactUsd, formatUsd } from "@/lib/format";
+import { formatBalance, formatUsd } from "@/lib/format";
+import type { OnchainPosition } from "@/lib/positions-onchain";
+
+function monogramFor(symbol: string): string {
+  const clean = symbol.trim().toUpperCase();
+  return clean.slice(0, 2).padEnd(2, clean.charAt(0) || "T");
+}
 
 export default function ManagePositionModal({
-  positionId,
+  position,
   onClose,
   onAction,
 }: {
-  positionId: string;
+  position: OnchainPosition;
   onClose: () => void;
   onAction: (label: string) => void;
 }) {
@@ -24,11 +28,8 @@ export default function ManagePositionModal({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [onClose]);
 
-  const { positions, getPoolById } = useLiquidity();
-  const position = positions.find((item) => item.id === positionId);
-  const pool = position ? getPoolById(position.poolId) : undefined;
-
-  if (!position || !pool) return null;
+  const isLocked = position.locks.some((lock) => !lock.withdrawn);
+  const isBoosted = position.locks.some((lock) => !lock.withdrawn && lock.boosted);
 
   return (
     <div className="fixed inset-0 z-[70] flex items-end justify-center md:items-center">
@@ -38,11 +39,11 @@ export default function ManagePositionModal({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
-              <Avatar label={pool.base.monogram} accent={pool.base.accent} className="h-8 w-8 text-[10px]" />
-              <Avatar label={pool.quote.monogram} accent={pool.quote.accent} className="h-8 w-8 text-[10px]" />
+              <Avatar label={monogramFor(position.symbol0)} accent="gold" className="h-8 w-8 text-[10px]" />
+              <Avatar label={monogramFor(position.symbol1)} accent="emerald" className="h-8 w-8 text-[10px]" />
             </div>
             <h2 className="font-display text-sm uppercase tracking-wider2 text-ivory">
-              {poolPairLabel(pool)}
+              {position.symbol0} / {position.symbol1}
             </h2>
           </div>
           <button
@@ -58,30 +59,35 @@ export default function ManagePositionModal({
         <div className="mt-6 space-y-2 border border-line bg-panel2 px-4 py-4">
           <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
             <span className="text-bronze">Your Position</span>
-            <span className="text-ivory">{formatUsd(position.valueUsd)}</span>
+            <span className="text-ivory">{position.valueUsd !== null ? formatUsd(position.valueUsd) : "—"}</span>
           </div>
           <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
             <span className="text-bronze">Pool Share</span>
-            <span className="text-ivory">{position.poolSharePct.toFixed(2)}%</span>
+            <span className="text-ivory">{position.poolSharePct.toFixed(4)}%</span>
           </div>
           <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
-            <span className="text-bronze">Pool Liquidity</span>
-            <span className="text-ivory">{formatCompactUsd(pool.tvlUsd)}</span>
+            <span className="text-bronze">{position.symbol0} Owned</span>
+            <span className="text-ivory">{formatBalance(position.amount0Owned)}</span>
           </div>
           <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
-            <span className="text-bronze">APR</span>
-            <span className="text-goldLight">{pool.aprPct.toFixed(2)}%</span>
+            <span className="text-bronze">{position.symbol1} Owned</span>
+            <span className="text-ivory">{formatBalance(position.amount1Owned)}</span>
           </div>
-          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
-            <span className="text-bronze">Unclaimed Fees</span>
-            <span className="text-ivory">{formatUsd(position.feesEarnedUsd24h)}</span>
-          </div>
-          {position.locked && position.lockedUntil && (
+          {isBoosted && (
             <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
-              <span className="text-bronze">Locked Until</span>
+              <span className="text-bronze">APR Boost</span>
+              <span className="flex items-center gap-1 text-goldLight">
+                <BoltIcon className="h-3 w-3" />
+                Active
+              </span>
+            </div>
+          )}
+          {position.nextUnlockTime !== null && (
+            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+              <span className="text-bronze">Next Unlock</span>
               <span className="flex items-center gap-1 text-goldLight">
                 <LockIcon className="h-3 w-3" />
-                {new Date(position.lockedUntil).toLocaleDateString("en-US", {
+                {new Date(Number(position.nextUnlockTime) * 1000).toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
@@ -98,23 +104,21 @@ export default function ManagePositionModal({
             className="flex w-full items-center gap-3 border border-line px-4 py-3 text-left transition-colors hover:border-gold/50 hover:bg-panel2"
           >
             <PlusIcon className="h-4 w-4 text-goldLight" />
-            <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">
-              Add Liquidity
-            </span>
+            <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Add Liquidity</span>
           </button>
           <button
             type="button"
-            disabled={position.locked}
+            disabled={isLocked}
             onClick={() => onAction("Remove Liquidity")}
             className={`flex w-full items-center gap-3 border px-4 py-3 text-left transition-colors ${
-              position.locked
+              isLocked
                 ? "cursor-not-allowed border-line bg-panel2 text-bronze"
                 : "border-line hover:border-gold/50 hover:bg-panel2"
             }`}
           >
             <MinusIcon className="h-4 w-4 text-goldLight" />
             <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">
-              {position.locked ? "Locked — Cannot Remove" : "Remove Liquidity"}
+              {isLocked ? "Locked — Cannot Remove" : "Remove Liquidity"}
             </span>
           </button>
           <button
@@ -123,9 +127,7 @@ export default function ManagePositionModal({
             className="flex w-full items-center gap-3 border border-line px-4 py-3 text-left transition-colors hover:border-gold/50 hover:bg-panel2"
           >
             <CoinIcon className="h-4 w-4 text-goldLight" />
-            <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">
-              Collect Fees
-            </span>
+            <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Collect Fees</span>
           </button>
         </div>
       </div>

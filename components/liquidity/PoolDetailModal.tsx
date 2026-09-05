@@ -1,24 +1,30 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CloseIcon, PlusIcon, MinusIcon, RocketIcon, CrownIcon } from "@/components/icons";
+import { CloseIcon, PlusIcon, MinusIcon, RocketIcon } from "@/components/icons";
 import Sparkline from "@/components/Sparkline";
 import Avatar from "@/components/discover/Avatar";
-import { poolPairLabel, chartMetrics, getSeriesForMetric, type ChartMetric } from "@/lib/liquidity-data";
-import { useLiquidity } from "@/lib/liquidity-context";
+import {
+  accentForAddress,
+  chartMetrics,
+  getSeriesForMetric,
+  monogramFor,
+  poolPairLabel,
+  type ChartMetric,
+  type OnchainPool,
+} from "@/lib/pools-onchain";
 import { formatCompactUsd } from "@/lib/format";
 
 export default function PoolDetailModal({
-  poolId,
+  pool,
   onClose,
   onAction,
 }: {
-  poolId: string;
+  pool: OnchainPool;
   onClose: () => void;
   onAction: (label: string) => void;
 }) {
   const [metric, setMetric] = useState<ChartMetric>("tvl");
-  const { getPoolById } = useLiquidity();
 
   useEffect(() => {
     function handleEscape(event: KeyboardEvent) {
@@ -27,9 +33,6 @@ export default function PoolDetailModal({
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, [onClose]);
-
-  const pool = getPoolById(poolId);
-  if (!pool) return null;
 
   const series = getSeriesForMetric(pool, metric);
   const positive = series[series.length - 1] >= series[0];
@@ -42,25 +45,18 @@ export default function PoolDetailModal({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
-              <Avatar label={pool.base.monogram} accent={pool.base.accent} className="h-9 w-9 text-[10px]" />
-              <Avatar label={pool.quote.monogram} accent={pool.quote.accent} className="h-9 w-9 text-[10px]" />
+              <Avatar label={monogramFor(pool.symbol0)} accent={accentForAddress(pool.token0)} className="h-9 w-9 text-[10px]" />
+              <Avatar label={monogramFor(pool.symbol1)} accent={accentForAddress(pool.token1)} className="h-9 w-9 text-[10px]" />
             </div>
             <div>
               <h2 className="font-display text-sm uppercase tracking-wider2 text-ivory">
                 {poolPairLabel(pool)}
               </h2>
-              {pool.createdByUser ? (
+              {pool.isLaunchpad && (
                 <span className="mt-1 flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
-                  <CrownIcon className="h-3 w-3" />
-                  Your Token
+                  <RocketIcon className="h-3 w-3" />
+                  Launched on Gumifi
                 </span>
-              ) : (
-                pool.isLaunchpad && (
-                  <span className="mt-1 flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
-                    <RocketIcon className="h-3 w-3" />
-                    Launched on Gumifi
-                  </span>
-                )
               )}
             </div>
           </div>
@@ -77,19 +73,21 @@ export default function PoolDetailModal({
         <div className="mt-6 grid grid-cols-3 gap-3 text-center">
           <div>
             <p className="font-display text-lg text-goldLight md:text-xl">
-              {formatCompactUsd(pool.tvlUsd)}
+              {pool.tvlUsd !== null ? formatCompactUsd(pool.tvlUsd) : "—"}
             </p>
             <p className="mt-1 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
               Total Liquidity
             </p>
           </div>
           <div>
-            <p className="font-display text-lg text-goldLight md:text-xl">{pool.aprPct.toFixed(2)}%</p>
+            <p className="font-display text-lg text-goldLight md:text-xl">
+              {pool.aprPct !== null ? `${pool.aprPct.toFixed(2)}%` : "—"}
+            </p>
             <p className="mt-1 font-mono text-[9px] uppercase tracking-wider2 text-bronze">APR</p>
           </div>
           <div>
             <p className="font-display text-lg text-goldLight md:text-xl">
-              {formatCompactUsd(pool.volume24hUsd)}
+              {pool.volume24hUsd !== null ? formatCompactUsd(pool.volume24hUsd) : "—"}
             </p>
             <p className="mt-1 font-mono text-[9px] uppercase tracking-wider2 text-bronze">24H Volume</p>
           </div>
@@ -117,7 +115,7 @@ export default function PoolDetailModal({
 
         <div className="mt-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2 text-bronze">
           <span>24H Fees</span>
-          <span className="text-ivory">{formatCompactUsd(pool.fees24hUsd)}</span>
+          <span className="text-ivory">{pool.fees24hUsd !== null ? formatCompactUsd(pool.fees24hUsd) : "—"}</span>
         </div>
 
         <div className="mt-6 grid grid-cols-2 gap-3">
