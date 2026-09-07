@@ -60,6 +60,7 @@ type WalletContextValue = {
   disconnect: () => void;
   selectProvider: (uuid: string) => void;
   closePicker: () => void;
+  refreshGumiHoldings: () => void;
 };
 
 const WalletContext = createContext<WalletContextValue | null>(null);
@@ -215,6 +216,19 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     [isGumiHolder, ownedGumiNfts]
   );
 
+  const refreshGumiHoldings = useCallback(() => {
+    if (!address || !activeProvider || !GUMI_NFT_CONTRACT_ADDRESS) return;
+    setGumiNftsLoading(true);
+    fetchGumiCustomNftHoldings(createProviderCaller(activeProvider), GUMI_NFT_CONTRACT_ADDRESS, address)
+      .then((holdings) => {
+        setIsGumiHolder(holdings.balance > 0);
+        setGumiNftBalance(holdings.balance);
+        setOwnedGumiNfts(holdings.items);
+      })
+      .catch(() => {})
+      .finally(() => setGumiNftsLoading(false));
+  }, [address, activeProvider]);
+
   const connect = useCallback(() => {
     setError(null);
     setPickerOpen(true);
@@ -287,6 +301,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       disconnect,
       selectProvider,
       closePicker,
+      refreshGumiHoldings,
     }),
     [
       isConnected,
@@ -309,6 +324,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       disconnect,
       selectProvider,
       closePicker,
+      refreshGumiHoldings,
     ]
   );
 

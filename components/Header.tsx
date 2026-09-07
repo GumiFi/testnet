@@ -23,6 +23,7 @@ import {
   BellIcon,
   CloseIcon,
   ChevronDownIcon,
+  CrownIcon,
   type IconProps,
 } from "./icons";
 
@@ -53,6 +54,7 @@ const navItems: NavItem[] = [
       { label: "Marketplace", href: "/nft/marketplace", icon: GridIcon },
     ],
   },
+  { label: "Upgrade", href: "/upgrade", icon: CrownIcon },
 ];
 
 export default function Header() {

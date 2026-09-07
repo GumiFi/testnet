@@ -257,3 +257,72 @@ export function extractCreatedCollectionAddress(
   if (!log || !log.topics[1]) return null;
   return `0x${log.topics[1].slice(-40)}`;
 }
+
+export const GUMI_HANDLE_SUFFIX = ".gumi";
+export const GUMI_HANDLE_MAX_LENGTH = 28;
+export const GUMI_HANDLE_BASE_MAX_LENGTH = GUMI_HANDLE_MAX_LENGTH - GUMI_HANDLE_SUFFIX.length;
+export const GUMI_MINT_PRICE_WEI = 20000000000000000n;
+export const GUMI_MINT_PRICE_ETH = "0.02";
+
+const HANDLE_BASE_CHAR_RE = /^[a-zA-Z0-9_-]+$/;
+
+export function sanitizeGumiHandleBase(value: string): string {
+  return value.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, GUMI_HANDLE_BASE_MAX_LENGTH);
+}
+
+export function isValidGumiHandleBase(base: string): boolean {
+  return (
+    base.length > 0 &&
+    base.length <= GUMI_HANDLE_BASE_MAX_LENGTH &&
+    HANDLE_BASE_CHAR_RE.test(base)
+  );
+}
+
+export function buildGumiHandle(base: string): string {
+  return `${base}${GUMI_HANDLE_SUFFIX}`;
+}
+
+function mintCalldataFor(selector: string, handle: string): string {
+  const encoded = encodeDynamicString(handle);
+  const offset = uintToPadded(32n);
+  return `${selector}${offset}${encoded}`;
+}
+
+export function mintGumiHandleCalldata(handle: string): string {
+  return mintCalldataFor("0xd85d3d27", handle);
+}
+
+export function isHandleAvailableCalldata(handle: string): string {
+  return mintCalldataFor("0x8c1efee1", handle);
+}
+
+export function decodeAbiBool(hex: string | null): boolean {
+  if (!hex || hex === "0x") return false;
+  try {
+    return BigInt(hex) !== 0n;
+  } catch {
+    return false;
+  }
+}
+
+export const NFT_TRANSFER_TOPIC0 =
+  "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+
+export function extractMintedTokenId(
+  receipt: TransactionReceipt,
+  contractAddress: string
+): string | null {
+  const contract = contractAddress.toLowerCase();
+  const log = receipt.logs.find(
+    (entry) =>
+      entry.address.toLowerCase() === contract &&
+      entry.topics[0]?.toLowerCase() === NFT_TRANSFER_TOPIC0 &&
+      entry.topics.length >= 4
+  );
+  if (!log || !log.topics[3]) return null;
+  try {
+    return BigInt(log.topics[3]).toString();
+  } catch {
+    return null;
+  }
+}
