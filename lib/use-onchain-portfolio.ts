@@ -111,6 +111,21 @@ async function buildMyLaunches(call: EthCaller, records: LaunchpadCoinRecord[]):
   );
 }
 
+function decodeUint256(hex: string | null): bigint {
+  if (!hex || hex === "0x") return 0n;
+  return BigInt(hex);
+}
+
+async function fetchEthUsdRate(call: EthCaller): Promise<number | null> {
+  try {
+    const raw = await call(CONTRACT_ADDRESSES.priceOracle, "0x679aefce");
+    if (!raw || raw === "0x") return null;
+    return Number(decodeUint256(raw)) / 1e18;
+  } catch {
+    return null;
+  }
+}
+
 export function useOnchainPortfolio(address: string | null): OnchainPortfolio {
   const [assets, setAssets] = useState<OnchainAsset[]>([]);
   const [myLaunches, setMyLaunches] = useState<OnchainLaunch[]>([]);
@@ -133,11 +148,12 @@ export function useOnchainPortfolio(address: string | null): OnchainPortfolio {
     const call = createRpcCaller(NETWORK.rpcUrl);
 
     async function run() {
-      const [ethBalance, gumiBalance, allLaunchpadRecords, myCollectionRecords] = await Promise.all([
+      const [ethBalance, gumiBalance, allLaunchpadRecords, myCollectionRecords, ethUsdRate] = await Promise.all([
         fetchNativeBalance(null, NETWORK.rpcUrl, address as string),
         fetchErc20Balance(call, CONTRACT_ADDRESSES.gumiToken, address as string),
         fetchLaunchpadCoinRecords().catch(() => []),
         fetchNftCollectionRecordsByCreator(address as string).catch(() => []),
+        fetchEthUsdRate(call),
       ]);
       if (cancelled) return;
 
@@ -165,8 +181,8 @@ export function useOnchainPortfolio(address: string | null): OnchainPortfolio {
           monogram: "ET",
           accent: "gold",
           balance: ethBalance,
-          priceUsd: null,
-          valueUsd: null,
+          priceUsd: ethUsdRate,
+          valueUsd: ethUsdRate != null ? ethUsdRate * ethBalance : null,
         },
         {
           id: "gumi",

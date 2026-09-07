@@ -6,7 +6,7 @@ import CopyField from "@/components/swap/CopyField";
 import ComingSoonModal from "@/components/ComingSoonModal";
 import { CrownIcon } from "@/components/icons";
 import { CONTRACT_ADDRESSES, NETWORK, getExplorerAddressUrl } from "@/config/contracts.config";
-import { createRpcCaller, fetchGumiCustomNftBalance } from "@/lib/nft-onchain";
+import { createRpcCaller, fetchGumiCustomNftBalance, fetchGumiHandleForWallet } from "@/lib/nft-onchain";
 import { formatUsd } from "@/lib/format";
 import { getWalletProfile } from "@/lib/user-profile-data";
 
@@ -26,22 +26,46 @@ export default function UserProfileHero({
   const [following, setFollowing] = useState(false);
   const [comingSoon, setComingSoon] = useState<string | null>(null);
   const [isPremium, setIsPremium] = useState(false);
+  const [handle, setHandle] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
   const profile = getWalletProfile(address);
+  const displayName = handle ? `@${handle}` : profile.name;
   const showPlaceholder = loading && totalValueUsd === 0;
 
   useEffect(() => {
     let cancelled = false;
-    fetchGumiCustomNftBalance(createRpcCaller(NETWORK.rpcUrl), CONTRACT_ADDRESSES.gumiCustomNFT, address)
+    const call = createRpcCaller(NETWORK.rpcUrl);
+    fetchGumiCustomNftBalance(call, CONTRACT_ADDRESSES.gumiCustomNFT, address)
       .then((balance) => {
-        if (!cancelled) setIsPremium(balance > 0);
+        if (cancelled) return;
+        setIsPremium(balance > 0);
+        if (balance > 0) {
+          return fetchGumiHandleForWallet(call, CONTRACT_ADDRESSES.gumiCustomNFT, address).then((found) => {
+            if (!cancelled) setHandle(found);
+          });
+        }
+        setHandle(null);
       })
       .catch(() => {
-        if (!cancelled) setIsPremium(false);
+        if (!cancelled) {
+          setIsPremium(false);
+          setHandle(null);
+        }
       });
     return () => {
       cancelled = true;
     };
   }, [address]);
+
+  async function handleShare() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    } catch {
+      setComingSoon("Share Profile");
+    }
+  }
 
   return (
     <div className="border border-line bg-panel p-5">
@@ -54,7 +78,7 @@ export default function UserProfileHero({
         />
         <div className="min-w-0 flex-1">
           <p className="truncate font-display text-lg uppercase tracking-wider2 text-ivory">
-            {profile.name}
+            {displayName}
           </p>
           <a
             href={getExplorerAddressUrl(address)}
@@ -111,10 +135,10 @@ export default function UserProfileHero({
         <span>{NETWORK.name}</span>
         <button
           type="button"
-          onClick={() => setComingSoon("Share Profile")}
+          onClick={handleShare}
           className="ml-auto text-bronze transition-colors hover:text-goldLight"
         >
-          Share
+          {shareCopied ? "Link Copied" : "Share"}
         </button>
       </div>
 

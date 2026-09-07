@@ -5,65 +5,16 @@ import Link from "next/link";
 import Avatar from "@/components/discover/Avatar";
 import { CheckIcon, CopyIcon, EyeIcon, EyeOffIcon } from "@/components/icons";
 import { useWallet, truncateAddress } from "@/lib/wallet-context";
-import { portfolioAssets, type PortfolioAssetWithValue } from "@/lib/portfolio-data";
+import { useOnchainPortfolio } from "@/lib/use-onchain-portfolio";
 import { formatBalance, formatUsd } from "@/lib/format";
-import { CONTRACT_ADDRESSES, NETWORK } from "@/config/contracts.config";
-import { createRpcCaller } from "@/lib/nft-onchain";
-import { fetchErc20Balance, fetchNativeBalance } from "@/lib/token-onchain";
-
-const ON_CHAIN_ASSET_IDS = ["eth", "gumi"] as const;
 
 export default function WalletDropdown({ onClose }: { onClose: () => void }) {
   const { address, monogram, avatarUrl } = useWallet();
-  const [assets, setAssets] = useState<PortfolioAssetWithValue[]>([]);
-  const [holdingsLoading, setHoldingsLoading] = useState(false);
+  const { assets, totalValueUsd, loading: holdingsLoading } = useOnchainPortfolio(address);
   const [copied, setCopied] = useState(false);
   const [valueHidden, setValueHidden] = useState(false);
   const scrollLockPrev = useRef<string | null>(null);
   const scrollLockTimer = useRef<number | null>(null);
-
-  const totalValueUsd = assets.reduce((sum, asset) => sum + asset.valueUsd, 0);
-
-  useEffect(() => {
-    if (!address) {
-      setAssets([]);
-      return;
-    }
-    let cancelled = false;
-    setHoldingsLoading(true);
-    const call = createRpcCaller(NETWORK.rpcUrl);
-    Promise.all([
-      fetchNativeBalance(null, NETWORK.rpcUrl, address),
-      fetchErc20Balance(call, CONTRACT_ADDRESSES.gumiToken, address),
-    ])
-      .then(([ethBalance, gumiBalance]) => {
-        if (cancelled) return;
-        const balances: Record<(typeof ON_CHAIN_ASSET_IDS)[number], number> = {
-          eth: ethBalance,
-          gumi: gumiBalance,
-        };
-        const onChainAssets = portfolioAssets
-          .filter((asset): asset is typeof asset & { id: (typeof ON_CHAIN_ASSET_IDS)[number] } =>
-            (ON_CHAIN_ASSET_IDS as readonly string[]).includes(asset.id)
-          )
-          .map((asset) => {
-            const balance = balances[asset.id];
-            return { ...asset, balance, valueUsd: asset.priceUsd * balance };
-          })
-          .sort((a, b) => b.valueUsd - a.valueUsd);
-        setAssets(onChainAssets);
-      })
-      .catch(() => {
-        if (cancelled) return;
-        setAssets([]);
-      })
-      .finally(() => {
-        if (!cancelled) setHoldingsLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [address]);
 
   function lockPageScroll() {
     if (scrollLockPrev.current === null) {
@@ -163,25 +114,27 @@ export default function WalletDropdown({ onClose }: { onClose: () => void }) {
             Loading on-chain holdings…
           </p>
         )}
-        {assets.map((asset) => (
-          <div
-            key={asset.id}
-            className="flex h-14 shrink-0 items-center gap-2 border-b border-line px-3 last:border-b-0"
-          >
-            <Avatar label={asset.monogram} accent={asset.accent} className="h-6 w-6 shrink-0 text-[8px]" />
-            <div className="min-w-0 flex-1">
-              <p className="truncate font-display text-[10px] uppercase tracking-wider2 text-ivory">
-                {asset.symbol}
-              </p>
-              <p className="truncate font-mono text-[8px] text-bronze">
-                {formatBalance(asset.balance)} {asset.symbol}
+        {[...assets]
+          .sort((a, b) => (b.valueUsd ?? -1) - (a.valueUsd ?? -1))
+          .map((asset) => (
+            <div
+              key={asset.id}
+              className="flex h-14 shrink-0 items-center gap-2 border-b border-line px-3 last:border-b-0"
+            >
+              <Avatar label={asset.monogram} accent={asset.accent} className="h-6 w-6 shrink-0 text-[8px]" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-display text-[10px] uppercase tracking-wider2 text-ivory">
+                  {asset.symbol}
+                </p>
+                <p className="truncate font-mono text-[8px] text-bronze">
+                  {formatBalance(asset.balance)} {asset.symbol}
+                </p>
+              </div>
+              <p className="shrink-0 font-mono text-[9px] text-goldLight">
+                {valueHidden ? "*****" : asset.valueUsd != null ? formatUsd(asset.valueUsd) : "—"}
               </p>
             </div>
-            <p className="shrink-0 font-mono text-[9px] text-goldLight">
-              {valueHidden ? "*****" : formatUsd(asset.valueUsd)}
-            </p>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );

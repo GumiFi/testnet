@@ -42,8 +42,8 @@ export default function DiscoverApp() {
         <SearchResults query={query} onAction={setComingSoon} />
       ) : (
         <>
-          <TrendingSection onAction={setComingSoon} />
-          <NewLaunchesSection onAction={setComingSoon} />
+          <TrendingSection />
+          <NewLaunchesSection />
           <LazyOnView fallback={<SectionSkeleton />}>
             <FeaturedSection onAction={setComingSoon} />
           </LazyOnView>
@@ -51,7 +51,7 @@ export default function DiscoverApp() {
             <NftSection onAction={setComingSoon} />
           </LazyOnView>
           <LazyOnView fallback={<SectionSkeleton />}>
-            <PoolsSection onAction={setComingSoon} />
+            <PoolsSection />
           </LazyOnView>
           <LazyOnView fallback={<SectionSkeleton />}>
             <CreatorsSection />

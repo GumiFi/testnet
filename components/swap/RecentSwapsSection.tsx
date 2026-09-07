@@ -1,12 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { ChevronRightIcon, ClockIcon } from "@/components/icons";
 import SwapHistoryRow from "./SwapHistoryRow";
-import { getRecentSwapHistory } from "@/lib/swap-data";
+import { useSwapHistory } from "@/lib/swap-history-live";
 
 const RECENT_SWAPS_LIMIT = 4;
 
 export default function RecentSwapsSection() {
-  const items = getRecentSwapHistory(RECENT_SWAPS_LIMIT);
+  const { history } = useSwapHistory();
+  const items = history.slice(0, RECENT_SWAPS_LIMIT);
 
   return (
     <div className="mx-auto mt-6 w-full max-w-md pb-4">

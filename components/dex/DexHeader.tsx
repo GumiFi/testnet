@@ -1,8 +1,14 @@
+"use client";
+
 import { ChartIcon } from "@/components/icons";
 import { formatCompactNumber, formatCompactUsd } from "@/lib/format";
-import { dexStats, TOTAL_PAIRS } from "@/lib/dex-data";
+import { dexPairs, getDexStats } from "@/lib/dex-data";
+import { useLiveDexPairs } from "@/lib/dex-live";
 
 export default function DexHeader() {
+  useLiveDexPairs();
+  const stats = getDexStats();
+
   return (
     <section className="border-b border-line px-6 py-10 md:py-14">
       <div className="mx-auto max-w-6xl">
@@ -22,18 +28,18 @@ export default function DexHeader() {
           <div className="border border-line bg-panel px-3 py-3 text-center sm:px-4">
             <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">24H Volume</p>
             <p className="mt-1 font-display text-sm text-ivory sm:text-base">
-              {formatCompactUsd(dexStats.volume24h)}
+              {formatCompactUsd(stats.volume24h)}
             </p>
           </div>
           <div className="border border-line bg-panel px-3 py-3 text-center sm:px-4">
             <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">24H Txns</p>
             <p className="mt-1 font-display text-sm text-ivory sm:text-base">
-              {formatCompactNumber(dexStats.txns24h)}
+              {formatCompactNumber(stats.txns24h)}
             </p>
           </div>
           <div className="border border-line bg-panel px-3 py-3 text-center sm:px-4">
             <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Pairs Tracked</p>
-            <p className="mt-1 font-display text-sm text-ivory sm:text-base">{TOTAL_PAIRS}</p>
+            <p className="mt-1 font-display text-sm text-ivory sm:text-base">{dexPairs.length}</p>
           </div>
         </div>
       </div>

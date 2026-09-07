@@ -86,6 +86,7 @@ export async function buildLaunchpadCoinFromRecord(
     bannerImage: record.bannerImage,
     description: record.description,
     isLive: true,
+    graduated: snapshot.graduated,
   };
 }
 

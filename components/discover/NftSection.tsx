@@ -5,6 +5,7 @@ import { FrameIcon } from "@/components/icons";
 import FilterChips from "./FilterChips";
 import Avatar from "./Avatar";
 import { nftCollections, type NftCollection } from "@/lib/discover-data";
+import { useLiveDiscoverCollectionsAndCreators } from "@/lib/discover-collections-live";
 import { formatCompactNumber, formatEth, formatPct } from "@/lib/format";
 
 const nftFilters = ["Trending", "New", "Top Volume", "Lowest Price"] as const;
@@ -30,7 +31,8 @@ export default function NftSection({
   onAction: (label: string) => void;
 }) {
   const [filter, setFilter] = useState<NftFilter>("Trending");
-  const collections = useMemo(() => sortCollections(nftCollections, filter), [filter]);
+  const liveReady = useLiveDiscoverCollectionsAndCreators();
+  const collections = useMemo(() => sortCollections(nftCollections, filter), [filter, liveReady]);
 
   return (
     <section className="border-b border-line px-6 py-10">
@@ -47,7 +49,7 @@ export default function NftSection({
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {collections.length === 0 ? (
             <p className="col-span-full px-4 py-8 text-center font-mono text-xs uppercase tracking-wider2 text-bronze">
-              No collections in this filter yet
+              {liveReady ? "No collections in this filter yet" : "Loading collections from chain..."}
             </p>
           ) : (
             collections.map((collection) => {

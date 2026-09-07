@@ -17,6 +17,7 @@ import CoinExternalLinksRow from "./CoinExternalLinksRow";
 import CoinDexLinksRow from "./CoinDexLinksRow";
 import CoinActivityTabs, { type CoinActivityTab } from "./CoinActivityTabs";
 import CoinTradeButtons from "./CoinTradeButtons";
+import CoinTradeModal, { type CoinTradeMode } from "./CoinTradeModal";
 import CoinGraduationCard from "./CoinGraduationCard";
 import CoinTopHoldersCard from "./CoinTopHoldersCard";
 import CoinSentimentBar from "./CoinSentimentBar";
@@ -31,10 +32,35 @@ import {
 import { useLiveLaunchpadCoins } from "@/lib/launchpad-live";
 import { fetchRealLaunchpadCoin } from "@/lib/launchpad-realtime";
 import { formatCompactUsd, formatPrice } from "@/lib/format";
+import { useWallet } from "@/lib/wallet-context";
+import { useNotifications } from "@/lib/notification-context";
+import { createProviderCaller } from "@/lib/nft-onchain";
+import {
+  buyCalldata,
+  sellCalldata,
+  previewBuyCalldata,
+  previewSellCalldata,
+  parseEtherToWei,
+  decodeUint256,
+  sendLaunchpadTransaction,
+  waitForTransactionReceipt,
+} from "@/lib/launchpad-onchain";
+import {
+  balanceOfCalldata,
+  approveCalldata,
+  fetchAllowance,
+  fetchDecimals,
+  parseAmountToBaseUnits,
+  formatBaseUnitsToNumber,
+  applySlippageToRaw,
+} from "@/lib/swap-onchain";
+import { CONTRACT_ADDRESSES, NETWORK } from "@/config/contracts.config";
 
 const ADDRESS_PATTERN = /^0x[0-9a-fA-F]{40}$/;
 
 export default function CoinDetailApp({ id }: { id: string }) {
+  const { connect, address, provider, chainId } = useWallet();
+  const { addNotification } = useNotifications();
   const liveReady = useLiveLaunchpadCoins();
   const [detail, setDetail] = useState(() => getLaunchpadCoinDetail(id));
   const [timeframe, setTimeframe] = useState<LaunchpadDetailTimeframe>("24H");
@@ -42,6 +68,16 @@ export default function CoinDetailApp({ id }: { id: string }) {
   const [watchlisted, setWatchlisted] = useState(false);
   const [activityTab, setActivityTab] = useState<CoinActivityTab>("Trades");
   const activityRef = useRef<HTMLDivElement>(null);
+
+  const [tradeMode, setTradeMode] = useState<CoinTradeMode | null>(null);
+  const [tradeStage, setTradeStage] = useState("");
+  const [tradeError, setTradeError] = useState<string | null>(null);
+  const [quoteLabel, setQuoteLabel] = useState("");
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [sellBalanceRaw, setSellBalanceRaw] = useState<bigint>(0n);
+  const [tokenDecimals, setTokenDecimals] = useState(18);
+  const quoteTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const quoteRequestId = useRef(0);
 
   useEffect(() => {
     const existing = getLaunchpadCoinDetail(id);
@@ -95,6 +131,186 @@ export default function CoinDetailApp({ id }: { id: string }) {
   function focusActivity(tab: CoinActivityTab) {
     setActivityTab(tab);
     activityRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function ensureGiwaNetwork() {
+    if (!provider) return;
+    if (chainId === NETWORK.chainIdHex) return;
+    setTradeStage("Switching To Giwa Sepolia...");
+    try {
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: NETWORK.chainIdHex }],
+      });
+    } catch (switchError) {
+      const code = (switchError as { code?: number })?.code;
+      if (code === 4902) {
+        await provider.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: NETWORK.chainIdHex,
+              chainName: NETWORK.name,
+              rpcUrls: [NETWORK.rpcUrl],
+              blockExplorerUrls: [NETWORK.explorerUrl],
+              nativeCurrency: NETWORK.nativeCurrency,
+            },
+          ],
+        });
+      } else {
+        throw switchError;
+      }
+    }
+  }
+
+  function openTrade(mode: CoinTradeMode) {
+    if (!detail) return;
+    setTradeError(null);
+    setQuoteLabel("");
+    setTradeStage("");
+    setTradeMode(mode);
+
+    if (mode === "sell" && provider && address) {
+      const call = createProviderCaller(provider);
+      fetchDecimals(call, detail.contractAddress, false)
+        .then((decimals) => {
+          setTokenDecimals(decimals);
+          return call(detail.contractAddress, balanceOfCalldata(address));
+        })
+        .then((raw) => setSellBalanceRaw(decodeUint256(raw)))
+        .catch(() => setSellBalanceRaw(0n));
+    }
+  }
+
+  function closeTrade() {
+    if (tradeStage) return;
+    setTradeMode(null);
+    setTradeError(null);
+    setQuoteLabel("");
+    setSellBalanceRaw(0n);
+  }
+
+  function handleAmountChange(mode: CoinTradeMode, value: string) {
+    if (quoteTimer.current) clearTimeout(quoteTimer.current);
+    const amountNum = parseFloat(value) || 0;
+    if (!detail || amountNum <= 0 || !provider) {
+      setQuoteLabel("");
+      setQuoteLoading(false);
+      return;
+    }
+    setQuoteLoading(true);
+    const requestId = ++quoteRequestId.current;
+    quoteTimer.current = setTimeout(async () => {
+      try {
+        const call = createProviderCaller(provider);
+        if (mode === "buy") {
+          const ethIn = parseEtherToWei(value);
+          const raw = await call(CONTRACT_ADDRESSES.bondingCurveEngine, previewBuyCalldata(detail.contractAddress, ethIn));
+          const tokensOut = decodeUint256(raw);
+          if (requestId !== quoteRequestId.current) return;
+          setQuoteLabel(`≈ ${formatBaseUnitsToNumber(tokensOut, 18).toLocaleString(undefined, { maximumFractionDigits: 2 })} ${detail.symbol}`);
+        } else {
+          const tokensIn = parseAmountToBaseUnits(value, tokenDecimals);
+          const raw = await call(CONTRACT_ADDRESSES.bondingCurveEngine, previewSellCalldata(detail.contractAddress, tokensIn));
+          const ethOut = decodeUint256(raw);
+          if (requestId !== quoteRequestId.current) return;
+          setQuoteLabel(`≈ ${formatBaseUnitsToNumber(ethOut, 18).toLocaleString(undefined, { maximumFractionDigits: 6 })} ETH`);
+        }
+      } catch {
+        if (requestId === quoteRequestId.current) setQuoteLabel("Quote unavailable");
+      } finally {
+        if (requestId === quoteRequestId.current) setQuoteLoading(false);
+      }
+    }, 400);
+  }
+
+  async function refreshDetailAfterTrade() {
+    const updated = await fetchRealLaunchpadCoin(detail!.contractAddress).catch(() => null);
+    if (updated) {
+      registerLiveLaunchpadCoins([updated]);
+      setDetail(getLaunchpadCoinDetail(id));
+    }
+  }
+
+  async function handleConfirmTrade(amount: string) {
+    if (!detail || !tradeMode) return;
+    if (!provider || !address) {
+      connect();
+      return;
+    }
+
+    setTradeError(null);
+
+    try {
+      await ensureGiwaNetwork();
+      const call = createProviderCaller(provider);
+      const engine = CONTRACT_ADDRESSES.bondingCurveEngine;
+
+      if (tradeMode === "buy") {
+        const ethIn = parseEtherToWei(amount);
+        if (ethIn <= 0n) throw new Error("Enter an amount to buy");
+
+        const previewRaw = await call(engine, previewBuyCalldata(detail.contractAddress, ethIn));
+        const expectedTokensOut = decodeUint256(previewRaw);
+        if (expectedTokensOut <= 0n) throw new Error("This coin isn't tradeable on the curve right now");
+        const minTokensOut = applySlippageToRaw(expectedTokensOut, 5);
+
+        setTradeStage("Confirm In Your Wallet...");
+        const data = buyCalldata(detail.contractAddress, minTokensOut, address);
+        const txHash = await sendLaunchpadTransaction(provider, address, engine, data, ethIn);
+
+        setTradeStage("Waiting For Confirmation...");
+        const receipt = await waitForTransactionReceipt(provider, txHash);
+        if (!receipt || receipt.status !== "0x1") throw new Error("Transaction failed or timed out");
+      } else {
+        const tokensIn = parseAmountToBaseUnits(amount, tokenDecimals);
+        if (tokensIn <= 0n) throw new Error("Enter an amount to sell");
+        if (tokensIn > sellBalanceRaw) throw new Error("Amount exceeds your balance");
+
+        const allowance = await fetchAllowance(call, detail.contractAddress, address, engine);
+        if (allowance < tokensIn) {
+          setTradeStage("Approve Token Spend...");
+          const approveData = approveCalldata(engine, tokensIn);
+          const approveTxHash = await sendLaunchpadTransaction(provider, address, detail.contractAddress, approveData, 0n);
+          setTradeStage("Confirming Approval...");
+          const approveReceipt = await waitForTransactionReceipt(provider, approveTxHash);
+          if (!approveReceipt || approveReceipt.status !== "0x1") throw new Error("Approval failed or timed out");
+        }
+
+        const previewRaw = await call(engine, previewSellCalldata(detail.contractAddress, tokensIn));
+        const expectedEthOut = decodeUint256(previewRaw);
+        if (expectedEthOut <= 0n) throw new Error("This coin isn't tradeable on the curve right now");
+        const minEthOut = applySlippageToRaw(expectedEthOut, 5);
+
+        setTradeStage("Confirm In Your Wallet...");
+        const data = sellCalldata(detail.contractAddress, tokensIn, minEthOut, address);
+        const txHash = await sendLaunchpadTransaction(provider, address, engine, data, 0n);
+
+        setTradeStage("Waiting For Confirmation...");
+        const receipt = await waitForTransactionReceipt(provider, txHash);
+        if (!receipt || receipt.status !== "0x1") throw new Error("Transaction failed or timed out");
+      }
+
+      setTradeStage("Updating Coin Data...");
+      await refreshDetailAfterTrade();
+      setTradeStage("");
+      setTradeMode(null);
+      addNotification({
+        category: "launch",
+        title: tradeMode === "buy" ? "Buy Completed" : "Sell Completed",
+        message: `${tradeMode === "buy" ? "Bought" : "Sold"} $${detail.symbol} on the bonding curve.`,
+        href: `/launchpad/coin/${detail.id}`,
+      });
+    } catch (caughtError) {
+      setTradeStage("");
+      setTradeError(caughtError instanceof Error ? caughtError.message : "Transaction failed");
+      addNotification({
+        category: "launch",
+        title: tradeMode === "buy" ? "Buy Failed" : "Sell Failed",
+        message: `Your ${tradeMode} of $${detail.symbol} didn't go through.`,
+        href: `/launchpad/coin/${detail.id}`,
+      });
+    }
   }
 
   return (
@@ -188,11 +404,19 @@ export default function CoinDetailApp({ id }: { id: string }) {
       </div>
 
       <div className="mt-4">
-        <CoinTradeButtons
-          symbol={detail.symbol}
-          onBuy={() => setComingSoon(`Buy ${detail.symbol}`)}
-          onSell={() => setComingSoon(`Sell ${detail.symbol}`)}
-        />
+        {detail.graduated ? (
+          <div className="rounded-md border border-gold/40 bg-gold/10 px-4 py-3 text-center">
+            <p className="font-mono text-[10px] uppercase tracking-wider2 text-goldLight">
+              Graduated — now trading on the DEX pool
+            </p>
+          </div>
+        ) : (
+          <CoinTradeButtons
+            symbol={detail.symbol}
+            onBuy={() => openTrade("buy")}
+            onSell={() => openTrade("sell")}
+          />
+        )}
       </div>
 
       <div ref={activityRef} className="mt-4 scroll-mt-20">
@@ -224,6 +448,32 @@ export default function CoinDetailApp({ id }: { id: string }) {
       </div>
 
       {comingSoon && <ComingSoonModal label={comingSoon} onClose={() => setComingSoon(null)} />}
+
+      {tradeMode && (
+        <CoinTradeModal
+          mode={tradeMode}
+          symbol={detail.symbol}
+          balanceLabel={
+            tradeMode === "sell"
+              ? `Max: ${formatBaseUnitsToNumber(sellBalanceRaw, tokenDecimals).toLocaleString(undefined, {
+                  maximumFractionDigits: 4,
+                })}`
+              : undefined
+          }
+          quoteLabel={quoteLabel}
+          quoteLoading={quoteLoading}
+          errorMessage={tradeError}
+          stageLabel={tradeStage}
+          onAmountChange={(value) => handleAmountChange(tradeMode, value)}
+          onMax={
+            tradeMode === "sell"
+              ? () => formatBaseUnitsToNumber(sellBalanceRaw, tokenDecimals).toString()
+              : undefined
+          }
+          onConfirm={handleConfirmTrade}
+          onClose={closeTrade}
+        />
+      )}
     </div>
   );
 }

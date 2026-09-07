@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { PAIRS_PER_PAGE, TOTAL_PAIRS } from "@/lib/dex-data";
 import { buildPageParams, parsePageSegment } from "@/lib/pagination";
 import DexSkeleton from "@/components/skeletons/DexSkeleton";
 
@@ -10,12 +9,13 @@ const DexApp = dynamic(() => import("@/components/dex/DexApp"), {
   loading: () => <DexSkeleton />,
 });
 
-const MAX_PAGE = Math.ceil(TOTAL_PAIRS / PAIRS_PER_PAGE);
+const STATIC_PAGE_RANGE = 20;
+const SANITY_MAX_PAGE = 500;
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export function generateStaticParams() {
-  return buildPageParams(MAX_PAGE);
+  return buildPageParams(STATIC_PAGE_RANGE);
 }
 
 export function generateMetadata({ params }: { params: { page: string } }): Metadata {
@@ -29,7 +29,7 @@ export function generateMetadata({ params }: { params: { page: string } }): Meta
 
 export default function DexPagedPage({ params }: { params: { page: string } }) {
   const pageNumber = parsePageSegment(params.page);
-  if (!pageNumber || pageNumber > MAX_PAGE) {
+  if (!pageNumber || pageNumber > SANITY_MAX_PAGE) {
     notFound();
   }
 

@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { FlameIcon, ArrowUpIcon, ArrowDownIcon } from "@/components/icons";
 import Sparkline from "@/components/Sparkline";
 import BoosterBadge from "@/components/BoosterBadge";
 import FilterChips from "./FilterChips";
 import Avatar from "./Avatar";
 import { discoverTokens, type DiscoverToken } from "@/lib/discover-data";
+import { useLiveDiscoverData } from "@/lib/discover-live";
 import { formatCompactUsd, formatPct, formatPrice } from "@/lib/format";
 
 const trendingFilters = ["Trending", "New", "Gainers", "Volume"] as const;
@@ -26,13 +28,10 @@ function sortTokens(tokens: DiscoverToken[], filter: TrendingFilter): DiscoverTo
   }
 }
 
-export default function TrendingSection({
-  onAction,
-}: {
-  onAction: (label: string) => void;
-}) {
+export default function TrendingSection() {
   const [filter, setFilter] = useState<TrendingFilter>("Trending");
-  const tokens = useMemo(() => sortTokens(discoverTokens, filter).slice(0, 6), [filter]);
+  const liveReady = useLiveDiscoverData();
+  const tokens = useMemo(() => sortTokens(discoverTokens, filter).slice(0, 6), [filter, liveReady]);
 
   return (
     <section className="border-b border-line px-6 py-10">
@@ -49,16 +48,15 @@ export default function TrendingSection({
         <div className="mt-5 border border-line bg-panel">
           {tokens.length === 0 ? (
             <p className="px-4 py-8 text-center font-mono text-xs uppercase tracking-wider2 text-bronze">
-              No tokens in this filter yet
+              {liveReady ? "No tokens in this filter yet" : "Loading pairs from chain..."}
             </p>
           ) : (
             tokens.map((token) => {
               const positive = token.change24h >= 0;
               return (
-                <button
+                <Link
                   key={token.id}
-                  type="button"
-                  onClick={() => onAction(token.symbol)}
+                  href={`/dex/pair/${token.id}`}
                   className="flex w-full items-center gap-3 border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-panel2"
                 >
                   <Avatar label={token.monogram} accent={token.accent} className="h-10 w-10 text-[11px]" />
@@ -95,7 +93,7 @@ export default function TrendingSection({
                       {formatPct(token.change24h)}
                     </p>
                   </div>
-                </button>
+                </Link>
               );
             })
           )}

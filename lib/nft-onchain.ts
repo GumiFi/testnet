@@ -38,6 +38,23 @@ function tokenUriCalldata(tokenId: bigint): string {
   return `0xc87b56dd${uintToPadded(tokenId)}`;
 }
 
+function ownerOfCalldata(tokenId: bigint): string {
+  return `0x6352211e${uintToPadded(tokenId)}`;
+}
+
+function totalMintedCalldata(): string {
+  return "0xa2309ff8";
+}
+
+function handleOfCalldata(tokenId: bigint): string {
+  return `0x49491987${uintToPadded(tokenId)}`;
+}
+
+function decodeAddressWord(hex: string): string {
+  const clean = hex.replace(/^0x/, "");
+  return `0x${clean.slice(-40)}`;
+}
+
 function decodeAbiString(hex: string): string {
   const clean = hex.replace(/^0x/, "");
   if (clean.length < 128) return "";
@@ -153,6 +170,30 @@ export async function fetchGumiCustomNftHoldings(
   return { balance, items };
 }
 
+export async function fetchGumiHandleForWallet(
+  call: EthCaller,
+  contractAddress: string,
+  owner: string
+): Promise<string | null> {
+  const totalRaw = await call(contractAddress, totalMintedCalldata());
+  if (!totalRaw || totalRaw === "0x") return null;
+  const total = Number(BigInt(totalRaw));
+  if (total <= 0) return null;
+  const ownerLower = owner.toLowerCase();
+  const tokenIds = Array.from({ length: total }, (_, index) => BigInt(index + 1));
+  const owners = await Promise.all(
+    tokenIds.map((tokenId) =>
+      call(contractAddress, ownerOfCalldata(tokenId))
+        .then((raw) => (raw && raw !== "0x" ? decodeAddressWord(raw) : null))
+        .catch(() => null)
+    )
+  );
+  const matchIndex = owners.findIndex((address) => address && address.toLowerCase() === ownerLower);
+  if (matchIndex === -1) return null;
+  const handleRaw = await call(contractAddress, handleOfCalldata(tokenIds[matchIndex]));
+  if (!handleRaw || handleRaw === "0x") return null;
+  return decodeAbiString(handleRaw) || null;
+}
 function utf8ToHex(value: string): string {
   const bytes = new TextEncoder().encode(value);
   let hex = "";
@@ -161,7 +202,6 @@ function utf8ToHex(value: string): string {
   }
   return hex;
 }
-
 function encodeDynamicString(value: string): string {
   const dataHex = utf8ToHex(value);
   const byteLength = dataHex.length / 2;
@@ -170,7 +210,6 @@ function encodeDynamicString(value: string): string {
   const dataWord = dataHex.padEnd(paddedLength, "0");
   return lengthWord + dataWord;
 }
-
 export function createCollectionCalldata(
   name: string,
   symbol: string,
@@ -191,16 +230,13 @@ export function createCollectionCalldata(
   const maxSupplyWord = uintToPadded(maxSupply);
   return `0x7ad3e1cf${nameOffset}${symbolOffset}${baseUriOffset}${mintPriceWord}${maxSupplyWord}${nameEncoded}${symbolEncoded}${baseUriEncoded}`;
 }
-
 export const COLLECTION_CREATED_TOPIC0 =
   "0x8b191557afa6a02003a58f9c53041c9704d06bbad5df81dbaa8ddcf35ccdf1b0";
-
 export type TransactionLog = {
   address: string;
   topics: string[];
   data: string;
 };
-
 export type TransactionReceipt = {
   status: string;
   transactionHash: string;

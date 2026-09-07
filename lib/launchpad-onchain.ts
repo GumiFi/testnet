@@ -72,6 +72,10 @@ export function previewBuyCalldata(token: string, ethIn: bigint): string {
   return `0xb5ac48a0${addressToPadded(token)}${uintToPadded(ethIn)}`;
 }
 
+export function previewSellCalldata(token: string, tokensIn: bigint): string {
+  return `0xe5f0f5cc${addressToPadded(token)}${uintToPadded(tokensIn)}`;
+}
+
 export function graduationThresholdUsdCalldata(): string {
   return "0x3d5d5469";
 }

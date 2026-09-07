@@ -101,7 +101,6 @@ export default function AdvancedTokenGeneratorApp() {
         if (!cancelled) setFactoryDefaults(defaults);
       })
       .catch(() => {
-        /* leave as null — UI shows a fallback label */
       });
     return () => {
       cancelled = true;

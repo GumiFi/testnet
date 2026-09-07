@@ -28,3 +28,9 @@ export async function fetchNftCollectionRecordsByCreator(address: string): Promi
   const snapshot = await getDocs(q);
   return snapshot.docs.map((docSnapshot) => docSnapshot.data() as NftCollectionRecord);
 }
+
+export async function fetchAllNftCollectionRecords(): Promise<NftCollectionRecord[]> {
+  const db = getClientDb();
+  const snapshot = await getDocs(collection(db, NFT_COLLECTIONS_COLLECTION));
+  return snapshot.docs.map((docSnapshot) => docSnapshot.data() as NftCollectionRecord);
+}

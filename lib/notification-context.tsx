@@ -9,10 +9,12 @@ import {
   type ReactNode,
 } from "react";
 import {
-  seedNotifications,
   type NotificationCategory,
   type NotificationSeed,
 } from "./notifications-data";
+import { useWallet } from "./wallet-context";
+import { useOnchainPortfolio } from "./use-onchain-portfolio";
+import { formatTimeAgo, type ActivityEntry } from "./activity-onchain";
 
 export type NotificationItem = NotificationSeed & { createdAt: number };
 
@@ -40,16 +42,61 @@ function nextNotificationId(): string {
   return `note-live-${Date.now().toString(36)}-${notificationIdSeed}`;
 }
 
-function seedWithTimestamps(): NotificationItem[] {
-  const now = Date.now();
-  return seedNotifications.map((item, index) => ({
-    ...item,
-    createdAt: now - (index + 1) * 60_000,
-  }));
+const ACTIVITY_CATEGORY: Record<ActivityEntry["kind"], NotificationCategory> = {
+  launch: "launch",
+  collection: "nft",
+  "token-in": "transaction",
+  "token-out": "transaction",
+  "nft-in": "nft",
+  "nft-out": "nft",
+};
+
+const ACTIVITY_HREF: Record<ActivityEntry["kind"], string> = {
+  launch: "/launchpad",
+  collection: "/nft/marketplace",
+  "token-in": "/swap",
+  "token-out": "/swap",
+  "nft-in": "/nft/marketplace",
+  "nft-out": "/nft/marketplace",
+};
+
+const ACTIVITY_TITLE: Record<ActivityEntry["kind"], string> = {
+  launch: "Token Launched",
+  collection: "Collection Created",
+  "token-in": "Tokens Received",
+  "token-out": "Tokens Sent",
+  "nft-in": "NFT Received",
+  "nft-out": "NFT Sent",
+};
+
+function activityToNotification(entry: ActivityEntry): NotificationItem {
+  return {
+    id: entry.id,
+    category: ACTIVITY_CATEGORY[entry.kind],
+    title: ACTIVITY_TITLE[entry.kind],
+    message: entry.description,
+    timeAgo: formatTimeAgo(entry.timestampMs),
+    href: ACTIVITY_HREF[entry.kind],
+    read: true,
+    createdAt: entry.timestampMs,
+  };
 }
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(seedWithTimestamps);
+  const { address } = useWallet();
+  const { activity } = useOnchainPortfolio(address);
+  const [liveNotifications, setLiveNotifications] = useState<NotificationItem[]>([]);
+  const [dismissedActivityIds, setDismissedActivityIds] = useState<Set<string>>(new Set());
+
+  const activityNotifications = useMemo(
+    () => activity.filter((entry) => !dismissedActivityIds.has(entry.id)).map(activityToNotification),
+    [activity, dismissedActivityIds]
+  );
+
+  const notifications = useMemo(
+    () => [...liveNotifications, ...activityNotifications].sort((a, b) => b.createdAt - a.createdAt),
+    [liveNotifications, activityNotifications]
+  );
 
   const addNotification = useCallback((input: AddNotificationInput) => {
     const item: NotificationItem = {
@@ -62,26 +109,31 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
       read: false,
       createdAt: Date.now(),
     };
-    setNotifications((prev) => [item, ...prev]);
+    setLiveNotifications((prev) => [item, ...prev]);
   }, []);
 
   const markAsRead = useCallback((id: string) => {
-    setNotifications((prev) =>
+    setLiveNotifications((prev) =>
       prev.map((item) => (item.id === id ? { ...item, read: true } : item))
     );
   }, []);
 
   const markAllAsRead = useCallback(() => {
-    setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
+    setLiveNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
   }, []);
 
   const clearAll = useCallback(() => {
-    setNotifications([]);
-  }, []);
+    setLiveNotifications([]);
+    setDismissedActivityIds((prev) => {
+      const next = new Set(prev);
+      activity.forEach((entry) => next.add(entry.id));
+      return next;
+    });
+  }, [activity]);
 
   const unreadCount = useMemo(
-    () => notifications.filter((item) => !item.read).length,
-    [notifications]
+    () => liveNotifications.filter((item) => !item.read).length,
+    [liveNotifications]
   );
 
   const value = useMemo<NotificationContextValue>(

@@ -2,6 +2,8 @@ import Link from "next/link";
 import Avatar from "./Avatar";
 import GumiTag from "@/components/GumiTag";
 import { countResults, searchEcosystem } from "@/lib/search";
+import { useLiveDiscoverData } from "@/lib/discover-live";
+import { useLiveDiscoverCollectionsAndCreators } from "@/lib/discover-collections-live";
 import { handleToSlug } from "@/lib/user-profile-data";
 import { formatCompactUsd, formatEth, formatPct, formatPrice } from "@/lib/format";
 
@@ -12,6 +14,8 @@ export default function SearchResults({
   query: string;
   onAction: (label: string) => void;
 }) {
+  useLiveDiscoverData();
+  useLiveDiscoverCollectionsAndCreators();
   const results = searchEcosystem(query);
   const { tokens, collections, pools: matchedPools, creators: matchedCreators } = results;
   const hasResults = countResults(results) > 0;
@@ -36,10 +40,9 @@ export default function SearchResults({
               {tokens.map((token) => {
                 const positive = token.change24h >= 0;
                 return (
-                  <button
+                  <Link
                     key={token.id}
-                    type="button"
-                    onClick={() => onAction(token.symbol)}
+                    href={`/dex/pair/${token.id}`}
                     className="flex w-full items-center gap-3 border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-panel2"
                   >
                     <Avatar label={token.monogram} accent={token.accent} className="h-9 w-9 text-[10px]" />
@@ -59,7 +62,7 @@ export default function SearchResults({
                         {formatPct(token.change24h)}
                       </p>
                     </div>
-                  </button>
+                  </Link>
                 );
               })}
             </div>
@@ -104,10 +107,9 @@ export default function SearchResults({
             <h3 className="font-display text-sm uppercase tracking-wider2 text-goldLight">Pools</h3>
             <div className="mt-3 overflow-hidden rounded-xl border border-line bg-panel">
               {matchedPools.map((pool) => (
-                <button
+                <Link
                   key={pool.id}
-                  type="button"
-                  onClick={() => onAction(pool.pair)}
+                  href={`/dex/pair/${pool.id}`}
                   className="flex w-full items-center justify-between border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-panel2"
                 >
                   <span className="font-display text-xs uppercase tracking-wider2 text-ivory">
@@ -116,7 +118,7 @@ export default function SearchResults({
                   <span className="font-mono text-[10px] text-bronze">
                     TVL {formatCompactUsd(pool.tvlUsd)}
                   </span>
-                </button>
+                </Link>
               ))}
             </div>
           </div>

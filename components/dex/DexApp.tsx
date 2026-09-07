@@ -15,6 +15,7 @@ import {
   isDexSortOption,
   queryDexPairs,
 } from "@/lib/dex-data";
+import { useLiveDexPairs } from "@/lib/dex-live";
 import { buildSearchString, pageHref, resolvePageFromPathname } from "@/lib/pagination";
 import { useDebouncedValue } from "@/lib/useDebouncedValue";
 
@@ -25,6 +26,7 @@ export default function DexApp() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const page = resolvePageFromPathname(pathname, DEX_BASE_PATH);
+  const liveReady = useLiveDexPairs();
 
   const initialTab = isDexMainTab(searchParams.get("tab"))
     ? (searchParams.get("tab") as DexMainTab)
@@ -53,7 +55,7 @@ export default function DexApp() {
         page,
         pageSize: PAIRS_PER_PAGE,
       }),
-    [tab, timeframe, sort, debouncedQuery, page]
+    [tab, timeframe, sort, debouncedQuery, page, liveReady]
   );
 
   const search = buildSearchString({
@@ -73,10 +75,10 @@ export default function DexApp() {
   }, [debouncedQuery, tab, timeframe, sort, router, search]);
 
   useEffect(() => {
-    if (page > totalPages) {
+    if (liveReady && page > totalPages) {
       router.replace(pageHref(DEX_BASE_PATH, totalPages, search));
     }
-  }, [page, totalPages, router, search]);
+  }, [page, totalPages, router, search, liveReady]);
 
   const rangeStart = total === 0 ? 0 : (page - 1) * PAIRS_PER_PAGE + 1;
   const rangeEnd = Math.min(total, page * PAIRS_PER_PAGE);
@@ -119,7 +121,9 @@ export default function DexApp() {
 
             <p className="mt-4 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
               {total === 0
-                ? "No pairs match this filter"
+                ? liveReady
+                  ? "No pairs match this filter"
+                  : "Loading pairs from chain..."
                 : `Showing pairs ${rangeStart}-${rangeEnd} of ${total}`}
             </p>
           </div>
@@ -129,7 +133,7 @@ export default function DexApp() {
           <div className="border-y border-line bg-panel sm:border-x">
             {pagePairs.length === 0 ? (
               <p className="px-4 py-10 text-center font-mono text-xs uppercase tracking-wider2 text-bronze">
-                No pairs in this filter yet
+                {liveReady ? "No pairs in this filter yet" : "Loading pairs from chain..."}
               </p>
             ) : (
               pagePairs.map((pair) => <PairRow key={pair.id} pair={pair} />)

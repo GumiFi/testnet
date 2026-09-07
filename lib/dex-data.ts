@@ -1,7 +1,5 @@
 import type { Accent } from "@/lib/discover-data";
 
-export type DexCategoryId = "regalia" | "beasts" | "artifacts" | "elementals" | "spirits";
-
 export type DexPair = {
   id: string;
   rank: number;
@@ -9,7 +7,7 @@ export type DexPair = {
   name: string;
   monogram: string;
   accent: Accent;
-  category: DexCategoryId;
+  quoteSymbol: string;
   age: string;
   ageMinutes: number;
   priceUsd: number;
@@ -35,269 +33,49 @@ export type DexPair = {
   sellers: number;
   contractAddress: string;
   pairAddress: string;
+  quoteTokenAddress: string;
+  baseIsToken0: boolean;
+  baseDecimals: number;
+  quoteDecimals: number;
+  priceHistory: { timestamp: number; priceUsd: number; priceInQuote: number }[];
 };
 
-export const ETH_USD_PRICE = 3200;
-
 export const PAIRS_PER_PAGE = 20;
-export const TOTAL_PAIRS = 240;
-
-export const dexCategories: { id: DexCategoryId; label: string }[] = [
-  { id: "regalia", label: "Regalia" },
-  { id: "beasts", label: "Beasts" },
-  { id: "artifacts", label: "Artifacts" },
-  { id: "elementals", label: "Elementals" },
-  { id: "spirits", label: "Spirits" },
-];
-
-const prefixes = [
-  "Gilt",
-  "Onyx",
-  "Ember",
-  "Sable",
-  "Marble",
-  "Opal",
-  "Cobalt",
-  "Amber",
-  "Jade",
-  "Solar",
-  "Lunar",
-  "Regal",
-  "Mystic",
-  "Arcane",
-  "Velvet",
-  "Crimson",
-  "Astral",
-  "Frost",
-  "Storm",
-  "Phantom",
-  "Divine",
-  "Iron",
-  "Bronzed",
-  "Hollow",
-];
-
-const suffixes = [
-  "Wyrm",
-  "Stag",
-  "Kraken",
-  "Griffin",
-  "Warden",
-  "Templar",
-  "Oracle",
-  "Sentinel",
-  "Reliquary",
-  "Sigil",
-  "Ember",
-  "Crest",
-  "Throne",
-  "Tide",
-  "Ashes",
-  "Fang",
-  "Halo",
-  "Vow",
-  "Cinder",
-  "Rune",
-  "Shard",
-  "Bloom",
-  "Wisp",
-  "Cairn",
-];
-
-const accentOptions: Accent[] = ["gold", "emerald", "garnet"];
-
-const creatorWords = [
-  "astra",
-  "obsidian",
-  "lunar",
-  "juno",
-  "vesper",
-  "cipher",
-  "raven",
-  "echo",
-  "zephyr",
-  "nyx",
-  "orin",
-  "talon",
-  "vale",
-  "rook",
-  "sable",
-  "ember",
-  "frost",
-  "onix",
-  "brix",
-  "kade",
-  "soren",
-  "lior",
-  "wren",
-  "atlas",
-];
-
-const ageBuckets: { label: string; minutes: number; isNew: boolean }[] = [
-  { label: "6m", minutes: 6, isNew: true },
-  { label: "24m", minutes: 24, isNew: true },
-  { label: "48m", minutes: 48, isNew: true },
-  { label: "1h", minutes: 60, isNew: true },
-  { label: "2h", minutes: 120, isNew: true },
-  { label: "3h", minutes: 180, isNew: true },
-  { label: "6h", minutes: 360, isNew: true },
-  { label: "9h", minutes: 540, isNew: true },
-  { label: "12h", minutes: 720, isNew: false },
-  { label: "19h", minutes: 1_140, isNew: false },
-  { label: "22h", minutes: 1_320, isNew: false },
-  { label: "1d", minutes: 1_440, isNew: false },
-  { label: "2d", minutes: 2_880, isNew: false },
-  { label: "5d", minutes: 7_200, isNew: false },
-  { label: "13d", minutes: 18_720, isNew: false },
-  { label: "1mo", minutes: 43_200, isNew: false },
-];
-
-function createRng(seed: number): () => number {
-  let state = seed;
-  return function random() {
-    state |= 0;
-    state = (state + 0x6d2b79f5) | 0;
-    let t = Math.imul(state ^ (state >>> 15), 1 | state);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-const hexChars = "0123456789abcdef";
-
-function randomHex(rng: () => number, length: number): string {
-  let out = "";
-  for (let i = 0; i < length; i++) {
-    out += hexChars[Math.floor(rng() * hexChars.length)];
-  }
-  return out;
-}
 
 export function isGumiHandle(creator: string): boolean {
   return creator.startsWith("@");
 }
 
-function generatePairs(count: number): DexPair[] {
-  const rng = createRng(4242);
-  const pairSlots = prefixes.length * suffixes.length;
-  const order = Array.from({ length: pairSlots }, (_, index) => index);
+export const dexPairs: DexPair[] = [];
+const dexPairsById = new Map<string, DexPair>();
 
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    const temp = order[i];
-    order[i] = order[j];
-    order[j] = temp;
+export function registerLiveDexPairs(pairs: DexPair[]): void {
+  for (const pair of pairs) {
+    if (dexPairsById.has(pair.id)) {
+      dexPairsById.set(pair.id, pair);
+      const index = dexPairs.findIndex((existing) => existing.id === pair.id);
+      if (index >= 0) dexPairs[index] = pair;
+      continue;
+    }
+    dexPairsById.set(pair.id, pair);
+    dexPairs.push(pair);
   }
-
-  const pairs: DexPair[] = [];
-
-  for (let i = 0; i < count; i++) {
-    const slot = order[i % order.length];
-    const prefix = prefixes[Math.floor(slot / suffixes.length)];
-    const suffix = suffixes[slot % suffixes.length];
-    const name = `${prefix} ${suffix}`;
-    const symbol = `${prefix.slice(0, 2)}${suffix.slice(0, 2)}`.toUpperCase();
-    const monogram = `${prefix[0]}${suffix[0]}`.toUpperCase();
-    const accent = accentOptions[Math.floor(rng() * accentOptions.length)];
-    const category = dexCategories[Math.floor(rng() * dexCategories.length)].id;
-
-    const ageIndex = Math.min(ageBuckets.length - 1, Math.floor(Math.pow(rng(), 1.5) * ageBuckets.length));
-    const ageBucket = ageBuckets[ageIndex];
-
-    const magnitude = Math.pow(rng(), 4.2);
-    const priceUsd = 0.0000008 + magnitude * 0.35;
-
-    const change1h = Math.round((rng() * 60 - 22) * 10) / 10;
-    const change24h = Math.round((rng() * 160 - 45) * 10) / 10;
-
-    const liquidity = Math.round((800 + Math.pow(rng(), 2.5) * 260_000) / 100) * 100;
-    const volume24h = Math.round(liquidity * (0.4 + rng() * 9));
-    const marketCap = Math.round(liquidity * (2 + rng() * 60));
-
-    const buys24h = Math.round(30 + rng() * 4_200);
-    const sells24h = Math.round(20 + rng() * 3_800);
-    const txns24h = buys24h + sells24h;
-
-    const boost = rng() < 0.3 ? [10, 90, 100, 200, 500][Math.floor(rng() * 5)] : null;
-    const creator =
-      rng() < 0.25
-        ? `0x${randomHex(rng, 40)}`
-        : `@${creatorWords[Math.floor(rng() * creatorWords.length)]}.gumi`;
-
-    const trendScore = Math.round(
-      Math.max(1, Math.min(100, 50 + change24h * 0.4 + (volume24h / Math.max(liquidity, 1)) * 4 + rng() * 12))
-    );
-
-    const detailRng = createRng(90_000 + i * 17);
-    const priceEth = priceUsd / ETH_USD_PRICE;
-    const fdv = Math.round(marketCap * (1 + detailRng() * 0.12));
-    const change5m = Math.round((detailRng() * 8 - 3) * 100) / 100;
-    const change6h = Math.round((detailRng() * 90 - 32) * 10) / 10;
-    const buyShare = 0.4 + detailRng() * 0.2;
-    const buyVolUsd = Math.round(volume24h * buyShare);
-    const sellVolUsd = Math.max(0, volume24h - buyVolUsd);
-    const buyers = Math.max(1, Math.round(buys24h * (0.55 + detailRng() * 0.2)));
-    const sellers = Math.max(1, Math.round(sells24h * (0.55 + detailRng() * 0.2)));
-    const contractAddress = `0x${randomHex(detailRng, 40)}`;
-    const pairAddress = `0x${randomHex(detailRng, 40)}`;
-
-    pairs.push({
-      id: `pair-${i}`,
-      rank: i + 1,
-      symbol,
-      name,
-      monogram,
-      accent,
-      category,
-      age: ageBucket.label,
-      ageMinutes: ageBucket.minutes,
-      priceUsd,
-      change1h,
-      change24h,
-      liquidity,
-      volume24h,
-      marketCap,
-      txns24h,
-      buys24h,
-      sells24h,
-      boost,
-      creator,
-      isNew: ageBucket.isNew,
-      trendScore,
-      priceEth,
-      fdv,
-      change5m,
-      change6h,
-      buyVolUsd,
-      sellVolUsd,
-      buyers,
-      sellers,
-      contractAddress,
-      pairAddress,
-    });
-  }
-
-  return pairs;
 }
 
-export const dexPairs: DexPair[] = generatePairs(TOTAL_PAIRS);
+export function getDexPairById(id: string): DexPair | undefined {
+  return dexPairsById.get(id.toLowerCase());
+}
 
-export const dexCategoryTotals: Record<DexCategoryId, number> = dexPairs.reduce(
-  (totals, pair) => {
-    totals[pair.category] += pair.marketCap;
-    return totals;
-  },
-  { regalia: 0, beasts: 0, artifacts: 0, elementals: 0, spirits: 0 } as Record<DexCategoryId, number>
-);
-
-export const dexStats = dexPairs.reduce(
-  (acc, pair) => {
-    acc.volume24h += pair.volume24h;
-    acc.txns24h += pair.txns24h;
-    return acc;
-  },
-  { volume24h: 0, txns24h: 0 }
-);
+export function getDexStats(): { volume24h: number; txns24h: number } {
+  return dexPairs.reduce(
+    (acc, pair) => {
+      acc.volume24h += pair.volume24h;
+      acc.txns24h += pair.txns24h;
+      return acc;
+    },
+    { volume24h: 0, txns24h: 0 }
+  );
+}
 
 export const dexMainTabs = ["Trending", "New", "Top"] as const;
 export type DexMainTab = (typeof dexMainTabs)[number];
@@ -416,16 +194,6 @@ export function queryDexPairs({
   return { pairs, total, totalPages };
 }
 
-const dexPairsById = new Map(dexPairs.map((pair) => [pair.id, pair]));
-
-export function getDexPairById(id: string): DexPair | undefined {
-  return dexPairsById.get(id);
-}
-
-export function getDexCategoryLabel(category: DexCategoryId): string {
-  return dexCategories.find((entry) => entry.id === category)?.label ?? category;
-}
-
 export const dexDetailTimeframes = ["5M", "1H", "6H", "24H"] as const;
 export type DexDetailTimeframe = (typeof dexDetailTimeframes)[number];
 
@@ -438,30 +206,20 @@ export function getDexPairChanges(pair: DexPair): Record<DexDetailTimeframe, num
   };
 }
 
-function hashString(value: string): number {
-  let hash = 0;
-  for (let i = 0; i < value.length; i++) {
-    hash = (hash * 31 + value.charCodeAt(i)) | 0;
-  }
-  return hash;
-}
+const timeframeSeconds: Record<DexDetailTimeframe, number> = {
+  "5M": 5 * 60,
+  "1H": 60 * 60,
+  "6H": 6 * 60 * 60,
+  "24H": 24 * 60 * 60,
+};
 
 export function getPairSparkline(pair: DexPair, timeframe: DexDetailTimeframe): number[] {
-  const points = 24;
-  const rng = createRng(hashString(`${pair.id}-${timeframe}`));
-  const trendPct = getDexPairChanges(pair)[timeframe];
-  const end = pair.priceUsd;
-  const start = end / (1 + trendPct / 100);
-  const swing = Math.max(Math.abs(end - start), end * 0.04);
-
-  const values: number[] = [];
-  for (let index = 0; index < points; index++) {
-    const progress = index / (points - 1);
-    const trendValue = start + (end - start) * progress;
-    const noise = (rng() - 0.5) * swing * 0.5;
-    values.push(Math.max(trendValue + noise, end * 0.001));
-  }
-  values[points - 1] = end;
-
+  const nowSeconds = Math.floor(Date.now() / 1000);
+  const windowStart = nowSeconds - timeframeSeconds[timeframe];
+  const inWindow = pair.priceHistory.filter((point) => point.timestamp >= windowStart);
+  const source = inWindow.length >= 2 ? inWindow : pair.priceHistory;
+  const values = source.map((point) => (point.priceUsd || point.priceInQuote));
+  if (values.length === 0) return [pair.priceUsd || pair.priceEth || 0, pair.priceUsd || pair.priceEth || 0];
+  if (values.length === 1) return [values[0], values[0]];
   return values;
 }

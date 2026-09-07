@@ -95,9 +95,6 @@ export function isValidAddress(value: string): boolean {
   return /^0x[0-9a-fA-F]{40}$/.test(value.trim());
 }
 
-// Function selector for AdvancedTokenFactory.createToken(CreateParams) —
-// createToken((uint8,string,string,uint256,(uint256,uint256,uint256,uint256,uint256,
-// uint256,bool,bool,uint256,uint256,uint256),address,address,bool,bool,uint256,uint256,uint256))
 export const CREATE_ADVANCED_TOKEN_SELECTOR = "0x013ac224";
 
 const CREATE_TOKEN_HEAD_WORDS = 22;
@@ -141,7 +138,6 @@ export function createAdvancedTokenCalldata(params: AdvancedCreateTokenParams): 
   return `${CREATE_ADVANCED_TOKEN_SELECTOR}${outerOffset}${head}${tail}`;
 }
 
-// keccak256("TokenCreated(address,address,uint256,string,string,uint256,address)")
 export const ADVANCED_TOKEN_CREATED_TOPIC0 =
   "0x00902cef330122b2b2b50ba4847c01e28970ebcf80fc2f00de45f14837f31f2f";
 

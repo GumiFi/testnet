@@ -21,6 +21,7 @@ export type LaunchpadCoin = {
   bannerImage?: string | null;
   description?: string;
   isLive?: boolean;
+  graduated?: boolean;
 };
 
 export const COINS_PER_PAGE = 24;

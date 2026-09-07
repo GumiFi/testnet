@@ -147,7 +147,6 @@ export default function LockLiquiditySection({
   const resolvedB: ResolvedToken | null = useMemo(() => resolveTokenContract(tokenB), [tokenB]);
   const pairResolvable = !!resolvedA && !!resolvedB && tokenAId !== tokenBId;
 
-  // Tick every 20s while waiting on the boost TWAP checkpoint, so the countdown/button updates itself.
   useEffect(() => {
     if (boostStatus !== "checkpoint-pending") return;
     const interval = setInterval(() => setNow(Math.floor(Date.now() / 1000)), 20000);

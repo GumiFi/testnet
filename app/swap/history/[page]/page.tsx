@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
-import { SWAP_HISTORY_PAGE_SIZE, TOTAL_SWAP_HISTORY } from "@/lib/swap-data";
 import { buildPageParams, parsePageSegment } from "@/lib/pagination";
 import SwapHistorySkeleton from "@/components/skeletons/SwapHistorySkeleton";
 
@@ -10,12 +9,13 @@ const SwapHistoryApp = dynamic(() => import("@/components/swap/SwapHistoryApp"),
   loading: () => <SwapHistorySkeleton />,
 });
 
-const MAX_PAGE = Math.ceil(TOTAL_SWAP_HISTORY / SWAP_HISTORY_PAGE_SIZE);
+const STATIC_PAGE_RANGE = 5;
+const SANITY_MAX_PAGE = 500;
 
-export const dynamicParams = false;
+export const dynamicParams = true;
 
 export function generateStaticParams() {
-  return buildPageParams(MAX_PAGE);
+  return buildPageParams(STATIC_PAGE_RANGE);
 }
 
 export function generateMetadata({ params }: { params: { page: string } }): Metadata {
@@ -28,7 +28,7 @@ export function generateMetadata({ params }: { params: { page: string } }): Meta
 
 export default function SwapHistoryPagedPage({ params }: { params: { page: string } }) {
   const pageNumber = parsePageSegment(params.page);
-  if (!pageNumber || pageNumber > MAX_PAGE) {
+  if (!pageNumber || pageNumber > SANITY_MAX_PAGE) {
     notFound();
   }
 

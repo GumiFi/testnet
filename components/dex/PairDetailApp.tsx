@@ -27,16 +27,17 @@ import {
 import {
   getDexPairById,
   getDexPairChanges,
-  getDexCategoryLabel,
   getPairSparkline,
   isGumiHandle,
   type DexDetailTimeframe,
 } from "@/lib/dex-data";
+import { useLiveDexPairs } from "@/lib/dex-live";
 import { formatCompactUsd, formatCompactNumber } from "@/lib/format";
 
 const detailTabs = ["Info", "Chart + Txns", "Chart", "Txns"] as const;
 
 export default function PairDetailApp({ id }: { id: string }) {
+  const liveReady = useLiveDexPairs();
   const pair = getDexPairById(id);
   const [timeframe, setTimeframe] = useState<DexDetailTimeframe>("24H");
   const [comingSoon, setComingSoon] = useState<string | null>(null);
@@ -54,7 +55,9 @@ export default function PairDetailApp({ id }: { id: string }) {
   if (!pair) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center">
-        <p className="font-display text-sm uppercase tracking-wider2 text-ivory">Pair Not Found</p>
+        <p className="font-display text-sm uppercase tracking-wider2 text-ivory">
+          {liveReady ? "Pair Not Found" : "Loading Pair From Chain..."}
+        </p>
         <Link
           href="/dex"
           className="mt-4 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-goldLight hover:text-goldLight"
@@ -66,7 +69,6 @@ export default function PairDetailApp({ id }: { id: string }) {
     );
   }
 
-  const categoryLabel = getDexCategoryLabel(pair.category);
   const activeChange = changes[timeframe];
   const buysRatio = pair.buys24h / Math.max(pair.buys24h + pair.sells24h, 1);
   const buyVolRatio = pair.buyVolUsd / Math.max(pair.buyVolUsd + pair.sellVolUsd, 1);
@@ -89,7 +91,7 @@ export default function PairDetailApp({ id }: { id: string }) {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
               <h1 className="font-display text-base uppercase tracking-wider2 text-ivory">{pair.symbol}</h1>
-              <span className="font-mono text-[10px] text-bronze">/ ETH</span>
+              <span className="font-mono text-[10px] text-bronze">/ {pair.quoteSymbol}</span>
               {pair.boost != null && <BoosterBadge value={pair.boost} />}
             </div>
             <p className="truncate font-body text-xs text-bronze">{pair.name}</p>
@@ -125,7 +127,7 @@ export default function PairDetailApp({ id }: { id: string }) {
           Rank #{pair.rank}
         </span>
         <span className="border border-line px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
-          {categoryLabel}
+          Gumifi DEX
         </span>
       </div>
 
@@ -225,14 +227,13 @@ export default function PairDetailApp({ id }: { id: string }) {
         </button>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setComingSoon(`Trade ${pair.symbol} / ETH`)}
+      <Link
+        href="/swap"
         className="mt-3 flex w-full items-center justify-center gap-2 border border-gold bg-gold/10 px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
       >
         <SwapIcon className="h-4 w-4" />
-        Trade {pair.symbol} / ETH
-      </button>
+        Trade {pair.symbol} / {pair.quoteSymbol}
+      </Link>
 
       <div className="mt-4 flex items-center justify-between border border-line bg-panel px-4 py-3">
         <span className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Created by</span>

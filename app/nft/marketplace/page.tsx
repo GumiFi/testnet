@@ -9,7 +9,7 @@ const NftMarketplaceApp = dynamic(() => import("@/components/nft/NftMarketplaceA
 
 export const metadata: Metadata = {
   title: "NFT Marketplace — Gumifi Ecosystem",
-  description: "Browse live NFT collections across the GUMIFI ecosystem by trend, volume, and freshness.",
+  description: "Buy and sell NFTs directly on-chain across the GUMIFI ecosystem.",
 };
 
 export default function NftMarketplacePage() {

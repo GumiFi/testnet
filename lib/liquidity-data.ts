@@ -1,4 +1,4 @@
-import { discoverTokens, type Accent } from "./discover-data";
+import type { Accent } from "./discover-data";
 
 export type PoolCategory = "stable" | "trending" | "new" | "highApr";
 
@@ -29,17 +29,17 @@ const ETH: PoolToken = { id: "eth", symbol: "ETH", monogram: "ET", accent: "gold
 const USDC: PoolToken = { id: "usdc", symbol: "USDC", monogram: "US", accent: "emerald" };
 const MOON: PoolToken = { id: "moon", symbol: "MOON", monogram: "MO", accent: "emerald" };
 const DRAC: PoolToken = { id: "drac", symbol: "DRAC", monogram: "DR", accent: "garnet" };
-
-function fromDiscover(id: string): PoolToken {
-  const token = discoverTokens.find((item) => item.id === id)!;
-  return { id: token.id, symbol: token.symbol, monogram: token.monogram, accent: token.accent };
-}
+const GUMI: PoolToken = { id: "gumi", symbol: "GUMI", monogram: "GU", accent: "gold" };
+const GEUM: PoolToken = { id: "geum", symbol: "GEUM", monogram: "GE", accent: "emerald" };
+const ONYX: PoolToken = { id: "onyx", symbol: "ONYX", monogram: "ON", accent: "garnet" };
+const NOVA: PoolToken = { id: "nova", symbol: "NOVA", monogram: "NO", accent: "emerald" };
+const KING: PoolToken = { id: "king", symbol: "KING", monogram: "KI", accent: "gold" };
 
 export const liquidityPools: LiquidityPool[] = [
   {
     id: "eth-gumi",
     base: ETH,
-    quote: fromDiscover("gumi"),
+    quote: GUMI,
     tvlUsd: 612_000,
     volume24hUsd: 1_940_000,
     aprPct: 18.4,
@@ -52,7 +52,7 @@ export const liquidityPools: LiquidityPool[] = [
   },
   {
     id: "gumi-usdc",
-    base: fromDiscover("gumi"),
+    base: GUMI,
     quote: USDC,
     tvlUsd: 284_000,
     volume24hUsd: 820_000,
@@ -95,7 +95,7 @@ export const liquidityPools: LiquidityPool[] = [
   {
     id: "eth-geum",
     base: ETH,
-    quote: fromDiscover("geum"),
+    quote: GEUM,
     tvlUsd: 398_000,
     volume24hUsd: 1_120_000,
     aprPct: 22.1,
@@ -109,7 +109,7 @@ export const liquidityPools: LiquidityPool[] = [
   {
     id: "eth-onyx",
     base: ETH,
-    quote: fromDiscover("onyx"),
+    quote: ONYX,
     tvlUsd: 211_000,
     volume24hUsd: 380_000,
     aprPct: 9.4,
@@ -123,7 +123,7 @@ export const liquidityPools: LiquidityPool[] = [
   {
     id: "eth-nova",
     base: ETH,
-    quote: fromDiscover("nova"),
+    quote: NOVA,
     tvlUsd: 305_000,
     volume24hUsd: 640_000,
     aprPct: 16.9,
@@ -136,7 +136,7 @@ export const liquidityPools: LiquidityPool[] = [
   },
   {
     id: "king-usdc",
-    base: fromDiscover("king"),
+    base: KING,
     quote: USDC,
     tvlUsd: 94_000,
     volume24hUsd: 526_000,
