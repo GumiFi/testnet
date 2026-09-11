@@ -59,7 +59,7 @@ export default function WalletDropdown({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="absolute right-0 top-full z-40 mt-2 w-full border border-gold/40 bg-panel shadow-[0_1.25rem_2.5rem_rgba(0,0,0,0.55)]">
+    <div className="absolute right-0 top-full z-40 mt-2 w-80 max-w-[calc(100vw_-_1.5rem)] border border-gold/40 bg-panel shadow-[0_1.25rem_2.5rem_rgba(0,0,0,0.55)]">
       <div className="flex items-center gap-2.5 border-b border-line bg-gradient-to-b from-gold/10 to-transparent px-3.5 py-3">
         <Link href="/profile" onClick={onClose} aria-label="View profile">
           <Avatar label={monogram ?? ""} accent="gold" src={avatarUrl} className="h-8 w-8 shrink-0 text-[0.625rem]" />

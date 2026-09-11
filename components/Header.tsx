@@ -145,12 +145,15 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-line bg-void/90 backdrop-blur">
-        <div className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
+      <header
+        className="sticky top-0 z-50 border-b border-line bg-void/90 backdrop-blur"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
+        <div className="relative mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-3 sm:gap-4 sm:px-6 sm:py-4">
+          <div className="flex min-w-0 shrink items-center gap-2 sm:gap-4">
             <button
               ref={mobileMenuButtonRef}
-              className="group flex h-9 w-9 items-center justify-center border border-gold/40 bg-panel/60 transition-all duration-300 hover:border-gold hover:bg-gold/10 md:hidden"
+              className="group flex h-9 w-9 shrink-0 items-center justify-center border border-gold/40 bg-panel/60 transition-all duration-300 hover:border-gold hover:bg-gold/10 md:hidden"
               onClick={() => setOpen((value) => !value)}
               aria-label="Open menu"
             >
@@ -160,7 +163,7 @@ export default function Header() {
                 <span className="h-px w-5 bg-goldLight transition-all duration-300 group-hover:w-4" />
               </span>
             </button>
-            <Link href="/" prefetch={false} className="flex items-center">
+            <Link href="/" prefetch={false} className="flex shrink-0 items-center">
               <Logo className="h-9 w-auto" />
             </Link>
           </div>
@@ -226,9 +229,9 @@ export default function Header() {
             })}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <button
-              className={`flex h-8 w-8 items-center justify-center border text-bronze transition-colors hover:border-gold hover:text-goldLight ${
+              className={`flex h-8 w-8 shrink-0 items-center justify-center border text-bronze transition-colors hover:border-gold hover:text-goldLight ${
                 searchOpen ? "border-gold text-goldLight" : "border-line"
               }`}
               onClick={toggleSearch}
@@ -237,7 +240,7 @@ export default function Header() {
               <SearchIcon className="h-3.5 w-3.5" />
             </button>
 
-            <div ref={notifRef} className="relative inline-block">
+            <div ref={notifRef} className="relative inline-block shrink-0">
               <button
                 className={`relative flex h-8 w-8 items-center justify-center border text-bronze transition-colors hover:border-gold hover:text-goldLight ${
                   notifPanelOpen ? "border-gold text-goldLight" : "border-line"
@@ -260,13 +263,13 @@ export default function Header() {
             </div>
 
             {isConnected ? (
-              <div ref={walletRef} className="relative inline-block">
+              <div ref={walletRef} className="relative inline-block min-w-0 shrink">
                 <button
                   onClick={toggleWalletMenu}
-                  className="flex items-center gap-2 rounded-full bg-gradient-to-r from-goldDim/25 via-panel2 to-goldDim/25 px-3.5 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight shadow-[0_0_0.3125rem_rgba(201,162,39,0.35)] ring-1 ring-inset ring-gold/50 transition-shadow hover:shadow-[0_0_0.625rem_rgba(201,162,39,0.5)]"
+                  className="flex max-w-full items-center gap-1.5 rounded-full bg-gradient-to-r from-goldDim/25 via-panel2 to-goldDim/25 px-2.5 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight shadow-[0_0_0.3125rem_rgba(201,162,39,0.35)] ring-1 ring-inset ring-gold/50 transition-shadow hover:shadow-[0_0_0.625rem_rgba(201,162,39,0.5)] sm:gap-2 sm:px-3.5"
                 >
-                  <span className="max-w-[8.75rem] truncate">{handle}</span>
-                  {isGumiHolder && <GumiBadge />}
+                  <span className="max-w-[4.5rem] truncate sm:max-w-[8.75rem]">{handle}</span>
+                  {isGumiHolder && <GumiBadge className="hidden xs:inline-flex" />}
                   <ChevronDownIcon className="h-3 w-3 shrink-0" />
                 </button>
                 {walletMenuOpen && <WalletDropdown onClose={() => setWalletMenuOpen(false)} />}
@@ -274,7 +277,7 @@ export default function Header() {
             ) : (
               <button
                 onClick={connect}
-                className="border border-gold px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+                className="shrink-0 whitespace-nowrap border border-gold px-2.5 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void sm:px-3"
               >
                 Connect Wallet
               </button>

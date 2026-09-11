@@ -16,7 +16,7 @@ export default function NotificationPanel({ onClose }: { onClose: () => void }) 
   }
 
   return (
-    <div className="absolute right-0 top-full z-40 mt-2 w-80 max-w-[calc(100vw-2rem)] border border-gold/40 bg-panel shadow-[0_1.25rem_2.5rem_rgba(0,0,0,0.55)]">
+    <div className="absolute right-0 top-full z-40 mt-2 w-80 max-w-[calc(100vw_-_2rem)] border border-gold/40 bg-panel shadow-[0_1.25rem_2.5rem_rgba(0,0,0,0.55)]">
       <div className="flex items-center justify-between border-b border-line px-3.5 py-3">
         <p className="font-display text-xs uppercase tracking-wider2 text-ivory">Notifications</p>
         {unreadCount > 0 && (

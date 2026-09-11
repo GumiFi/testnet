@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cinzel, Spectral, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -35,6 +35,14 @@ export const metadata: Metadata = {
     "The decentralized ecosystem to launch, trade, create, and own digital assets.",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  viewportFit: "cover",
+  themeColor: "#0A0908",
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -49,7 +57,7 @@ export default function RootLayout({
           <NotificationProvider>
             <TransactionProvider>
               <Header />
-              <main className="min-h-screen pb-20 md:pb-0">
+              <main className="min-h-screen pb-[calc(5rem_+_env(safe-area-inset-bottom))] md:pb-0">
                 <PageTransition>{children}</PageTransition>
               </main>
               <Footer />
