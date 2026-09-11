@@ -9,8 +9,8 @@ export default function PairWithGumiRow() {
         </span>
         <div>
           <span className="flex items-center gap-2">
-            <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Pair With $GUMI</span>
-            <span className="border border-line px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+            <span className="font-mono text-[0.6875rem] uppercase tracking-wider2 text-ivory">Pair With $GUMI</span>
+            <span className="border border-line px-1.5 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
               Soon
             </span>
           </span>

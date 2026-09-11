@@ -22,8 +22,8 @@ export default function CollapsibleSection({ icon: Icon, label, children }: Coll
       >
         <span className="flex items-center gap-3">
           <Icon className="h-4 w-4 text-bronze" />
-          <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">{label}</span>
-          <span className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">(Optional)</span>
+          <span className="font-mono text-[0.6875rem] uppercase tracking-wider2 text-ivory">{label}</span>
+          <span className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">(Optional)</span>
         </span>
         <ChevronDownIcon className={`h-4 w-4 shrink-0 text-bronze transition-transform ${open ? "rotate-180" : ""}`} />
       </button>

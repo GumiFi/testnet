@@ -17,12 +17,12 @@ export default function DisplaySettingsPanel({
 }) {
   return (
     <div className="absolute right-0 top-full z-30 mt-2 w-60 border border-line bg-panel p-4 shadow-lg shadow-void/60">
-      <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Layout</p>
+      <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Layout</p>
       <div className="mt-2 flex items-center gap-2">
         <button
           type="button"
           onClick={() => onViewModeChange("grid")}
-          className={`flex flex-1 items-center justify-center gap-1.5 border py-2 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+          className={`flex flex-1 items-center justify-center gap-1.5 border py-2 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
             viewMode === "grid"
               ? "border-gold bg-gold/10 text-goldLight"
               : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -34,7 +34,7 @@ export default function DisplaySettingsPanel({
         <button
           type="button"
           onClick={() => onViewModeChange("table")}
-          className={`flex flex-1 items-center justify-center gap-1.5 border py-2 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+          className={`flex flex-1 items-center justify-center gap-1.5 border py-2 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
             viewMode === "table"
               ? "border-gold bg-gold/10 text-goldLight"
               : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -46,7 +46,7 @@ export default function DisplaySettingsPanel({
       </div>
 
       <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Animations</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Animations</p>
         <button
           type="button"
           role="switch"

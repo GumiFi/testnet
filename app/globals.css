@@ -25,7 +25,7 @@ section[id] {
 }
 
 .text-shadow-gold {
-  text-shadow: 0 0 24px rgba(201, 162, 39, 0.35);
+  text-shadow: 0 0 1.5rem rgba(201, 162, 39, 0.35);
 }
 
 .no-scrollbar {

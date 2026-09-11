@@ -23,12 +23,12 @@ function FeatureCard({
           {title}
         </h3>
         {tag && (
-          <span className="font-mono text-[10px] uppercase text-bronze">
+          <span className="font-mono text-[0.625rem] uppercase text-bronze">
             {tag}
           </span>
         )}
       </div>
-      <ul className="mt-4 space-y-2 font-mono text-[11px] uppercase tracking-wider2 text-bronze">
+      <ul className="mt-4 space-y-2 font-mono text-[0.6875rem] uppercase tracking-wider2 text-bronze">
         {items.map((item) => (
           <li key={item}>{item}</li>
         ))}

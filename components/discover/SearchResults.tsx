@@ -45,17 +45,17 @@ export default function SearchResults({
                     href={`/dex/pair/${token.id}`}
                     className="flex w-full items-center gap-3 border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-panel2"
                   >
-                    <Avatar label={token.monogram} accent={token.accent} className="h-9 w-9 text-[10px]" />
+                    <Avatar label={token.monogram} accent={token.accent} className="h-9 w-9 text-[0.625rem]" />
                     <div className="min-w-0 flex-1">
                       <p className="font-display text-xs uppercase tracking-wider2 text-ivory">
                         {token.symbol}
                       </p>
-                      <p className="truncate font-mono text-[10px] text-bronze">{token.name}</p>
+                      <p className="truncate font-mono text-[0.625rem] text-bronze">{token.name}</p>
                     </div>
                     <div className="shrink-0 text-right">
                       <p className="font-mono text-xs text-ivory">{formatPrice(token.priceUsd)}</p>
                       <p
-                        className={`font-mono text-[10px] ${
+                        className={`font-mono text-[0.625rem] ${
                           positive ? "text-emeraldLight" : "text-garnetLight"
                         }`}
                       >
@@ -85,14 +85,14 @@ export default function SearchResults({
                   <Avatar
                     label={collection.monogram}
                     accent={collection.accent}
-                    className="h-9 w-9 text-[10px]"
+                    className="h-9 w-9 text-[0.625rem]"
                     shape="square"
                   />
                   <div className="min-w-0 flex-1">
                     <p className="font-display text-xs uppercase tracking-wider2 text-ivory">
                       {collection.name}
                     </p>
-                    <p className="font-mono text-[10px] text-bronze">
+                    <p className="font-mono text-[0.625rem] text-bronze">
                       Floor {formatEth(collection.floorEth)}
                     </p>
                   </div>
@@ -115,7 +115,7 @@ export default function SearchResults({
                   <span className="font-display text-xs uppercase tracking-wider2 text-ivory">
                     {pool.pair}
                   </span>
-                  <span className="font-mono text-[10px] text-bronze">
+                  <span className="font-mono text-[0.625rem] text-bronze">
                     TVL {formatCompactUsd(pool.tvlUsd)}
                   </span>
                 </Link>
@@ -137,7 +137,7 @@ export default function SearchResults({
                   <Avatar
                     label={creator.monogram}
                     accent={creator.accent}
-                    className="h-9 w-9 text-[10px]"
+                    className="h-9 w-9 text-[0.625rem]"
                     shape="square"
                   />
                   <div className="min-w-0 flex-1">

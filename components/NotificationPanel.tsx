@@ -16,14 +16,14 @@ export default function NotificationPanel({ onClose }: { onClose: () => void }) 
   }
 
   return (
-    <div className="absolute right-0 top-full z-40 mt-2 w-80 max-w-[calc(100vw-2rem)] border border-gold/40 bg-panel shadow-[0_20px_40px_rgba(0,0,0,0.55)]">
+    <div className="absolute right-0 top-full z-40 mt-2 w-80 max-w-[calc(100vw-2rem)] border border-gold/40 bg-panel shadow-[0_1.25rem_2.5rem_rgba(0,0,0,0.55)]">
       <div className="flex items-center justify-between border-b border-line px-3.5 py-3">
         <p className="font-display text-xs uppercase tracking-wider2 text-ivory">Notifications</p>
         {unreadCount > 0 && (
           <button
             type="button"
             onClick={markAllAsRead}
-            className="font-mono text-[9px] uppercase tracking-wider2 text-goldLight transition-colors hover:text-gold"
+            className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:text-gold"
           >
             Mark All Read
           </button>
@@ -31,7 +31,7 @@ export default function NotificationPanel({ onClose }: { onClose: () => void }) 
       </div>
 
       {recent.length === 0 ? (
-        <p className="px-4 py-10 text-center font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+        <p className="px-4 py-10 text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
           No notifications yet
         </p>
       ) : (
@@ -51,7 +51,7 @@ export default function NotificationPanel({ onClose }: { onClose: () => void }) 
         href="/notifications"
         prefetch={false}
         onClick={onClose}
-        className="block border-t border-line px-3.5 py-2.5 text-center font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-panel2"
+        className="block border-t border-line px-3.5 py-2.5 text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-panel2"
       >
         View All Notifications
       </Link>

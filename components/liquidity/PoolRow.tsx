@@ -7,15 +7,15 @@ function PoolPairLabel({ pool }: { pool: OnchainPool }) {
   return (
     <div className="flex items-center gap-3">
       <div className="flex -space-x-2">
-        <Avatar label={monogramFor(pool.symbol0)} accent={accentForAddress(pool.token0)} className="h-8 w-8 text-[10px]" />
-        <Avatar label={monogramFor(pool.symbol1)} accent={accentForAddress(pool.token1)} className="h-8 w-8 text-[10px]" />
+        <Avatar label={monogramFor(pool.symbol0)} accent={accentForAddress(pool.token0)} className="h-8 w-8 text-[0.625rem]" />
+        <Avatar label={monogramFor(pool.symbol1)} accent={accentForAddress(pool.token1)} className="h-8 w-8 text-[0.625rem]" />
       </div>
       <div className="min-w-0">
         <span className="font-display text-sm uppercase tracking-wider2 text-ivory">
           {poolPairLabel(pool)}
         </span>
         {pool.isLaunchpad && (
-          <span className="mt-1 flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
+          <span className="mt-1 flex items-center gap-1 font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight">
             <RocketIcon className="h-3 w-3" />
             Launched on Gumifi
           </span>
@@ -64,19 +64,19 @@ export default function PoolRow({
       <PoolPairLabel pool={pool} />
       <div className="mt-4 grid grid-cols-3 gap-2 border-t border-line pt-3">
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">TVL</p>
+          <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">TVL</p>
           <p className="mt-1 font-mono text-xs text-ivory">
             {pool.tvlUsd !== null ? formatCompactUsd(pool.tvlUsd) : "—"}
           </p>
         </div>
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Volume 24H</p>
+          <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Volume 24H</p>
           <p className="mt-1 font-mono text-xs text-ivory">
             {pool.volume24hUsd !== null ? formatCompactUsd(pool.volume24hUsd) : "—"}
           </p>
         </div>
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">APR</p>
+          <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">APR</p>
           <p className="mt-1 font-mono text-xs text-goldLight">
             {pool.aprPct !== null ? `${pool.aprPct.toFixed(1)}%` : "—"}
           </p>

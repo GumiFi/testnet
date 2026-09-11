@@ -119,7 +119,7 @@ export default function DexApp() {
               <DexSortBar active={sort} onChange={setSort} />
             </div>
 
-            <p className="mt-4 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+            <p className="mt-4 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
               {total === 0
                 ? liveReady
                   ? "No pairs match this filter"

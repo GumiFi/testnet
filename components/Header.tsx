@@ -154,7 +154,7 @@ export default function Header() {
               onClick={() => setOpen((value) => !value)}
               aria-label="Open menu"
             >
-              <span className="flex flex-col items-end gap-[5px]">
+              <span className="flex flex-col items-end gap-[0.3125rem]">
                 <span className="h-px w-5 bg-goldLight transition-all duration-300 group-hover:w-4" />
                 <span className="h-px w-3.5 bg-gold transition-all duration-300 group-hover:w-5" />
                 <span className="h-px w-5 bg-goldLight transition-all duration-300 group-hover:w-4" />
@@ -183,7 +183,7 @@ export default function Header() {
                       />
                     </button>
                     {nftMenuOpen && (
-                      <div className="absolute left-1/2 top-full z-40 mt-3 w-44 -translate-x-1/2 border border-gold/40 bg-panel shadow-[0_20px_40px_rgba(0,0,0,0.55)]">
+                      <div className="absolute left-1/2 top-full z-40 mt-3 w-44 -translate-x-1/2 border border-gold/40 bg-panel shadow-[0_1.25rem_2.5rem_rgba(0,0,0,0.55)]">
                         {item.children.map((child) => {
                           const ChildIcon = child.icon;
                           return (
@@ -195,7 +195,7 @@ export default function Header() {
                               className="flex items-center gap-2.5 border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-panel2"
                             >
                               <ChildIcon className="h-3.5 w-3.5 shrink-0 text-goldLight" />
-                              <span className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">
+                              <span className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">
                                 {child.label}
                               </span>
                             </Link>
@@ -249,7 +249,7 @@ export default function Header() {
               >
                 <BellIcon className="h-3.5 w-3.5" />
                 {unreadCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-garnetLight px-1 font-mono text-[8.5px] leading-none text-ivory">
+                  <span className="absolute -right-1 -top-1 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-garnetLight px-1 font-mono text-[0.53125rem] leading-none text-ivory">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
@@ -263,9 +263,9 @@ export default function Header() {
               <div ref={walletRef} className="relative inline-block">
                 <button
                   onClick={toggleWalletMenu}
-                  className="flex items-center gap-2 rounded-full bg-gradient-to-r from-goldDim/25 via-panel2 to-goldDim/25 px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-wider2 text-goldLight shadow-[0_0_5px_rgba(201,162,39,0.35)] ring-1 ring-inset ring-gold/50 transition-shadow hover:shadow-[0_0_10px_rgba(201,162,39,0.5)]"
+                  className="flex items-center gap-2 rounded-full bg-gradient-to-r from-goldDim/25 via-panel2 to-goldDim/25 px-3.5 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight shadow-[0_0_0.3125rem_rgba(201,162,39,0.35)] ring-1 ring-inset ring-gold/50 transition-shadow hover:shadow-[0_0_0.625rem_rgba(201,162,39,0.5)]"
                 >
-                  <span className="max-w-[140px] truncate">{handle}</span>
+                  <span className="max-w-[8.75rem] truncate">{handle}</span>
                   {isGumiHolder && <GumiBadge />}
                   <ChevronDownIcon className="h-3 w-3 shrink-0" />
                 </button>
@@ -274,7 +274,7 @@ export default function Header() {
             ) : (
               <button
                 onClick={connect}
-                className="border border-gold px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+                className="border border-gold px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
               >
                 Connect Wallet
               </button>
@@ -295,7 +295,7 @@ export default function Header() {
           />
           <div
             ref={mobileMenuRef}
-            className="relative flex h-full w-[280px] animate-slideInLeft flex-col border-r border-line bg-panel"
+            className="relative flex h-full w-[17.5rem] animate-slideInLeft flex-col border-r border-line bg-panel"
           >
             <div className="flex items-center justify-between border-b border-line px-6 py-5">
               <Link
@@ -358,7 +358,7 @@ export default function Header() {
                                 className="flex items-center gap-3 py-2.5 pl-14 pr-6 text-bronze transition-colors hover:bg-panel2 hover:text-goldLight"
                               >
                                 <ChildIcon className="h-3.5 w-3.5" />
-                                <span className="font-mono text-[11px] uppercase tracking-wider2">
+                                <span className="font-mono text-[0.6875rem] uppercase tracking-wider2">
                                   {child.label}
                                 </span>
                               </Link>

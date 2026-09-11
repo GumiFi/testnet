@@ -9,7 +9,7 @@ export default function MintNftSkeleton() {
         <Skel className="mt-1 h-4 w-64" />
       </div>
 
-      <Skel className="mx-auto mb-6 aspect-square w-full max-w-[220px]" />
+      <Skel className="mx-auto mb-6 aspect-square w-full max-w-[13.75rem]" />
 
       <div className="border border-gold/40 bg-panel px-5 py-6 md:px-6">
         <Skel className="h-3 w-28" />

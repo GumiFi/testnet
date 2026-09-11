@@ -36,7 +36,7 @@ export default function CoinActionsRow({
       <button
         type="button"
         onClick={onShare}
-        className="flex flex-1 items-center justify-center gap-1.5 border border-gold/50 bg-gold/10 px-3 py-2 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+        className="flex flex-1 items-center justify-center gap-1.5 border border-gold/50 bg-gold/10 px-3 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
       >
         <ShareIcon className="h-3.5 w-3.5" />
         Share
@@ -44,7 +44,7 @@ export default function CoinActionsRow({
       <button
         type="button"
         onClick={handleCopy}
-        className="flex flex-1 items-center justify-center gap-1.5 border border-line px-3 py-2 font-mono text-[10px] text-ivory transition-colors hover:border-gold/50"
+        className="flex flex-1 items-center justify-center gap-1.5 border border-line px-3 py-2 font-mono text-[0.625rem] text-ivory transition-colors hover:border-gold/50"
       >
         {copied ? (
           <CheckIcon className="h-3.5 w-3.5 text-emeraldLight" />

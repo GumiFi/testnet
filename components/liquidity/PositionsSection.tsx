@@ -195,7 +195,7 @@ export default function PositionsSection({
             <button
               type="button"
               onClick={connect}
-              className="mt-6 border border-gold px-5 py-2.5 font-mono text-[11px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+              className="mt-6 border border-gold px-5 py-2.5 font-mono text-[0.6875rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
             >
               Connect Wallet
             </button>
@@ -212,7 +212,7 @@ export default function PositionsSection({
             <button
               type="button"
               onClick={() => setRefreshTick((tick) => tick + 1)}
-              className="mt-6 border border-gold px-5 py-2.5 font-mono text-[11px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+              className="mt-6 border border-gold px-5 py-2.5 font-mono text-[0.6875rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
             >
               Retry
             </button>
@@ -231,7 +231,7 @@ export default function PositionsSection({
             <button
               type="button"
               onClick={onExplore}
-              className="mt-6 border border-gold px-5 py-2.5 font-mono text-[11px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+              className="mt-6 border border-gold px-5 py-2.5 font-mono text-[0.6875rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
             >
               Explore Pools
             </button>
@@ -242,7 +242,7 @@ export default function PositionsSection({
               <button
                 type="button"
                 onClick={() => setRefreshTick((tick) => tick + 1)}
-                className="font-mono text-[10px] uppercase tracking-wider2 text-bronze hover:text-ivory"
+                className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze hover:text-ivory"
               >
                 Refresh
               </button>

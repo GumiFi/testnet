@@ -20,13 +20,13 @@ export default function ComingSoonModal({
           <ClockIcon className="h-5 w-5" />
         </div>
         <p className="font-display text-sm tracking-wider2 text-ivory">{label}</p>
-        <p className="mt-2 font-mono text-[10px] uppercase tracking-wider3 text-bronze">
+        <p className="mt-2 font-mono text-[0.625rem] uppercase tracking-wider3 text-bronze">
           Coming Soon
         </p>
         <button
           type="button"
           onClick={onClose}
-          className="mt-6 w-full border border-gold px-4 py-2 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+          className="mt-6 w-full border border-gold px-4 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
         >
           Close
         </button>

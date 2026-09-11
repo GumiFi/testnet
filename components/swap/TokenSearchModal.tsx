@@ -134,19 +134,19 @@ export default function TokenSearchModal({
                   <Avatar
                     label={importedMatch.monogram}
                     accent={importedMatch.accent}
-                    className="h-9 w-9 text-[10px]"
+                    className="h-9 w-9 text-[0.625rem]"
                   />
                   <div className="min-w-0 flex-1">
                     <p className="font-display text-xs uppercase tracking-wider2 text-ivory">
                       {importedMatch.symbol}
                     </p>
-                    <p className="truncate font-mono text-[10px] text-bronze">
+                    <p className="truncate font-mono text-[0.625rem] text-bronze">
                       {importedMatch.name}
                     </p>
                   </div>
                 </button>
               )}
-              <p className="mt-3 font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+              <p className="mt-3 font-mono text-[0.625rem] uppercase tracking-wider2 text-garnetLight">
                 Pasted address — this token is unverified. Trade with caution.
               </p>
             </div>
@@ -168,7 +168,7 @@ export default function TokenSearchModal({
                 <div>
                   <div className="flex items-center gap-2">
                     <ClockIcon className="h-3.5 w-3.5 text-bronze" />
-                    <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                    <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                       Recently Used
                     </p>
                   </div>
@@ -180,7 +180,7 @@ export default function TokenSearchModal({
                         onClick={() => handlePick(token)}
                         className="flex shrink-0 items-center gap-2 rounded-lg border border-line px-3 py-2 transition-colors hover:border-gold/60"
                       >
-                        <Avatar label={token.monogram} accent={token.accent} className="h-5 w-5 text-[8px]" />
+                        <Avatar label={token.monogram} accent={token.accent} className="h-5 w-5 text-[0.5rem]" />
                         <span className="font-display text-xs uppercase tracking-wider2 text-ivory">
                           {token.symbol}
                         </span>
@@ -193,7 +193,7 @@ export default function TokenSearchModal({
               <div>
                 <div className="flex items-center gap-2">
                   <StarIcon className="h-3.5 w-3.5 text-bronze" />
-                  <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                  <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                     Popular Tokens
                   </p>
                 </div>
@@ -219,13 +219,13 @@ function TokenRow({ token, onClick }: { token: SwapToken; onClick: () => void })
       onClick={onClick}
       className="flex w-full items-center gap-3 border-b border-line px-3 py-3 text-left transition-colors last:border-b-0 hover:bg-panel"
     >
-      <Avatar label={token.monogram} accent={token.accent} className="h-9 w-9 text-[10px]" />
+      <Avatar label={token.monogram} accent={token.accent} className="h-9 w-9 text-[0.625rem]" />
       <div className="min-w-0 flex-1">
         <p className="font-display text-xs uppercase tracking-wider2 text-ivory">{token.symbol}</p>
-        <p className="truncate font-mono text-[10px] text-bronze">{token.name}</p>
+        <p className="truncate font-mono text-[0.625rem] text-bronze">{token.name}</p>
       </div>
       {token.priceUsd > 0 && (
-        <div className="shrink-0 text-right font-mono text-[10px]">
+        <div className="shrink-0 text-right font-mono text-[0.625rem]">
           <p className="text-ivory">{formatPrice(token.priceUsd)}</p>
           <p className={positive ? "text-emeraldLight" : "text-garnetLight"}>
             {formatPct(token.change24h)}

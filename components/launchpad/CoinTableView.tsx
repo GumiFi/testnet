@@ -26,9 +26,9 @@ export default function CoinTableView({
 
   return (
     <div className="overflow-x-auto border border-line">
-      <table className="w-full min-w-[560px] border-collapse text-left">
+      <table className="w-full min-w-[35rem] border-collapse text-left">
         <thead>
-          <tr className="border-b border-line font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+          <tr className="border-b border-line font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
             <th className="px-3 py-2 font-normal">Coin</th>
             <th className="px-3 py-2 font-normal">Price</th>
             <th className="px-3 py-2 font-normal">Mcap</th>
@@ -51,18 +51,18 @@ export default function CoinTableView({
               >
                 <td className="px-3 py-2.5">
                   <div className="flex items-center gap-2.5">
-                    <Avatar label={coin.monogram} accent={coin.accent} shape="square" className="h-8 w-8 shrink-0 text-[10px]" src={coin.image ?? undefined} />
+                    <Avatar label={coin.monogram} accent={coin.accent} shape="square" className="h-8 w-8 shrink-0 text-[0.625rem]" src={coin.image ?? undefined} />
                     <div className="min-w-0">
                       <p className="truncate font-display text-xs uppercase tracking-wider2 text-ivory">{coin.name}</p>
-                      <p className="truncate font-mono text-[9px] uppercase tracking-wider2 text-bronze">${coin.symbol}</p>
+                      <p className="truncate font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">${coin.symbol}</p>
                     </div>
                   </div>
                 </td>
-                <td className="px-3 py-2.5 font-mono text-[10px] text-goldLight">{formatPrice(coin.priceUsd)}</td>
-                <td className="px-3 py-2.5 font-mono text-[10px] text-ivory">{formatCompactUsd(coin.marketCap)}</td>
+                <td className="px-3 py-2.5 font-mono text-[0.625rem] text-goldLight">{formatPrice(coin.priceUsd)}</td>
+                <td className="px-3 py-2.5 font-mono text-[0.625rem] text-ivory">{formatCompactUsd(coin.marketCap)}</td>
                 <td className="px-3 py-2.5">
                   <span
-                    className={`flex items-center gap-0.5 font-mono text-[10px] uppercase tracking-wider2 ${
+                    className={`flex items-center gap-0.5 font-mono text-[0.625rem] uppercase tracking-wider2 ${
                       positive ? "text-emeraldLight" : "text-garnetLight"
                     }`}
                   >
@@ -78,17 +78,17 @@ export default function CoinTableView({
                         style={{ width: `${bonded}%` }}
                       />
                     </div>
-                    <span className="font-mono text-[9px] text-bronze">{bonded}%</span>
+                    <span className="font-mono text-[0.5625rem] text-bronze">{bonded}%</span>
                   </div>
                 </td>
                 <td className="px-3 py-2.5">
                   <div className="flex items-center gap-1.5">
                     {isGumiHandle(coin.creator) ? (
-                      <GumiTag handle={coin.creator} className="max-w-[110px]" />
+                      <GumiTag handle={coin.creator} className="max-w-[6.875rem]" />
                     ) : (
-                      <WalletTag address={coin.creator} className="max-w-[110px]" />
+                      <WalletTag address={coin.creator} className="max-w-[6.875rem]" />
                     )}
-                    <span className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">{coin.age}</span>
+                    <span className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">{coin.age}</span>
                   </div>
                 </td>
               </tr>

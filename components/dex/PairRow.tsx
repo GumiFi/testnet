@@ -12,9 +12,9 @@ function ChangeTag({ value, label }: { value: number; label: string }) {
   const positive = value >= 0;
   return (
     <div className="flex flex-col items-end gap-0.5">
-      <span className="font-mono text-[8px] uppercase tracking-wider2 text-bronze">{label}</span>
+      <span className="font-mono text-[0.5rem] uppercase tracking-wider2 text-bronze">{label}</span>
       <span
-        className={`flex items-center justify-end gap-0.5 font-mono text-[10px] ${
+        className={`flex items-center justify-end gap-0.5 font-mono text-[0.625rem] ${
           positive ? "text-emeraldLight" : "text-garnetLight"
         }`}
       >
@@ -32,15 +32,15 @@ export default function PairRow({ pair }: { pair: DexPair }) {
       className="flex w-full flex-col gap-2 border-b border-line px-4 py-3.5 text-left transition-colors last:border-b-0 hover:bg-panel2 sm:px-6"
     >
       <div className="flex items-start gap-3">
-        <Avatar label={pair.monogram} accent={pair.accent} className="mt-0.5 h-9 w-9 shrink-0 text-[10px]" />
+        <Avatar label={pair.monogram} accent={pair.accent} className="mt-0.5 h-9 w-9 shrink-0 text-[0.625rem]" />
 
         <div className="min-w-0 flex-1 pt-0.5">
           <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
             <span className="font-display text-sm uppercase tracking-wider2 text-ivory">{pair.symbol}</span>
-            <span className="font-mono text-[9px] text-bronze">{pair.age}</span>
+            <span className="font-mono text-[0.5625rem] text-bronze">{pair.age}</span>
             {pair.boost != null && <BoosterBadge value={pair.boost} />}
           </div>
-          <p className="truncate font-body text-[11px] text-bronze">{pair.name}</p>
+          <p className="truncate font-body text-[0.6875rem] text-bronze">{pair.name}</p>
         </div>
 
         <div className="shrink-0 pt-0.5 text-right">
@@ -53,15 +53,15 @@ export default function PairRow({ pair }: { pair: DexPair }) {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-1.5">
-        <div className="flex flex-wrap items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+        <div className="flex flex-wrap items-center gap-1.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
           <span className="border border-line px-1.5 py-0.5">LIQ {formatCompactUsd(pair.liquidity)}</span>
           <span className="border border-line px-1.5 py-0.5">VOL {formatCompactUsd(pair.volume24h)}</span>
           <span className="border border-line px-1.5 py-0.5">MCAP {formatCompactUsd(pair.marketCap)}</span>
         </div>
         {isGumiHandle(pair.creator) ? (
-          <GumiTag handle={pair.creator} className="max-w-[130px] shrink-0" />
+          <GumiTag handle={pair.creator} className="max-w-[8.125rem] shrink-0" />
         ) : (
-          <WalletTag address={pair.creator} className="max-w-[130px] shrink-0" />
+          <WalletTag address={pair.creator} className="max-w-[8.125rem] shrink-0" />
         )}
       </div>
     </Link>

@@ -33,7 +33,7 @@ export default function FeeFlowDiagram() {
           <div key={route.label} className="flex flex-col items-center gap-6">
             <div className="hidden h-8 w-px bg-line md:block" />
             <div className="w-full max-w-xs border border-line bg-panel px-4 py-3 text-center">
-              <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">
+              <span className="font-mono text-[0.6875rem] uppercase tracking-wider2 text-ivory">
                 {route.label}
               </span>
             </div>
@@ -50,7 +50,7 @@ export default function FeeFlowDiagram() {
                     <div className="font-display text-xl text-goldLight">
                       {split.value}
                     </div>
-                    <div className="mt-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                    <div className="mt-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                       {split.label}
                     </div>
                   </div>

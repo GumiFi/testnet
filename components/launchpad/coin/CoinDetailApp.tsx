@@ -116,7 +116,7 @@ export default function CoinDetailApp({ id }: { id: string }) {
         <p className="font-display text-sm uppercase tracking-wider2 text-ivory">Coin Not Found</p>
         <Link
           href="/launchpad"
-          className="mt-4 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-goldLight hover:text-goldLight"
+          className="mt-4 inline-flex items-center gap-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight hover:text-goldLight"
         >
           <ChevronLeftIcon className="h-3 w-3" />
           Back to Launchpad
@@ -317,7 +317,7 @@ export default function CoinDetailApp({ id }: { id: string }) {
     <div className="mx-auto max-w-2xl px-4 pt-6 pb-10 md:pt-10 md:pb-14">
       <Link
         href="/launchpad"
-        className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
+        className="inline-flex items-center gap-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
       >
         <ChevronLeftIcon className="h-3 w-3" />
         Back to Launchpad
@@ -337,20 +337,20 @@ export default function CoinDetailApp({ id }: { id: string }) {
             {detail.boost != null && <BoosterBadge value={detail.boost} />}
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            <span className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">${detail.symbol}</span>
-            <span className="flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+            <span className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">${detail.symbol}</span>
+            <span className="flex items-center gap-1 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
               <ClockIcon className="h-2.5 w-2.5" />
               {detail.age} ago
             </span>
-            <span className="border border-gold/40 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
+            <span className="border border-gold/40 px-1.5 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight">
               Gumifi Launchpad
             </span>
           </div>
           <div className="mt-1.5">
             {isGumiHandle(detail.creator) ? (
-              <GumiTag handle={detail.creator} className="max-w-[160px]" />
+              <GumiTag handle={detail.creator} className="max-w-[10rem]" />
             ) : (
-              <WalletTag address={detail.creator} className="max-w-[160px]" />
+              <WalletTag address={detail.creator} className="max-w-[10rem]" />
             )}
           </div>
         </div>
@@ -397,7 +397,7 @@ export default function CoinDetailApp({ id }: { id: string }) {
       </div>
 
       <div className="mt-4 border border-line bg-panel2 px-4 py-3">
-        <p className="mb-1.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze">Description</p>
+        <p className="mb-1.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Description</p>
         <p className="border-l-2 border-emeraldLight/50 pl-3 font-body text-xs leading-relaxed text-ivory/80">
           {detail.description}
         </p>
@@ -406,7 +406,7 @@ export default function CoinDetailApp({ id }: { id: string }) {
       <div className="mt-4">
         {detail.graduated ? (
           <div className="rounded-md border border-gold/40 bg-gold/10 px-4 py-3 text-center">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-goldLight">
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight">
               Graduated — now trading on the DEX pool
             </p>
           </div>

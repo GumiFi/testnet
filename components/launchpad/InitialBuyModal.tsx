@@ -44,8 +44,8 @@ export default function InitialBuyModal({
 
         <div className="mt-5">
           <div className="flex h-5 items-center justify-between">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Initial Buy (ETH)</p>
-            <span className="border border-gold/60 bg-gold/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Initial Buy (ETH)</p>
+            <span className="border border-gold/60 bg-gold/10 px-1.5 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight">
               Required
             </span>
           </div>
@@ -67,7 +67,7 @@ export default function InitialBuyModal({
           type="button"
           disabled={draftNum <= 0}
           onClick={handleConfirm}
-          className={`mt-6 w-full rounded-lg border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+          className={`mt-6 w-full rounded-lg border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
             draftNum <= 0
               ? "cursor-not-allowed border-line bg-panel2 text-bronze"
               : "border-gold text-goldLight hover:bg-gold hover:text-void"

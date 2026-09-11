@@ -47,7 +47,7 @@ export default function SwapHistoryApp() {
     <div className="mx-auto max-w-md px-4 py-8 md:py-12">
       <Link
         href="/swap"
-        className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
+        className="inline-flex items-center gap-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
       >
         <ChevronLeftIcon className="h-3 w-3" />
         Back to Swap
@@ -59,7 +59,7 @@ export default function SwapHistoryApp() {
           Transaction History
         </h1>
       </div>
-      <p className="mt-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+      <p className="mt-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
         {!address
           ? "Connect your wallet to see your swap history"
           : total === 0
@@ -91,7 +91,7 @@ export default function SwapHistoryApp() {
             {lazyChunks.map((rows, chunkIndex) => (
               <LazyOnView
                 key={`${safePage}-${chunkIndex}`}
-                rootMargin="150px"
+                rootMargin="9.375rem"
                 fallback={<SwapHistoryChunkSkeleton rows={rows.length} />}
               >
                 <div>

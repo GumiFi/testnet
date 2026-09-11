@@ -84,16 +84,16 @@ export default function UserProfileHero({
             href={getExplorerAddressUrl(address)}
             target="_blank"
             rel="noreferrer"
-            className="mt-1 inline-block font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
+            className="mt-1 inline-block font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
           >
             View on Explorer ↗
           </a>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1.5">
           <span
-            className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[8px] uppercase tracking-wider2 ${
+            className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[0.5rem] uppercase tracking-wider2 ${
               isPremium
-                ? "border-gold/60 bg-gold/10 text-goldLight shadow-[0_0_5px_rgba(201,162,39,0.35)]"
+                ? "border-gold/60 bg-gold/10 text-goldLight shadow-[0_0_0.3125rem_rgba(201,162,39,0.35)]"
                 : "border-line text-bronze"
             }`}
           >
@@ -103,7 +103,7 @@ export default function UserProfileHero({
           <button
             type="button"
             onClick={() => setFollowing((value) => !value)}
-            className={`border px-4 py-2 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`border px-4 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               following
                 ? "border-line text-bronze hover:border-garnetLight/60 hover:text-garnetLight"
                 : "border-gold text-goldLight hover:bg-gold hover:text-void"
@@ -116,22 +116,22 @@ export default function UserProfileHero({
 
       <div className="mt-4 grid grid-cols-3 gap-1 border-t border-line pt-4">
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Portfolio Value</p>
+          <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Portfolio Value</p>
           <p className="mt-1 font-display text-sm text-ivory">
             {showPlaceholder ? "—" : formatUsd(totalValueUsd)}
           </p>
         </div>
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Launches</p>
+          <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Launches</p>
           <p className="mt-1 font-display text-sm text-ivory">{launchesCount}</p>
         </div>
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">NFT Collections</p>
+          <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">NFT Collections</p>
           <p className="mt-1 font-display text-sm text-ivory">{collectionsCount}</p>
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-3 border-t border-line pt-4 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+      <div className="mt-4 flex items-center gap-3 border-t border-line pt-4 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
         <span>{NETWORK.name}</span>
         <button
           type="button"

@@ -57,7 +57,7 @@ function TradeButton({
         />
       ))}
       <span className={`relative font-display text-xs uppercase tracking-wider2 ${textClass}`}>{label}</span>
-      <span className="relative font-mono text-[9px] uppercase tracking-wider2 text-ivory/60">${symbol}</span>
+      <span className="relative font-mono text-[0.5625rem] uppercase tracking-wider2 text-ivory/60">${symbol}</span>
     </button>
   );
 }
@@ -81,7 +81,7 @@ export default function CoinTradeButtons({
         hoverBgClass="hover:bg-emeraldLight/25"
         borderClass="border-emeraldLight"
         rippleClass="bg-emeraldLight/50"
-        ringClass="shadow-[0_0_0_3px_rgba(232,199,102,0.35)]"
+        ringClass="shadow-[0_0_0_0.1875rem_rgba(232,199,102,0.35)]"
         onClick={onBuy}
       />
       <TradeButton
@@ -92,7 +92,7 @@ export default function CoinTradeButtons({
         hoverBgClass="hover:bg-garnetLight/25"
         borderClass="border-garnetLight"
         rippleClass="bg-garnetLight/50"
-        ringClass="shadow-[0_0_0_3px_rgba(232,199,102,0.35)]"
+        ringClass="shadow-[0_0_0_0.1875rem_rgba(232,199,102,0.35)]"
         onClick={onSell}
       />
     </div>

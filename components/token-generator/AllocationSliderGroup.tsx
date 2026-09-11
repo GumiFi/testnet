@@ -24,11 +24,11 @@ export default function AllocationSliderGroup({
         {rows.map((row) => (
           <div key={row.id}>
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider2 text-ivory">
+              <span className="flex items-center gap-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">
                 <span className="h-2 w-2 rounded-full" style={{ backgroundColor: row.color }} />
                 {row.label}
               </span>
-              <span className="font-mono text-[10px] text-goldLight">{row.pct.toFixed(1)}%</span>
+              <span className="font-mono text-[0.625rem] text-goldLight">{row.pct.toFixed(1)}%</span>
             </div>
             <input
               type="range"

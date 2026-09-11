@@ -33,7 +33,7 @@ export default function CoinActivityTabs({
             key={tab}
             type="button"
             onClick={() => onChange(tab)}
-            className={`px-2 py-2.5 text-center font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`px-2 py-2.5 text-center font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               index !== 0 ? "border-l border-line" : ""
             } ${active === tab ? "bg-gold/10 text-goldLight" : "text-bronze hover:text-ivory"}`}
           >

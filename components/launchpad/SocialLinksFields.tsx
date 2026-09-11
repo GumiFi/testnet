@@ -49,7 +49,7 @@ function SocialField({
 }) {
   return (
     <div>
-      <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">{label}</p>
+      <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">{label}</p>
       <input
         value={value}
         onChange={(event) => onChange(event.target.value)}

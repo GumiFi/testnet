@@ -46,12 +46,12 @@ export default function BuyNftModal({
           </div>
           <div className="min-w-0">
             <p className="truncate font-display text-sm uppercase tracking-wider2 text-ivory">{listing.name}</p>
-            <p className="font-mono text-[10px] text-bronze">Token #{listing.tokenId}</p>
+            <p className="font-mono text-[0.625rem] text-bronze">Token #{listing.tokenId}</p>
           </div>
         </div>
 
         <div className="mt-4 flex items-center justify-between border-t border-line pt-4">
-          <span className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Price</span>
+          <span className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Price</span>
           <span className="font-mono text-sm text-goldLight">{formatEth(priceEth)}</span>
         </div>
 
@@ -61,7 +61,7 @@ export default function BuyNftModal({
           type="button"
           disabled={isBusy}
           onClick={onConfirm}
-          className={`mt-5 w-full rounded-lg border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+          className={`mt-5 w-full rounded-lg border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
             isBusy
               ? "cursor-not-allowed border-line bg-panel2 text-bronze"
               : "border-emeraldLight text-emeraldLight hover:bg-emeraldLight/20"

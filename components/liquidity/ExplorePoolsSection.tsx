@@ -99,7 +99,7 @@ export default function ExplorePoolsSection({
           <button
             type="button"
             onClick={() => setRefreshTick((tick) => tick + 1)}
-            className="shrink-0 font-mono text-[10px] uppercase tracking-wider2 text-bronze hover:text-ivory"
+            className="shrink-0 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze hover:text-ivory"
           >
             Refresh
           </button>
@@ -116,7 +116,7 @@ export default function ExplorePoolsSection({
               <button
                 type="button"
                 onClick={() => setRefreshTick((tick) => tick + 1)}
-                className="mt-4 border border-gold px-5 py-2.5 font-mono text-[11px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+                className="mt-4 border border-gold px-5 py-2.5 font-mono text-[0.6875rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
               >
                 Retry
               </button>
@@ -128,7 +128,7 @@ export default function ExplorePoolsSection({
           ) : (
             <>
               <div className="hidden border border-line bg-panel sm:block">
-                <div className="grid grid-cols-[1.6fr_1fr_1fr_0.8fr] gap-4 border-b border-line px-4 py-3 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                <div className="grid grid-cols-[1.6fr_1fr_1fr_0.8fr] gap-4 border-b border-line px-4 py-3 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                   <span>Pool</span>
                   <span className="text-right">TVL</span>
                   <span className="text-right">Volume 24H</span>

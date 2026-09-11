@@ -39,7 +39,7 @@ export default function TransactionTrayCard({
   }
 
   return (
-    <div className="w-full animate-fadeUp border border-gold/40 bg-panel/95 px-4 py-3.5 shadow-[0_20px_40px_rgba(0,0,0,0.55)] backdrop-blur">
+    <div className="w-full animate-fadeUp border border-gold/40 bg-panel/95 px-4 py-3.5 shadow-[0_1.25rem_2.5rem_rgba(0,0,0,0.55)] backdrop-blur">
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-center gap-2.5">
           <span
@@ -64,7 +64,7 @@ export default function TransactionTrayCard({
               {title}
             </p>
             {subtitle && (
-              <p className="mt-0.5 truncate font-mono text-[10px] text-bronze">{subtitle}</p>
+              <p className="mt-0.5 truncate font-mono text-[0.625rem] text-bronze">{subtitle}</p>
             )}
           </div>
         </div>
@@ -100,7 +100,7 @@ export default function TransactionTrayCard({
         })}
       </div>
 
-      <div className="mt-1.5 flex items-center justify-between font-mono text-[8.5px] uppercase tracking-wider2">
+      <div className="mt-1.5 flex items-center justify-between font-mono text-[0.53125rem] uppercase tracking-wider2">
         <span className={activeIndex >= 0 ? "text-goldLight" : "text-bronze"}>Pending</span>
         <span className={activeIndex >= 1 ? "text-goldLight" : "text-bronze"}>Confirming</span>
         <span
@@ -114,7 +114,7 @@ export default function TransactionTrayCard({
         <button
           type="button"
           onClick={handleCopy}
-          className="flex items-center gap-1.5 font-mono text-[10px] text-bronze transition-colors hover:text-goldLight"
+          className="flex items-center gap-1.5 font-mono text-[0.625rem] text-bronze transition-colors hover:text-goldLight"
         >
           {copied ? (
             <CheckIcon className="h-3 w-3 text-emeraldLight" />
@@ -127,7 +127,7 @@ export default function TransactionTrayCard({
           href={`${GIWA_EXPLORER_TX_URL}/${txHash}`}
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:text-gold"
+          className="flex items-center gap-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:text-gold"
         >
           <GlobeIcon className="h-3 w-3" />
           Explorer

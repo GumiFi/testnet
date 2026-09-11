@@ -31,7 +31,7 @@ export default function CopyField({
 
   return (
     <div className={`px-4 py-3 ${isLast ? "" : "border-b border-line"}`}>
-      <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">{label}</p>
+      <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">{label}</p>
       <div className="mt-1.5 flex items-center justify-between gap-3">
         <p className="min-w-0 flex-1 truncate font-mono text-xs text-ivory">{truncateMiddle(value)}</p>
         <button

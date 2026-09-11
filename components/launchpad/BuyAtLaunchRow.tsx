@@ -20,15 +20,15 @@ export default function BuyAtLaunchRow({
       </span>
       <div className="min-w-0 flex-1">
         <span className="flex items-center gap-2">
-          <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Buy Tokens At Launch</span>
-          <span className="border border-gold/60 bg-gold/10 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
+          <span className="font-mono text-[0.6875rem] uppercase tracking-wider2 text-ivory">Buy Tokens At Launch</span>
+          <span className="border border-gold/60 bg-gold/10 px-1.5 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight">
             Required
           </span>
         </span>
         <p className="mt-1 font-body text-xs text-bronze">
           Every launch requires the creator to buy in first — tap to set your initial buy amount.
         </p>
-        <p className="mt-1.5 font-mono text-[10px] uppercase tracking-wider2 text-goldLight">
+        <p className="mt-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight">
           Initial Buy: {amount || "0"} ETH
         </p>
       </div>

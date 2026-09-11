@@ -25,13 +25,13 @@ export default function TokenStandardSelector({
           >
             <span>
               <span
-                className={`font-mono text-[11px] uppercase tracking-wider2 ${
+                className={`font-mono text-[0.6875rem] uppercase tracking-wider2 ${
                   active ? "text-goldLight" : "text-ivory"
                 }`}
               >
                 {standard.label}
               </span>
-              <span className="mt-1 block font-body text-[11px] text-bronze">{standard.description}</span>
+              <span className="mt-1 block font-body text-[0.6875rem] text-bronze">{standard.description}</span>
             </span>
             {active && (
               <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-gold text-goldLight">

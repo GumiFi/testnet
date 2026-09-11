@@ -22,9 +22,9 @@ function getPageItems(current: number, total: number): (number | "...")[] {
 }
 
 const navClasses =
-  "flex items-center gap-1 border border-line px-3 py-2 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold hover:text-goldLight";
+  "flex items-center gap-1 border border-line px-3 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold hover:text-goldLight";
 const navDisabledClasses =
-  "flex cursor-not-allowed items-center gap-1 border border-line px-3 py-2 font-mono text-[10px] uppercase tracking-wider2 text-bronze/40 opacity-30";
+  "flex cursor-not-allowed items-center gap-1 border border-line px-3 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze/40 opacity-30";
 
 export default function Pagination({
   page,
@@ -58,7 +58,7 @@ export default function Pagination({
         item === "..." ? (
           <span
             key={`ellipsis-${index}`}
-            className="px-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze"
+            className="px-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze"
           >
             ...
           </span>
@@ -68,7 +68,7 @@ export default function Pagination({
             href={pageHref(basePath, item, search)}
             prefetch={false}
             aria-current={item === page ? "page" : undefined}
-            className={`flex h-8 w-8 items-center justify-center border font-mono text-[10px] transition-colors ${
+            className={`flex h-8 w-8 items-center justify-center border font-mono text-[0.625rem] transition-colors ${
               item === page
                 ? "border-gold bg-gold/10 text-goldLight"
                 : "border-line text-bronze hover:border-gold/40 hover:text-ivory"

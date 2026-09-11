@@ -9,7 +9,7 @@ export default function PairStatBox({
 }) {
   return (
     <div className={`border border-line bg-panel px-3 py-3 text-center ${className}`}>
-      <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">{label}</p>
+      <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">{label}</p>
       <div className="mt-1 font-display text-sm text-ivory sm:text-base">{children}</div>
     </div>
   );

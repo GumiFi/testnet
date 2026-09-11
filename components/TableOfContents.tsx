@@ -12,14 +12,14 @@ const sections = [
 export default function TableOfContents() {
   return (
     <nav className="sticky top-28 hidden w-56 shrink-0 flex-col gap-1 lg:flex">
-      <span className="mb-3 font-mono text-[10px] uppercase tracking-wider3 text-bronze">
+      <span className="mb-3 font-mono text-[0.625rem] uppercase tracking-wider3 text-bronze">
         Contents
       </span>
       {sections.map((section) => (
         <a
           key={section.id}
           href={`#${section.id}`}
-          className="border-l border-line py-1.5 pl-4 font-mono text-[11px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold hover:text-goldLight"
+          className="border-l border-line py-1.5 pl-4 font-mono text-[0.6875rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold hover:text-goldLight"
         >
           {section.label}
         </a>

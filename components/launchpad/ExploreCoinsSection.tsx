@@ -127,7 +127,7 @@ export default function ExploreCoinsSection() {
                 type="button"
                 onClick={() => setOpenPanel((prev) => (prev === "filter" ? null : "filter"))}
                 aria-label="Filter coins"
-                className={`flex h-8 items-center gap-1.5 border px-2.5 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+                className={`flex h-8 items-center gap-1.5 border px-2.5 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
                   isFilterActive || openPanel === "filter"
                     ? "border-gold text-goldLight"
                     : "border-line text-bronze hover:border-gold hover:text-goldLight"
@@ -172,7 +172,7 @@ export default function ExploreCoinsSection() {
           </div>
         </div>
 
-        <p className="mt-4 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+        <p className="mt-4 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
           {liveReady ? `${total} coins · Page ${page} of ${totalPages}` : "Loading live coins..."}
         </p>
 
@@ -212,17 +212,17 @@ export default function ExploreCoinsSection() {
                         className="h-full w-full text-2xl"
                         src={coin.image ?? undefined}
                       />
-                      <span className="absolute left-1 top-1 border border-gold/50 bg-void/90 px-1 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
+                      <span className="absolute left-1 top-1 border border-gold/50 bg-void/90 px-1 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight">
                         {formatCompactUsd(coin.marketCap)}
                       </span>
                       {coin.isNew && (
-                        <span className="absolute right-1 top-1 border border-emeraldLight/60 bg-void/90 px-1 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-emeraldLight">
+                        <span className="absolute right-1 top-1 border border-emeraldLight/60 bg-void/90 px-1 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-emeraldLight">
                           New
                         </span>
                       )}
 
                       <div className="absolute inset-x-0 bottom-0 bg-void/90 px-1.5 py-1">
-                        <div className="flex items-center justify-between font-mono text-[8px] uppercase tracking-wider2 text-bronze">
+                        <div className="flex items-center justify-between font-mono text-[0.5rem] uppercase tracking-wider2 text-bronze">
                           <span>Bonding</span>
                           <span className={bonded >= 100 ? "text-emeraldLight" : "text-goldLight"}>{bonded}%</span>
                         </div>
@@ -239,7 +239,7 @@ export default function ExploreCoinsSection() {
                       <p className="min-w-0 flex-1 truncate font-display text-xs uppercase tracking-wider2 text-ivory">
                         {coin.name}
                       </p>
-                      <div className="flex shrink-0 flex-col items-end gap-1 font-mono text-[9px] uppercase tracking-wider2">
+                      <div className="flex shrink-0 flex-col items-end gap-1 font-mono text-[0.5625rem] uppercase tracking-wider2">
                         <span className="flex items-center gap-0.5 text-bronze">
                           <ClockIcon className="h-2.5 w-2.5" />
                           {coin.age}
@@ -258,22 +258,22 @@ export default function ExploreCoinsSection() {
                         </span>
                       </div>
                     </div>
-                    <p className="truncate font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                    <p className="truncate font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                       ${coin.symbol}
                     </p>
-                    <p className="mt-1 h-4 truncate font-body text-[11px] text-ivory/60">
+                    <p className="mt-1 h-4 truncate font-body text-[0.6875rem] text-ivory/60">
                       {coin.tagline || "\u00A0"}
                     </p>
                     <div className="mt-1 flex items-end justify-between gap-2">
-                      <p className="font-mono text-[10px] text-goldLight">{formatPrice(coin.priceUsd)}</p>
+                      <p className="font-mono text-[0.625rem] text-goldLight">{formatPrice(coin.priceUsd)}</p>
                       <div className="flex shrink-0 flex-col items-end gap-1">
-                        <div className="flex h-[13px] items-center">
+                        <div className="flex h-[0.8125rem] items-center">
                           {coin.boost != null && <BoosterBadge value={coin.boost} />}
                         </div>
                         {isGumiHandle(coin.creator) ? (
-                          <GumiTag handle={coin.creator} className="max-w-[120px]" />
+                          <GumiTag handle={coin.creator} className="max-w-[7.5rem]" />
                         ) : (
-                          <WalletTag address={coin.creator} className="max-w-[120px]" />
+                          <WalletTag address={coin.creator} className="max-w-[7.5rem]" />
                         )}
                       </div>
                     </div>

@@ -15,10 +15,10 @@ export default function CoinCommentsPanel({
         <div className="flex flex-col items-center gap-2 px-4 py-10 text-center">
           <MessageIcon className="h-6 w-6 text-bronze" />
           <p className="font-mono text-xs uppercase tracking-wider2 text-bronze">No comments yet</p>
-          <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze/70">Be the first to say gm</p>
+          <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze/70">Be the first to say gm</p>
         </div>
       ) : (
-        <p className="px-4 py-6 text-center font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+        <p className="px-4 py-6 text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
           {commentCount} comments · connect a wallet to view the thread
         </p>
       )}

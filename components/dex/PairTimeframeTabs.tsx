@@ -25,9 +25,9 @@ export default function PairTimeframeTabs({
               isActive ? "border-gold bg-gold/10" : "border-line hover:border-gold/40"
             }`}
           >
-            <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">{timeframe}</p>
+            <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">{timeframe}</p>
             <p
-              className={`mt-0.5 font-mono text-[11px] ${
+              className={`mt-0.5 font-mono text-[0.6875rem] ${
                 positive ? "text-emeraldLight" : "text-garnetLight"
               }`}
             >

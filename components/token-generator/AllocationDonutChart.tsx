@@ -24,7 +24,7 @@ export default function AllocationDonutChart({
 
   return (
     <div
-      className="relative shrink-0 rounded-full shadow-[0_0_40px_rgba(201,162,39,0.18)]"
+      className="relative shrink-0 rounded-full shadow-[0_0_2.5rem_rgba(201,162,39,0.18)]"
       style={{ width: size, height: size, background: `conic-gradient(${stops})` }}
     >
       <div
@@ -36,7 +36,7 @@ export default function AllocationDonutChart({
             <span className="font-display text-lg uppercase tracking-wider2 text-ivory">{centerLabel}</span>
           )}
           {centerSubLabel && (
-            <span className="mt-1 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+            <span className="mt-1 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
               {centerSubLabel}
             </span>
           )}

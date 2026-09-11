@@ -59,10 +59,10 @@ export default function NotificationRow({
             {item.title}
           </p>
         </div>
-        <p className="mt-1 line-clamp-2 font-mono text-[10px] leading-relaxed text-bronze">
+        <p className="mt-1 line-clamp-2 font-mono text-[0.625rem] leading-relaxed text-bronze">
           {item.message}
         </p>
-        <p className="mt-1.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze/70">
+        <p className="mt-1.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze/70">
           {item.timeAgo}
         </p>
       </div>

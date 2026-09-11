@@ -19,11 +19,11 @@ export default function SwapHistoryRow({
       }`}
     >
       <div className="flex shrink-0 items-center">
-        <Avatar label={item.fromMonogram} accent={item.fromAccent} className="h-7 w-7 text-[9px]" />
+        <Avatar label={item.fromMonogram} accent={item.fromAccent} className="h-7 w-7 text-[0.5625rem]" />
         <span className="mx-1.5 flex h-4 w-4 items-center justify-center text-bronze">
           <ArrowDownIcon className="h-3 w-3 -rotate-90" />
         </span>
-        <Avatar label={item.toMonogram} accent={item.toAccent} className="h-7 w-7 text-[9px]" />
+        <Avatar label={item.toMonogram} accent={item.toAccent} className="h-7 w-7 text-[0.5625rem]" />
       </div>
 
       <div className="min-w-0 flex-1">
@@ -32,7 +32,7 @@ export default function SwapHistoryRow({
         </p>
       </div>
 
-      <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+      <span className="shrink-0 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
         {formatTimeAgo(item.timestampMs)}
       </span>
       <ChevronRightIcon className="h-3 w-3 shrink-0 text-bronze" />

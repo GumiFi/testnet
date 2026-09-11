@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Cinzel, Spectral, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -45,6 +46,9 @@ export default function RootLayout({
       <body
         className={`${cinzel.variable} ${spectral.variable} ${jetbrains.variable} font-body bg-void text-ivory antialiased`}
       >
+        <Script id="gumifi-scale" strategy="beforeInteractive">
+          {`(function(){function s(){var w=document.documentElement.clientWidth||window.innerWidth||384;var b=384;var mn=320;var mx=480;var c=Math.min(Math.max(w,mn),mx);document.documentElement.style.fontSize=(c/b*16)+"px";}s();window.addEventListener("resize",s);window.addEventListener("orientationchange",s);})();`}
+        </Script>
         <WalletProvider>
           <NotificationProvider>
             <TransactionProvider>

@@ -210,24 +210,24 @@ export default function MintGumiIdentityApp() {
         </p>
       </div>
 
-      <div className="relative mx-auto mb-6 flex aspect-square w-full max-w-[220px] items-center justify-center overflow-hidden border border-gold/50 bg-gradient-to-b from-panel to-void">
-        <div className="pointer-events-none absolute inset-[8px] border border-gold/30" />
+      <div className="relative mx-auto mb-6 flex aspect-square w-full max-w-[13.75rem] items-center justify-center overflow-hidden border border-gold/50 bg-gradient-to-b from-panel to-void">
+        <div className="pointer-events-none absolute inset-[0.5rem] border border-gold/30" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_30%,rgba(201,162,39,0.18),transparent_65%)]" />
         <div className="relative flex flex-col items-center gap-3 px-4 text-center">
-          <span className="font-display text-[10px] uppercase tracking-wider3 text-goldLight">
+          <span className="font-display text-[0.625rem] uppercase tracking-wider3 text-goldLight">
             Gumifi
           </span>
           <div className="flex h-10 w-10 items-center justify-center border border-gold/60 text-goldLight">
             <CrownIcon className="h-5 w-5" />
           </div>
           <span
-            className={`max-w-[170px] truncate font-display text-sm text-ivory ${
+            className={`max-w-[10.625rem] truncate font-display text-sm text-ivory ${
               baseName ? "" : "opacity-40"
             }`}
           >
             {previewHandle}
           </span>
-          <span className="font-mono text-[8px] uppercase tracking-wider3 text-bronze">
+          <span className="font-mono text-[0.5rem] uppercase tracking-wider3 text-bronze">
             Gumi Identity
           </span>
         </div>
@@ -235,10 +235,10 @@ export default function MintGumiIdentityApp() {
 
       <div className="border border-gold/40 bg-panel px-5 py-6 md:px-6">
         <div className="flex h-5 items-center justify-between">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
             Choose Your Name
           </p>
-          <span className="font-mono text-[9px] text-bronze">
+          <span className="font-mono text-[0.5625rem] text-bronze">
             {baseName.length}/{GUMI_HANDLE_BASE_MAX_LENGTH}
           </span>
         </div>
@@ -256,19 +256,19 @@ export default function MintGumiIdentityApp() {
           </span>
         </div>
         {statusText && (
-          <p className={`mt-2 font-mono text-[10px] uppercase tracking-wider2 ${statusClass}`}>
+          <p className={`mt-2 font-mono text-[0.625rem] uppercase tracking-wider2 ${statusClass}`}>
             {statusText}
           </p>
         )}
 
         <div className="mt-5 flex items-center justify-between border-t border-line pt-5">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Mint Price</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Mint Price</p>
             <p className="mt-1 font-display text-lg text-goldLight">{GUMI_MINT_PRICE_ETH} ETH</p>
           </div>
           <div className="text-right">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Ownership</p>
-            <p className="mt-1 flex items-center justify-end gap-1.5 font-mono text-[10px] uppercase tracking-wider2 text-goldLight">
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Ownership</p>
+            <p className="mt-1 flex items-center justify-end gap-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight">
               <LockIcon className="h-3 w-3" />
               Permanent
             </p>
@@ -279,7 +279,7 @@ export default function MintGumiIdentityApp() {
           type="button"
           disabled={ctaDisabled}
           onClick={ctaAction}
-          className={`mt-6 w-full border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+          className={`mt-6 w-full border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
             ctaDisabled
               ? "cursor-not-allowed border-line bg-panel2 text-bronze"
               : "border-gold text-goldLight hover:bg-gold hover:text-void"
@@ -288,11 +288,11 @@ export default function MintGumiIdentityApp() {
           {ctaLabel}
         </button>
         {mintError && (
-          <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+          <p className="mt-3 text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-garnetLight">
             {mintError}
           </p>
         )}
-        <p className="mt-3 text-center font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+        <p className="mt-3 text-center font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
           Deploys On Giwa Chain • One NFT, One Identity
         </p>
 

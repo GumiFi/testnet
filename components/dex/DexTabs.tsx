@@ -31,7 +31,7 @@ export default function DexTabs({
               key={option}
               type="button"
               onClick={() => onTabChange(option)}
-              className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+              className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
                 isActive
                   ? "border-gold bg-gold/10 text-goldLight"
                   : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -52,7 +52,7 @@ export default function DexTabs({
               key={option}
               type="button"
               onClick={() => onTimeframeChange(option)}
-              className={`border px-2 py-1 font-mono text-[9px] uppercase tracking-wider2 transition-colors ${
+              className={`border px-2 py-1 font-mono text-[0.5625rem] uppercase tracking-wider2 transition-colors ${
                 option === timeframe
                   ? "border-gold text-goldLight"
                   : "border-line text-bronze hover:border-gold/40 hover:text-ivory"

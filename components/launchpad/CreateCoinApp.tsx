@@ -298,7 +298,7 @@ export default function CreateCoinApp() {
           type="button"
           disabled={ctaDisabled}
           onClick={ctaAction}
-          className={`mt-6 w-full rounded-lg border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+          className={`mt-6 w-full rounded-lg border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
             ctaDisabled
               ? "cursor-not-allowed border-line bg-panel2 text-bronze"
               : "border-gold text-goldLight hover:bg-gold hover:text-void"
@@ -307,11 +307,11 @@ export default function CreateCoinApp() {
           {ctaLabel}
         </button>
         {launchError && (
-          <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+          <p className="mt-3 text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-garnetLight">
             {launchError}
           </p>
         )}
-        <p className="mt-3 text-center font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+        <p className="mt-3 text-center font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
           Deploys On Giwa Chain • Takes A Few Seconds
         </p>
       </div>
@@ -350,8 +350,8 @@ export default function CreateCoinApp() {
 function FieldHeader({ label, counter }: { label: string; counter: string }) {
   return (
     <div className="flex items-center justify-between">
-      <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">{label}</p>
-      <span className="font-mono text-[9px] text-bronze">{counter}</span>
+      <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">{label}</p>
+      <span className="font-mono text-[0.5625rem] text-bronze">{counter}</span>
     </div>
   );
 }

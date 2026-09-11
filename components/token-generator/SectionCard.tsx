@@ -18,9 +18,9 @@ export default function SectionCard({
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-gold/30 text-goldLight">
           <Icon className="h-4 w-4" />
         </span>
-        <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">{label}</span>
+        <span className="font-mono text-[0.6875rem] uppercase tracking-wider2 text-ivory">{label}</span>
         {optional && (
-          <span className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">(Optional)</span>
+          <span className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">(Optional)</span>
         )}
       </div>
       <div className="mt-4">{children}</div>

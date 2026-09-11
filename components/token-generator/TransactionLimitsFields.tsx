@@ -20,12 +20,12 @@ export default function TransactionLimitsFields({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Anti-Whale Limits</p>
-          <p className="mt-1 font-body text-[11px] text-bronze">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Anti-Whale Limits</p>
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">
             Cap how much supply a single wallet can hold or move. Enforced on-chain on every trade.
           </p>
           {isAntiWhaleStandard && (
-            <p className="mt-1 font-body text-[11px] text-goldLight">
+            <p className="mt-1 font-body text-[0.6875rem] text-goldLight">
               Required by the Anti-Whale token standard — both limits must be above 0% to deploy.
             </p>
           )}
@@ -42,8 +42,8 @@ export default function TransactionLimitsFields({
         <>
           <div className="border-t border-line pt-4">
             <div className="flex items-center justify-between">
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Max Transaction</p>
-              <span className="font-mono text-[10px] text-goldLight">{value.maxTxPct.toFixed(1)}%</span>
+              <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Max Transaction</p>
+              <span className="font-mono text-[0.625rem] text-goldLight">{value.maxTxPct.toFixed(1)}%</span>
             </div>
             <input
               type="range"
@@ -54,15 +54,15 @@ export default function TransactionLimitsFields({
               onChange={(event) => set("maxTxPct", parseFloat(event.target.value))}
               className="mt-2 w-full cursor-pointer accent-gold"
             />
-            <p className="mt-1 font-body text-[11px] text-bronze">
+            <p className="mt-1 font-body text-[0.6875rem] text-bronze">
               Largest single transaction, as a percent of total supply.
             </p>
           </div>
 
           <div className="border-t border-line pt-4">
             <div className="flex items-center justify-between">
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Max Wallet</p>
-              <span className="font-mono text-[10px] text-goldLight">{value.maxWalletPct.toFixed(1)}%</span>
+              <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Max Wallet</p>
+              <span className="font-mono text-[0.625rem] text-goldLight">{value.maxWalletPct.toFixed(1)}%</span>
             </div>
             <input
               type="range"
@@ -73,7 +73,7 @@ export default function TransactionLimitsFields({
               onChange={(event) => set("maxWalletPct", parseFloat(event.target.value))}
               className="mt-2 w-full cursor-pointer accent-gold"
             />
-            <p className="mt-1 font-body text-[11px] text-bronze">
+            <p className="mt-1 font-body text-[0.6875rem] text-bronze">
               Largest balance a single wallet can hold, as a percent of total supply.
             </p>
           </div>

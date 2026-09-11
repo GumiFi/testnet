@@ -488,23 +488,23 @@ export default function CreateLiquiditySection({
           </div>
 
           <div className="mt-6 space-y-2 border-t border-line pt-4">
-            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+            <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
               <span className="text-bronze">Pool</span>
               <span className="text-ivory">
                 {!pairResolvable ? "Unavailable" : pairExists ? "Existing Pool" : "New Pool"}
               </span>
             </div>
             {pairExists && (
-              <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+              <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
                 <span className="text-bronze">Current Liquidity</span>
                 <span className="text-ivory">{formatCompactUsd(existingTvlUsd)}</span>
               </div>
             )}
-            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+            <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
               <span className="text-bronze">Deposit Value</span>
               <span className="text-ivory">{hasAmounts ? formatCompactUsd(depositUsd) : "—"}</span>
             </div>
-            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+            <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
               <span className="text-bronze">Est. Pool Share</span>
               <span className="text-goldLight">{hasAmounts ? `${poolSharePct.toFixed(2)}%` : "—"}</span>
             </div>
@@ -514,7 +514,7 @@ export default function CreateLiquiditySection({
             type="button"
             disabled={ctaDisabled}
             onClick={ctaAction}
-            className={`mt-6 w-full border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+            className={`mt-6 w-full border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
               ctaDisabled
                 ? "cursor-not-allowed border-line bg-panel2 text-bronze"
                 : "border-gold text-goldLight hover:bg-gold hover:text-void"
@@ -524,7 +524,7 @@ export default function CreateLiquiditySection({
           </button>
 
           {actionError && (
-            <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+            <p className="mt-3 text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-garnetLight">
               {actionError}
             </p>
           )}
@@ -539,7 +539,7 @@ export default function CreateLiquiditySection({
                 href={`${NETWORK.explorerUrl}/tx/${txResult.hash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 block truncate font-mono text-[10px] text-bronze hover:text-ivory"
+                className="mt-2 block truncate font-mono text-[0.625rem] text-bronze hover:text-ivory"
               >
                 {txResult.hash}
               </a>
@@ -585,7 +585,7 @@ function AmountField({
 }) {
   return (
     <div>
-      <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">{label}</p>
+      <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">{label}</p>
       <div className="mt-2 border border-line bg-panel2 px-4 py-3 transition-colors focus-within:border-gold/60">
         <div className="flex items-center gap-3">
           <input
@@ -599,14 +599,14 @@ function AmountField({
           <TokenSelectButton token={token} onClick={onSelectToken} />
         </div>
         <div className="mt-2 flex items-center justify-between">
-          <p className="font-mono text-[10px] text-bronze">
+          <p className="font-mono text-[0.625rem] text-bronze">
             Balance: {balancesLoading ? "—" : formatBalance(balance)} {token.symbol}
           </p>
           {isConnected && balance > 0 && (
             <button
               type="button"
               onClick={onMax}
-              className="font-mono text-[10px] uppercase tracking-wider2 text-goldLight hover:text-gold"
+              className="font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight hover:text-gold"
             >
               Max
             </button>

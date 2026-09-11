@@ -20,8 +20,8 @@ export default function AntiBotFields({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Anti-Bot Protection</p>
-          <p className="mt-1 font-body text-[11px] text-bronze">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Anti-Bot Protection</p>
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">
             Enforces a trading cooldown and extra limits for the first blocks after launch, on-chain.
           </p>
         </div>
@@ -37,10 +37,10 @@ export default function AntiBotFields({
           <div className="flex items-center justify-between border-t border-line pt-4">
             <div>
               <span className="flex items-center gap-2">
-                <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Blacklist Bots</p>
+                <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Blacklist Bots</p>
                 <SoonTag />
               </span>
-              <p className="mt-1 font-body text-[11px] text-bronze">
+              <p className="mt-1 font-body text-[0.6875rem] text-bronze">
                 Auto-detecting and blacklisting bot wallets at launch isn't supported by any deployed
                 Advanced token contract. Use the manual Blacklist Function in Ownership & Security instead.
               </p>
@@ -49,7 +49,7 @@ export default function AntiBotFields({
           </div>
 
           <div className="border-t border-line pt-4">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Trading Cooldown</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Trading Cooldown</p>
             <div className="mt-2">
               <Stepper
                 value={value.cooldownSeconds}
@@ -60,13 +60,13 @@ export default function AntiBotFields({
                 suffix="s"
               />
             </div>
-            <p className="mt-1 font-body text-[11px] text-bronze">
+            <p className="mt-1 font-body text-[0.6875rem] text-bronze">
               Minimum time a wallet must wait between trades.
             </p>
           </div>
 
           <div className="border-t border-line pt-4">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
               Launch Protection Blocks
             </p>
             <div className="mt-2">
@@ -79,7 +79,7 @@ export default function AntiBotFields({
                 suffix=" Blocks"
               />
             </div>
-            <p className="mt-1 font-body text-[11px] text-bronze">
+            <p className="mt-1 font-body text-[0.6875rem] text-bronze">
               Extra transaction limits applied for the first blocks after launch.
             </p>
           </div>

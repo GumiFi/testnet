@@ -19,18 +19,18 @@ export default function TokenInfoSection({
     <div className="mx-auto mt-6 w-full max-w-md">
       <div className="rounded-xl border border-line bg-panel px-5 py-5">
         <div className="flex items-center gap-3">
-          <Avatar label={token.monogram} accent={token.accent} className="h-9 w-9 text-[10px]" />
+          <Avatar label={token.monogram} accent={token.accent} className="h-9 w-9 text-[0.625rem]" />
           <div className="min-w-0 flex-1">
             <p className="font-display text-sm uppercase tracking-wider2 text-ivory">
               {token.symbol}
             </p>
-            <p className="truncate font-mono text-[10px] text-bronze">{token.name}</p>
+            <p className="truncate font-mono text-[0.625rem] text-bronze">{token.name}</p>
           </div>
           {hasPrice && (
             <div className="shrink-0 text-right">
               <p className="font-mono text-sm text-ivory">{formatPrice(token.priceUsd)}</p>
               <p
-                className={`mt-1 flex items-center justify-end gap-1 font-mono text-[10px] ${
+                className={`mt-1 flex items-center justify-end gap-1 font-mono text-[0.625rem] ${
                   positive ? "text-emeraldLight" : "text-garnetLight"
                 }`}
               >
@@ -56,14 +56,14 @@ export default function TokenInfoSection({
             <button
               type="button"
               onClick={onViewChart}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-gold/50 px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold/10"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-gold/50 px-4 py-2.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold/10"
             >
               <ChartIcon className="h-3.5 w-3.5" />
               View Chart
             </button>
           </>
         ) : (
-          <p className="mt-4 border-t border-line pt-4 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+          <p className="mt-4 border-t border-line pt-4 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
             No market data available for this imported token yet.
           </p>
         )}
@@ -75,7 +75,7 @@ export default function TokenInfoSection({
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">{label}</p>
+      <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">{label}</p>
       <p className="mt-1 font-mono text-xs text-ivory">{value}</p>
     </div>
   );

@@ -13,7 +13,7 @@ export default function LaunchesSection({
   if (loading && launches.length === 0) {
     return (
       <div className="border border-line bg-panel px-4 py-8 text-center">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Loading launches…</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Loading launches…</p>
       </div>
     );
   }
@@ -21,7 +21,7 @@ export default function LaunchesSection({
   if (launches.length === 0) {
     return (
       <div className="border border-line bg-panel px-4 py-8 text-center">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
       </div>
     );
   }
@@ -38,7 +38,7 @@ export default function LaunchesSection({
           <Avatar
             label={launch.monogram}
             accent="gold"
-            className="h-8 w-8 shrink-0 text-[9px]"
+            className="h-8 w-8 shrink-0 text-[0.5625rem]"
             shape="square"
           />
           <div className="min-w-0 flex-1">
@@ -46,12 +46,12 @@ export default function LaunchesSection({
               {launch.symbol}
             </p>
             {launch.graduated ? (
-              <span className="mt-0.5 flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
+              <span className="mt-0.5 flex items-center gap-1 font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight">
                 <CrownIcon className="h-2.5 w-2.5" />
                 Graduated
               </span>
             ) : (
-              <p className="mt-0.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+              <p className="mt-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
                 {launch.bondingProgress}% Bonding Curve
               </p>
             )}

@@ -44,7 +44,7 @@ export default function NewLaunchesSection() {
                       <WalletTag address={launch.creator} className="mt-1 max-w-full" />
                     )}
                   </div>
-                  <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider2 text-goldLight">
+                  <span className="shrink-0 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight">
                     {launch.bondingCurvePct}%
                   </span>
                 </div>
@@ -56,14 +56,14 @@ export default function NewLaunchesSection() {
                   />
                 </div>
 
-                <div className="mt-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                <div className="mt-3 flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                   <span>Launched {launch.age} ago</span>
                   <span>MC {formatCompactUsd(launch.marketCap)}</span>
                 </div>
 
                 <Link
                   href={`/launchpad/coin/${launch.id}`}
-                  className="mt-4 flex w-full items-center justify-center rounded-lg border border-gold px-4 py-2 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+                  className="mt-4 flex w-full items-center justify-center rounded-lg border border-gold px-4 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
                 >
                   View
                 </Link>

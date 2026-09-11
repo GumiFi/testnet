@@ -7,7 +7,7 @@ export default function SimpleTokenGeneratorHeader() {
       <Link
         href="/token-generator"
         prefetch={false}
-        className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
+        className="inline-flex items-center gap-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
       >
         <ChevronLeftIcon className="h-3 w-3" />
         Back To Token Generator

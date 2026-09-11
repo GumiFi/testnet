@@ -121,7 +121,7 @@ export default function BottomNav() {
               <>
                 <Icon className={`h-5 w-5 shrink-0 ${activeColor}`} />
                 <span
-                  className={`whitespace-nowrap text-center font-mono text-[8.5px] uppercase leading-[1.15] ${activeColor}`}
+                  className={`whitespace-nowrap text-center font-mono text-[0.53125rem] uppercase leading-[1.15] ${activeColor}`}
                 >
                   {tab.label}
                 </span>
@@ -168,14 +168,14 @@ export default function BottomNav() {
               <div
                 ref={menuRef}
                 style={{ left: menuLeft }}
-                className="fixed bottom-full mb-3 w-44 origin-bottom -translate-x-1/2 animate-fadeUp overflow-hidden rounded-xl border border-gold/40 bg-panel2 shadow-[0_-8px_30px_rgba(0,0,0,0.45)]"
+                className="fixed bottom-full mb-3 w-44 origin-bottom -translate-x-1/2 animate-fadeUp overflow-hidden rounded-xl border border-gold/40 bg-panel2 shadow-[0_-0.5rem_1.875rem_rgba(0,0,0,0.45)]"
               >
                 {activeTab.children.map((child) => {
                   const ChildIcon = child.icon;
                   const content = (
                     <>
                       <ChildIcon className="h-4 w-4 shrink-0 text-goldLight" />
-                      <span className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">
+                      <span className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">
                         {child.label}
                       </span>
                     </>

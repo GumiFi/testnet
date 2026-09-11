@@ -31,10 +31,10 @@ function TaxSlider({
     <div className={disabled ? "opacity-50" : undefined}>
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-2">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">{label}</p>
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">{label}</p>
           {disabled && <SoonTag />}
         </span>
-        <span className="font-mono text-[10px] text-goldLight">{value.toFixed(1)}%</span>
+        <span className="font-mono text-[0.625rem] text-goldLight">{value.toFixed(1)}%</span>
       </div>
       <input
         type="range"
@@ -77,7 +77,7 @@ export default function TaxFeesFields({
           onChange={(next) => set("transferTaxPct", next)}
           disabled
         />
-        <p className="font-body text-[11px] text-bronze">
+        <p className="font-body text-[0.6875rem] text-bronze">
           Buy/Sell tax is enforced on-chain (max 25%) and only triggers on trades against a DEX pair.
           Wallet-to-wallet transfer tax isn't supported by any deployed Advanced token contract yet.
         </p>
@@ -85,10 +85,10 @@ export default function TaxFeesFields({
 
       <div>
         <span className="flex items-center gap-2">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Fee Revenue Split</p>
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Fee Revenue Split</p>
           <SoonTag />
         </span>
-        <p className="mt-1 font-body text-[11px] text-bronze">
+        <p className="mt-1 font-body text-[0.6875rem] text-bronze">
           Splitting tax revenue across custom liquidity/marketing/reflection/burn/dev shares isn't
           supported by any deployed Advanced token contract. Each standard routes 100% of collected tax
           to a single destination automatically — see the Treasury Wallet note below.
@@ -96,14 +96,14 @@ export default function TaxFeesFields({
         <div className="mt-4 pointer-events-none opacity-40">
           <AllocationSliderGroup rows={feeRows} onChange={() => {}} size={140} centerLabel="Fees" />
         </div>
-        <p className="mt-1 text-right font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+        <p className="mt-1 text-right font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
           {feeTotal.toFixed(0)}% (Local Preview Only)
         </p>
       </div>
 
       <div className="space-y-3 border-t border-line pt-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
             Treasury Wallet {!treasuryApplies && <span className="text-bronze/70">(N/A For This Standard)</span>}
           </p>
           <input
@@ -114,18 +114,18 @@ export default function TaxFeesFields({
             disabled={!treasuryApplies}
             className={`${inputClasses} disabled:cursor-not-allowed disabled:opacity-50`}
           />
-          <p className="mt-1 font-body text-[11px] text-bronze">On-chain, this wallet {treasuryNote}.</p>
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">On-chain, this wallet {treasuryNote}.</p>
         </div>
         <div className="opacity-50">
           <span className="flex items-center gap-2">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Marketing Wallet</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Marketing Wallet</p>
             <SoonTag />
           </span>
           <input value={value.marketingWallet} type="text" placeholder="0x..." disabled className={inputClasses} />
         </div>
         <div className="opacity-50">
           <span className="flex items-center gap-2">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Dev Wallet</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Dev Wallet</p>
             <SoonTag />
           </span>
           <input value={value.devWallet} type="text" placeholder="0x..." disabled className={inputClasses} />
@@ -134,8 +134,8 @@ export default function TaxFeesFields({
 
       <div className="flex items-center justify-between border-t border-line pt-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Seed Initial Liquidity</p>
-          <p className="mt-1 font-body text-[11px] text-bronze">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Seed Initial Liquidity</p>
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">
             Uses the Liquidity Pool share of your supply allocation plus the ETH you send at deploy to seed
             the pair on-chain. LP tokens auto-lock — see Liquidity & Launch.
           </p>

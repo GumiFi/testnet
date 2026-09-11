@@ -45,15 +45,15 @@ export default function PoolDetailModal({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
-              <Avatar label={monogramFor(pool.symbol0)} accent={accentForAddress(pool.token0)} className="h-9 w-9 text-[10px]" />
-              <Avatar label={monogramFor(pool.symbol1)} accent={accentForAddress(pool.token1)} className="h-9 w-9 text-[10px]" />
+              <Avatar label={monogramFor(pool.symbol0)} accent={accentForAddress(pool.token0)} className="h-9 w-9 text-[0.625rem]" />
+              <Avatar label={monogramFor(pool.symbol1)} accent={accentForAddress(pool.token1)} className="h-9 w-9 text-[0.625rem]" />
             </div>
             <div>
               <h2 className="font-display text-sm uppercase tracking-wider2 text-ivory">
                 {poolPairLabel(pool)}
               </h2>
               {pool.isLaunchpad && (
-                <span className="mt-1 flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
+                <span className="mt-1 flex items-center gap-1 font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight">
                   <RocketIcon className="h-3 w-3" />
                   Launched on Gumifi
                 </span>
@@ -75,7 +75,7 @@ export default function PoolDetailModal({
             <p className="font-display text-lg text-goldLight md:text-xl">
               {pool.tvlUsd !== null ? formatCompactUsd(pool.tvlUsd) : "—"}
             </p>
-            <p className="mt-1 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+            <p className="mt-1 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
               Total Liquidity
             </p>
           </div>
@@ -83,13 +83,13 @@ export default function PoolDetailModal({
             <p className="font-display text-lg text-goldLight md:text-xl">
               {pool.aprPct !== null ? `${pool.aprPct.toFixed(2)}%` : "—"}
             </p>
-            <p className="mt-1 font-mono text-[9px] uppercase tracking-wider2 text-bronze">APR</p>
+            <p className="mt-1 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">APR</p>
           </div>
           <div>
             <p className="font-display text-lg text-goldLight md:text-xl">
               {pool.volume24hUsd !== null ? formatCompactUsd(pool.volume24hUsd) : "—"}
             </p>
-            <p className="mt-1 font-mono text-[9px] uppercase tracking-wider2 text-bronze">24H Volume</p>
+            <p className="mt-1 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">24H Volume</p>
           </div>
         </div>
 
@@ -100,7 +100,7 @@ export default function PoolDetailModal({
                 key={item.id}
                 type="button"
                 onClick={() => setMetric(item.id)}
-                className={`rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+                className={`rounded-full border px-3 py-1 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
                   metric === item.id
                     ? "border-gold bg-gold/10 text-goldLight"
                     : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -113,7 +113,7 @@ export default function PoolDetailModal({
           <Sparkline values={series} positive={positive} className="mt-4 h-16 w-full" />
         </div>
 
-        <div className="mt-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+        <div className="mt-3 flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
           <span>24H Fees</span>
           <span className="text-ivory">{pool.fees24hUsd !== null ? formatCompactUsd(pool.fees24hUsd) : "—"}</span>
         </div>
@@ -122,7 +122,7 @@ export default function PoolDetailModal({
           <button
             type="button"
             onClick={() => onAction("Add Liquidity")}
-            className="flex items-center justify-center gap-2 border border-gold px-4 py-2.5 font-mono text-[11px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+            className="flex items-center justify-center gap-2 border border-gold px-4 py-2.5 font-mono text-[0.6875rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
           >
             <PlusIcon className="h-3.5 w-3.5" />
             Add Liquidity
@@ -130,7 +130,7 @@ export default function PoolDetailModal({
           <button
             type="button"
             onClick={() => onAction("Remove Liquidity")}
-            className="flex items-center justify-center gap-2 border border-line px-4 py-2.5 font-mono text-[11px] uppercase tracking-wider2 text-bronze transition-colors hover:border-garnetLight/50 hover:text-garnetLight"
+            className="flex items-center justify-center gap-2 border border-line px-4 py-2.5 font-mono text-[0.6875rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-garnetLight/50 hover:text-garnetLight"
           >
             <MinusIcon className="h-3.5 w-3.5" />
             Remove Liquidity

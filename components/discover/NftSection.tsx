@@ -72,10 +72,10 @@ export default function NftSection({
                   <p className="mt-3 truncate font-display text-xs uppercase tracking-wider2 text-ivory">
                     {collection.name}
                   </p>
-                  <p className="mt-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                  <p className="mt-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                     Floor {formatEth(collection.floorEth)}
                   </p>
-                  <div className="mt-1 flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+                  <div className="mt-1 flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
                     <span className="text-bronze">{formatCompactNumber(collection.owners)} owners</span>
                     <span className={positive ? "text-emeraldLight" : "text-garnetLight"}>
                       {formatPct(collection.change24h)}

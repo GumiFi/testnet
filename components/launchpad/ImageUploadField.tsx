@@ -34,8 +34,8 @@ export default function ImageUploadField({
   return (
     <div>
       <div className="flex items-center justify-between">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">{label}</p>
-        <span className="border border-line px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">{label}</p>
+        <span className="border border-line px-2 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
           {ratioLabel} Required
         </span>
       </div>
@@ -71,7 +71,7 @@ export default function ImageUploadField({
           className={`mt-2 flex w-full flex-col items-center justify-center gap-2 border border-dashed border-line bg-panel2 text-bronze transition-colors hover:border-gold/50 hover:text-goldLight ${aspectClassName}`}
         >
           <ImageIcon className="h-6 w-6" />
-          <span className="px-4 text-center font-mono text-[9px] uppercase tracking-wider2">
+          <span className="px-4 text-center font-mono text-[0.5625rem] uppercase tracking-wider2">
             Upload Image (PNG, JPG)
           </span>
         </button>

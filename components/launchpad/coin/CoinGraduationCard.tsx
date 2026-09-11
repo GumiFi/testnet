@@ -13,11 +13,11 @@ export default function CoinGraduationCard({ marketCap }: { marketCap: number })
           <span
             className={`h-2 w-2 shrink-0 rounded-full ${graduated ? "bg-emeraldLight" : "bg-goldLight"}`}
           />
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">
             Graduation {bonded}%
           </p>
         </div>
-        <span className="border border-emeraldLight/40 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-emeraldLight">
+        <span className="border border-emeraldLight/40 px-2 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-emeraldLight">
           Gumifi Dex
         </span>
       </div>
@@ -29,7 +29,7 @@ export default function CoinGraduationCard({ marketCap }: { marketCap: number })
         />
       </div>
 
-      <div className="mt-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+      <div className="mt-2 flex items-center justify-between font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
         <span>
           {formatCompactUsd(marketCap)} / {formatCompactUsd(BONDING_MCAP_TARGET)}
         </span>

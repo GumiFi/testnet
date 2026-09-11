@@ -24,24 +24,24 @@ export default function Footer() {
                 prefetch={link.external ? undefined : false}
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noopener noreferrer" : undefined}
-                className="font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
+                className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
               >
                 {link.label}
               </Link>
             ) : (
               <span
                 key={link.label}
-                className="cursor-default font-mono text-[10px] uppercase tracking-wider2 text-bronze/60"
+                className="cursor-default font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze/60"
               >
                 {link.label}
               </span>
             )
           )}
         </nav>
-        <p className="font-mono text-[10px] uppercase tracking-wider3 text-bronze">
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider3 text-bronze">
           Gumifi Ecosystem
         </p>
-        <p className="font-mono text-[10px] text-bronze">
+        <p className="font-mono text-[0.625rem] text-bronze">
           &#169; 2026 Gumifi. All rights reserved.
         </p>
       </div>

@@ -39,8 +39,8 @@ export default function ManagePositionModal({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex -space-x-2">
-              <Avatar label={monogramFor(position.symbol0)} accent="gold" className="h-8 w-8 text-[10px]" />
-              <Avatar label={monogramFor(position.symbol1)} accent="emerald" className="h-8 w-8 text-[10px]" />
+              <Avatar label={monogramFor(position.symbol0)} accent="gold" className="h-8 w-8 text-[0.625rem]" />
+              <Avatar label={monogramFor(position.symbol1)} accent="emerald" className="h-8 w-8 text-[0.625rem]" />
             </div>
             <h2 className="font-display text-sm uppercase tracking-wider2 text-ivory">
               {position.symbol0} / {position.symbol1}
@@ -57,24 +57,24 @@ export default function ManagePositionModal({
         </div>
 
         <div className="mt-6 space-y-2 border border-line bg-panel2 px-4 py-4">
-          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+          <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
             <span className="text-bronze">Your Position</span>
             <span className="text-ivory">{position.valueUsd !== null ? formatUsd(position.valueUsd) : "—"}</span>
           </div>
-          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+          <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
             <span className="text-bronze">Pool Share</span>
             <span className="text-ivory">{position.poolSharePct.toFixed(4)}%</span>
           </div>
-          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+          <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
             <span className="text-bronze">{position.symbol0} Owned</span>
             <span className="text-ivory">{formatBalance(position.amount0Owned)}</span>
           </div>
-          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+          <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
             <span className="text-bronze">{position.symbol1} Owned</span>
             <span className="text-ivory">{formatBalance(position.amount1Owned)}</span>
           </div>
           {isBoosted && (
-            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+            <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
               <span className="text-bronze">APR Boost</span>
               <span className="flex items-center gap-1 text-goldLight">
                 <BoltIcon className="h-3 w-3" />
@@ -83,7 +83,7 @@ export default function ManagePositionModal({
             </div>
           )}
           {position.nextUnlockTime !== null && (
-            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+            <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
               <span className="text-bronze">Next Unlock</span>
               <span className="flex items-center gap-1 text-goldLight">
                 <LockIcon className="h-3 w-3" />
@@ -104,7 +104,7 @@ export default function ManagePositionModal({
             className="flex w-full items-center gap-3 border border-line px-4 py-3 text-left transition-colors hover:border-gold/50 hover:bg-panel2"
           >
             <PlusIcon className="h-4 w-4 text-goldLight" />
-            <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Add Liquidity</span>
+            <span className="font-mono text-[0.6875rem] uppercase tracking-wider2 text-ivory">Add Liquidity</span>
           </button>
           <button
             type="button"
@@ -117,7 +117,7 @@ export default function ManagePositionModal({
             }`}
           >
             <MinusIcon className="h-4 w-4 text-goldLight" />
-            <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">
+            <span className="font-mono text-[0.6875rem] uppercase tracking-wider2 text-ivory">
               {isLocked ? "Locked — Cannot Remove" : "Remove Liquidity"}
             </span>
           </button>
@@ -127,7 +127,7 @@ export default function ManagePositionModal({
             className="flex w-full items-center gap-3 border border-line px-4 py-3 text-left transition-colors hover:border-gold/50 hover:bg-panel2"
           >
             <CoinIcon className="h-4 w-4 text-goldLight" />
-            <span className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Collect Fees</span>
+            <span className="font-mono text-[0.6875rem] uppercase tracking-wider2 text-ivory">Collect Fees</span>
           </button>
         </div>
       </div>

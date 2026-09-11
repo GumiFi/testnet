@@ -43,7 +43,7 @@ export default function ListNftModal({
 
         <div className="mt-4 space-y-3">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">NFT Contract Address</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">NFT Contract Address</p>
             <input
               value={nftAddress}
               onChange={(event) => setNftAddress(event.target.value)}
@@ -54,7 +54,7 @@ export default function ListNftModal({
             />
           </div>
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Token ID</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Token ID</p>
             <input
               value={tokenId}
               onChange={(event) => setTokenId(event.target.value.replace(/[^0-9]/g, ""))}
@@ -66,7 +66,7 @@ export default function ListNftModal({
             />
           </div>
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Price (ETH)</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Price (ETH)</p>
             <input
               value={priceEth}
               onChange={(event) => setPriceEth(event.target.value.replace(/[^0-9.]/g, ""))}
@@ -85,7 +85,7 @@ export default function ListNftModal({
           type="button"
           disabled={!canSubmit}
           onClick={() => onConfirm(nftAddress.trim(), tokenId.trim(), priceEth.trim())}
-          className={`mt-5 w-full rounded-lg border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+          className={`mt-5 w-full rounded-lg border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
             !canSubmit
               ? "cursor-not-allowed border-line bg-panel2 text-bronze"
               : "border-goldLight text-goldLight hover:bg-gold/20"

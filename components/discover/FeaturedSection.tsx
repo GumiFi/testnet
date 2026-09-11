@@ -27,7 +27,7 @@ export default function FeaturedSection({
               <div className="relative flex items-center gap-4">
                 <Avatar label={project.monogram} accent="gold" className="h-14 w-14 text-base" />
                 <div>
-                  <span className="font-mono text-[10px] uppercase tracking-wider3 text-bronze">
+                  <span className="font-mono text-[0.625rem] uppercase tracking-wider3 text-bronze">
                     {project.category}
                   </span>
                   <h3 className="mt-1 font-display text-xl uppercase tracking-wider2 text-ivory">
@@ -36,7 +36,7 @@ export default function FeaturedSection({
                 </div>
               </div>
               <p className="relative mt-4 font-body text-sm text-ivory/80">{project.tagline}</p>
-              <span className="relative mt-5 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-wider2 text-goldLight">
+              <span className="relative mt-5 inline-flex items-center gap-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight">
                 Explore
                 <span className="transition-transform group-hover:translate-x-1">→</span>
               </span>

@@ -9,7 +9,7 @@ export default function CoinStatBox({
 }) {
   return (
     <div className={`border border-line bg-panel px-1 py-2 text-center ${className}`}>
-      <p className="font-mono text-[8px] uppercase tracking-wider2 text-bronze">{label}</p>
+      <p className="font-mono text-[0.5rem] uppercase tracking-wider2 text-bronze">{label}</p>
       <div className="mt-1 truncate font-display text-xs text-ivory sm:text-sm">{children}</div>
     </div>
   );

@@ -60,7 +60,7 @@ export default function PairDetailApp({ id }: { id: string }) {
         </p>
         <Link
           href="/dex"
-          className="mt-4 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-goldLight hover:text-goldLight"
+          className="mt-4 inline-flex items-center gap-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight hover:text-goldLight"
         >
           <ChevronLeftIcon className="h-3 w-3" />
           Back to Dex
@@ -79,7 +79,7 @@ export default function PairDetailApp({ id }: { id: string }) {
     <div className="mx-auto max-w-2xl px-4 py-6 md:py-10">
       <Link
         href="/dex"
-        className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
+        className="inline-flex items-center gap-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
       >
         <ChevronLeftIcon className="h-3 w-3" />
         Back to Dex
@@ -91,7 +91,7 @@ export default function PairDetailApp({ id }: { id: string }) {
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
               <h1 className="font-display text-base uppercase tracking-wider2 text-ivory">{pair.symbol}</h1>
-              <span className="font-mono text-[10px] text-bronze">/ {pair.quoteSymbol}</span>
+              <span className="font-mono text-[0.625rem] text-bronze">/ {pair.quoteSymbol}</span>
               {pair.boost != null && <BoosterBadge value={pair.boost} />}
             </div>
             <p className="truncate font-body text-xs text-bronze">{pair.name}</p>
@@ -119,14 +119,14 @@ export default function PairDetailApp({ id }: { id: string }) {
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-1.5">
-        <span className="border border-line px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+        <span className="border border-line px-1.5 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
           {pair.age}
         </span>
-        <span className="inline-flex items-center gap-1 border border-gold/40 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
+        <span className="inline-flex items-center gap-1 border border-gold/40 px-1.5 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight">
           <FlameIcon className="h-2.5 w-2.5" />
           Rank #{pair.rank}
         </span>
-        <span className="border border-line px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+        <span className="border border-line px-1.5 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
           Gumifi DEX
         </span>
       </div>
@@ -208,7 +208,7 @@ export default function PairDetailApp({ id }: { id: string }) {
         <button
           type="button"
           onClick={() => setWatchlisted((value) => !value)}
-          className={`flex items-center justify-center gap-2 border px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+          className={`flex items-center justify-center gap-2 border px-4 py-2.5 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
             watchlisted
               ? "border-gold bg-gold/10 text-goldLight"
               : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -220,7 +220,7 @@ export default function PairDetailApp({ id }: { id: string }) {
         <button
           type="button"
           onClick={() => setComingSoon("Price Alerts")}
-          className="flex items-center justify-center gap-2 border border-line px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
+          className="flex items-center justify-center gap-2 border border-line px-4 py-2.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
         >
           <BellIcon className="h-3.5 w-3.5" />
           Alerts
@@ -229,18 +229,18 @@ export default function PairDetailApp({ id }: { id: string }) {
 
       <Link
         href="/swap"
-        className="mt-3 flex w-full items-center justify-center gap-2 border border-gold bg-gold/10 px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+        className="mt-3 flex w-full items-center justify-center gap-2 border border-gold bg-gold/10 px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
       >
         <SwapIcon className="h-4 w-4" />
         Trade {pair.symbol} / {pair.quoteSymbol}
       </Link>
 
       <div className="mt-4 flex items-center justify-between border border-line bg-panel px-4 py-3">
-        <span className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Created by</span>
+        <span className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Created by</span>
         {isGumiHandle(pair.creator) ? (
-          <GumiTag handle={pair.creator} className="max-w-[160px]" />
+          <GumiTag handle={pair.creator} className="max-w-[10rem]" />
         ) : (
-          <WalletTag address={pair.creator} className="max-w-[160px]" />
+          <WalletTag address={pair.creator} className="max-w-[10rem]" />
         )}
       </div>
 
@@ -252,7 +252,7 @@ export default function PairDetailApp({ id }: { id: string }) {
               key={tabLabel}
               type="button"
               onClick={() => !isActive && setComingSoon(tabLabel)}
-              className={`px-2 py-2.5 text-center font-mono text-[9px] uppercase tracking-wider2 transition-colors ${
+              className={`px-2 py-2.5 text-center font-mono text-[0.5625rem] uppercase tracking-wider2 transition-colors ${
                 index !== 0 ? "border-l border-line" : ""
               } ${isActive ? "bg-gold/10 text-goldLight" : "text-bronze hover:text-ivory"}`}
             >

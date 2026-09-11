@@ -59,10 +59,10 @@ export default function WalletDropdown({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="absolute right-0 top-full z-40 mt-2 w-full border border-gold/40 bg-panel shadow-[0_20px_40px_rgba(0,0,0,0.55)]">
+    <div className="absolute right-0 top-full z-40 mt-2 w-full border border-gold/40 bg-panel shadow-[0_1.25rem_2.5rem_rgba(0,0,0,0.55)]">
       <div className="flex items-center gap-2.5 border-b border-line bg-gradient-to-b from-gold/10 to-transparent px-3.5 py-3">
         <Link href="/profile" onClick={onClose} aria-label="View profile">
-          <Avatar label={monogram ?? ""} accent="gold" src={avatarUrl} className="h-8 w-8 shrink-0 text-[10px]" />
+          <Avatar label={monogram ?? ""} accent="gold" src={avatarUrl} className="h-8 w-8 shrink-0 text-[0.625rem]" />
         </Link>
 
         <div className="min-w-0 flex-1">
@@ -89,7 +89,7 @@ export default function WalletDropdown({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="mt-0.5 flex items-center gap-1.5">
-            <p className="min-w-0 truncate font-mono text-[10px] text-goldLight">
+            <p className="min-w-0 truncate font-mono text-[0.625rem] text-goldLight">
               {valueHidden ? "*****" : formatUsd(totalValueUsd)}
             </p>
             <button
@@ -104,13 +104,13 @@ export default function WalletDropdown({ onClose }: { onClose: () => void }) {
         </div>
       </div>
 
-      <p className="border-b border-line px-3.5 pt-2.5 pb-1.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+      <p className="border-b border-line px-3.5 pt-2.5 pb-1.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
         Holdings
       </p>
 
       <div className="max-h-28 overflow-y-auto overscroll-contain" onScroll={handleHoldingsScroll}>
         {holdingsLoading && assets.length === 0 && (
-          <p className="px-3.5 py-3 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+          <p className="px-3.5 py-3 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
             Loading on-chain holdings…
           </p>
         )}
@@ -121,16 +121,16 @@ export default function WalletDropdown({ onClose }: { onClose: () => void }) {
               key={asset.id}
               className="flex h-14 shrink-0 items-center gap-2 border-b border-line px-3 last:border-b-0"
             >
-              <Avatar label={asset.monogram} accent={asset.accent} className="h-6 w-6 shrink-0 text-[8px]" />
+              <Avatar label={asset.monogram} accent={asset.accent} className="h-6 w-6 shrink-0 text-[0.5rem]" />
               <div className="min-w-0 flex-1">
-                <p className="truncate font-display text-[10px] uppercase tracking-wider2 text-ivory">
+                <p className="truncate font-display text-[0.625rem] uppercase tracking-wider2 text-ivory">
                   {asset.symbol}
                 </p>
-                <p className="truncate font-mono text-[8px] text-bronze">
+                <p className="truncate font-mono text-[0.5rem] text-bronze">
                   {formatBalance(asset.balance)} {asset.symbol}
                 </p>
               </div>
-              <p className="shrink-0 font-mono text-[9px] text-goldLight">
+              <p className="shrink-0 font-mono text-[0.5625rem] text-goldLight">
                 {valueHidden ? "*****" : asset.valueUsd != null ? formatUsd(asset.valueUsd) : "—"}
               </p>
             </div>

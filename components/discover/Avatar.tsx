@@ -9,7 +9,7 @@ const accentStyles: Record<Accent, string> = {
 export default function Avatar({
   label,
   accent,
-  className = "h-10 w-10 text-[11px]",
+  className = "h-10 w-10 text-[0.6875rem]",
   shape = "circle",
   src,
 }: {

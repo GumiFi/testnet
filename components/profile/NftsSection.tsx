@@ -38,7 +38,7 @@ export default function NftsSection({
             key={tab.id}
             type="button"
             onClick={() => setCategory(tab.id)}
-            className={`rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`rounded-full border px-3 py-1 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               category === tab.id
                 ? "border-gold bg-gold/10 text-goldLight"
                 : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -52,7 +52,7 @@ export default function NftsSection({
       {isOwnedTab ? (
         gumiNftsLoading ? (
           <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Loading NFTs...</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Loading NFTs...</p>
           </div>
         ) : ownedGumiNfts.length > 0 ? (
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -62,13 +62,13 @@ export default function NftsSection({
                   label={nft.tokenId.slice(0, 3)}
                   accent="gold"
                   src={nft.image}
-                  className="h-12 w-12 text-[10px]"
+                  className="h-12 w-12 text-[0.625rem]"
                   shape="square"
                 />
-                <p className="mt-2 truncate font-display text-[11px] uppercase tracking-wider2 text-ivory">
+                <p className="mt-2 truncate font-display text-[0.6875rem] uppercase tracking-wider2 text-ivory">
                   {nft.name}
                 </p>
-                <p className="mt-0.5 truncate font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+                <p className="mt-0.5 truncate font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
                   Gumi Custom NFT
                 </p>
               </div>
@@ -76,25 +76,25 @@ export default function NftsSection({
           </div>
         ) : gumiNftBalance > 0 ? (
           <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
               {gumiNftBalance} Gumi Custom NFT Owned
             </p>
           </div>
         ) : (
           <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
           </div>
         )
       ) : isCreatedTab ? (
         collectionsLoading && collections.length === 0 ? (
           <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
               Loading collections...
             </p>
           </div>
         ) : collections.length === 0 ? (
           <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
           </div>
         ) : (
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -104,13 +104,13 @@ export default function NftsSection({
                   label={monogramFor(collection.symbol)}
                   accent="gold"
                   src={collection.image}
-                  className="h-12 w-12 text-[10px]"
+                  className="h-12 w-12 text-[0.625rem]"
                   shape="square"
                 />
-                <p className="mt-2 truncate font-display text-[11px] uppercase tracking-wider2 text-ivory">
+                <p className="mt-2 truncate font-display text-[0.6875rem] uppercase tracking-wider2 text-ivory">
                   {collection.name}
                 </p>
-                <p className="mt-0.5 truncate font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+                <p className="mt-0.5 truncate font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
                   {collection.symbol}
                 </p>
               </div>
@@ -119,7 +119,7 @@ export default function NftsSection({
         )
       ) : (
         <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
         </div>
       )}
     </div>

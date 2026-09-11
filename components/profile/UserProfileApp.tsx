@@ -38,7 +38,7 @@ export default function UserProfileApp({ address }: { address: string }) {
     <div className="mx-auto max-w-xl space-y-8 px-4 pt-6 pb-10 md:pt-10 md:pb-14">
       <Link
         href="/discover"
-        className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
+        className="inline-flex items-center gap-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:text-goldLight"
       >
         <ChevronLeftIcon className="h-3 w-3" />
         Back to Discover

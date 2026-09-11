@@ -44,7 +44,7 @@ export default function NotificationCenterApp() {
           Notification Center
         </h1>
       </div>
-      <p className="mt-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+      <p className="mt-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
         {unreadCount === 0
           ? "You are all caught up"
           : `${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}`}
@@ -55,7 +55,7 @@ export default function NotificationCenterApp() {
           <button
             type="button"
             onClick={() => setFilter("all")}
-            className={`rounded-full border px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`rounded-full border px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               filter === "all"
                 ? "border-gold bg-gold/10 text-goldLight"
                 : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -71,7 +71,7 @@ export default function NotificationCenterApp() {
                 key={category.id}
                 type="button"
                 onClick={() => setFilter(category.id)}
-                className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+                className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
                   isActive
                     ? "border-gold bg-gold/10 text-goldLight"
                     : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -89,7 +89,7 @@ export default function NotificationCenterApp() {
             <button
               type="button"
               onClick={markAllAsRead}
-              className="font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:text-gold"
+              className="font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:text-gold"
             >
               Mark All Read
             </button>
@@ -98,7 +98,7 @@ export default function NotificationCenterApp() {
             <button
               type="button"
               onClick={clearAll}
-              className="font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:text-garnetLight"
+              className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:text-garnetLight"
             >
               Clear All
             </button>

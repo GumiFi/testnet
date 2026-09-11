@@ -445,7 +445,7 @@ export default function LockLiquiditySection({
             <button
               type="button"
               onClick={connect}
-              className="mt-6 border border-gold px-5 py-2.5 font-mono text-[11px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+              className="mt-6 border border-gold px-5 py-2.5 font-mono text-[0.6875rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
             >
               Connect Wallet
             </button>
@@ -467,7 +467,7 @@ export default function LockLiquiditySection({
 
           <div className="mt-6 space-y-3">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Pool</p>
+              <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Pool</p>
               <div className="mt-2 flex items-center gap-2 border border-line bg-panel2 px-3 py-2.5">
                 <TokenSelectButton token={tokenA} onClick={() => setSearchSide("a")} />
                 <span className="font-mono text-xs text-bronze">/</span>
@@ -477,14 +477,14 @@ export default function LockLiquiditySection({
 
             <div>
               <div className="flex items-center justify-between">
-                <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                   LP Amount To Lock
                 </p>
                 {pairExists && lpBalance > 0 && (
                   <button
                     type="button"
                     onClick={() => setAmount(formatAmountInput(lpBalance))}
-                    className="font-mono text-[10px] uppercase tracking-wider2 text-goldLight hover:text-gold"
+                    className="font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight hover:text-gold"
                   >
                     Max
                   </button>
@@ -503,7 +503,7 @@ export default function LockLiquiditySection({
                   disabled={!pairExists}
                   className="w-full min-w-0 bg-transparent font-display text-2xl text-ivory placeholder:text-bronze/50 focus:outline-none disabled:opacity-40"
                 />
-                <p className="mt-2 font-mono text-[10px] text-bronze">
+                <p className="mt-2 font-mono text-[0.625rem] text-bronze">
                   LP Balance: {pairExists ? (balancesLoading ? "—" : formatBalance(lpBalance)) : "No pool yet"}
                 </p>
               </div>
@@ -511,7 +511,7 @@ export default function LockLiquiditySection({
           </div>
 
           <div className="mt-6">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Lock Duration</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Lock Duration</p>
             <div className="mt-2 grid grid-cols-4 gap-2">
               {tiers.map((tier, index) => (
                 <button
@@ -525,28 +525,28 @@ export default function LockLiquiditySection({
                   }`}
                 >
                   <p className="font-display text-xs uppercase tracking-wider2">{tier.minDays} Days</p>
-                  <p className="mt-1 font-mono text-[9px] text-bronze">{tier.multiplier}x weight</p>
+                  <p className="mt-1 font-mono text-[0.5625rem] text-bronze">{tier.multiplier}x weight</p>
                 </button>
               ))}
             </div>
           </div>
 
           <div className="mt-6 space-y-2 border-t border-line pt-4">
-            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+            <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
               <span className="text-bronze">Pool</span>
               <span className="text-ivory">{pairExists ? "Existing Pool" : !pairResolvable ? "Unavailable" : "No Pool Yet"}</span>
             </div>
-            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+            <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
               <span className="text-bronze">Boost Eligibility</span>
               <span className={isWethPaired ? "text-goldLight" : "text-bronze"}>
                 {pairExists ? (isWethPaired ? "ETH-Paired · Eligible" : "Not ETH-Paired") : "—"}
               </span>
             </div>
-            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+            <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
               <span className="text-bronze">Reward Weight</span>
               <span className="text-goldLight">{selectedTier.multiplier}x</span>
             </div>
-            <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider2">
+            <div className="flex items-center justify-between font-mono text-[0.625rem] uppercase tracking-wider2">
               <span className="text-bronze">Unlock Date</span>
               <span className="text-ivory">{getUnlockDateLabel(selectedTier.minDays)}</span>
             </div>
@@ -556,7 +556,7 @@ export default function LockLiquiditySection({
             type="button"
             disabled={ctaDisabled}
             onClick={ctaAction}
-            className={`mt-6 flex w-full items-center justify-center gap-2 border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+            className={`mt-6 flex w-full items-center justify-center gap-2 border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
               ctaDisabled
                 ? "cursor-not-allowed border-line bg-panel2 text-bronze"
                 : "border-gold text-goldLight hover:bg-gold hover:text-void"
@@ -567,7 +567,7 @@ export default function LockLiquiditySection({
           </button>
 
           {actionError && (
-            <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+            <p className="mt-3 text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-garnetLight">
               {actionError}
             </p>
           )}
@@ -576,7 +576,7 @@ export default function LockLiquiditySection({
             <button
               type="button"
               onClick={onExplore}
-              className="mt-3 w-full text-center font-mono text-[10px] uppercase tracking-wider2 text-bronze hover:text-ivory"
+              className="mt-3 w-full text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze hover:text-ivory"
             >
               Explore Pools →
             </button>
@@ -592,12 +592,12 @@ export default function LockLiquiditySection({
                 href={`${NETWORK.explorerUrl}/tx/${lockResult.hash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-2 block truncate font-mono text-[10px] text-bronze hover:text-ivory"
+                className="mt-2 block truncate font-mono text-[0.625rem] text-bronze hover:text-ivory"
               >
                 {lockResult.hash}
               </a>
               {lockResult.lockId !== null && (
-                <p className="mt-1 font-mono text-[10px] text-bronze">Lock ID #{lockResult.lockId.toString()}</p>
+                <p className="mt-1 font-mono text-[0.625rem] text-bronze">Lock ID #{lockResult.lockId.toString()}</p>
               )}
             </div>
           )}
@@ -610,7 +610,7 @@ export default function LockLiquiditySection({
               </div>
               {boostStatus === "checkpoint-pending" ? (
                 <>
-                  <p className="mt-2 flex items-center gap-1.5 font-mono text-[10px] text-bronze">
+                  <p className="mt-2 flex items-center gap-1.5 font-mono text-[0.625rem] text-bronze">
                     <ClockIcon className="h-3 w-3" />
                     Checkpoint recorded — {formatCountdown(boostReadySeconds)}
                   </p>
@@ -618,7 +618,7 @@ export default function LockLiquiditySection({
                     type="button"
                     disabled={busy || !isBoostReady}
                     onClick={() => handleRegisterBoost(lockResult!.lockId!)}
-                    className={`mt-2 w-full border px-3 py-2 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+                    className={`mt-2 w-full border px-3 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
                       !isBoostReady || busy
                         ? "cursor-not-allowed border-line text-bronze"
                         : "border-gold text-goldLight hover:bg-gold hover:text-void"
@@ -632,13 +632,13 @@ export default function LockLiquiditySection({
                   type="button"
                   disabled={busy}
                   onClick={() => handleRegisterBoost(lockResult!.lockId!)}
-                  className="mt-2 w-full border border-gold px-3 py-2 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void disabled:cursor-not-allowed disabled:opacity-50"
+                  className="mt-2 w-full border border-gold px-3 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {busy ? STAGE_LABELS[stage] : "Activate APR Boost"}
                 </button>
               )}
               {boostError && (
-                <p className="mt-2 font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">{boostError}</p>
+                <p className="mt-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-garnetLight">{boostError}</p>
               )}
             </div>
           )}

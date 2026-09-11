@@ -31,7 +31,7 @@ export default function GumiTag({
           goToProfile(e);
         }
       }}
-      className={`inline-flex min-w-0 shrink-0 cursor-pointer items-center gap-1 rounded-full bg-gradient-to-r from-goldDim/25 via-panel2 to-goldDim/25 px-2 py-0.5 font-mono text-[9px] uppercase tracking-wider2 text-goldLight shadow-[0_0_5px_rgba(201,162,39,0.35)] ring-1 ring-inset ring-gold/50 transition-colors hover:text-ivory hover:ring-gold ${className}`}
+      className={`inline-flex min-w-0 shrink-0 cursor-pointer items-center gap-1 rounded-full bg-gradient-to-r from-goldDim/25 via-panel2 to-goldDim/25 px-2 py-0.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight shadow-[0_0_0.3125rem_rgba(201,162,39,0.35)] ring-1 ring-inset ring-gold/50 transition-colors hover:text-ivory hover:ring-gold ${className}`}
     >
       <span className="min-w-0 truncate">{handle}</span>
       <CrownIcon className="h-2.5 w-2.5 shrink-0 text-goldLight" />

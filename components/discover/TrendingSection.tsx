@@ -59,7 +59,7 @@ export default function TrendingSection() {
                   href={`/dex/pair/${token.id}`}
                   className="flex w-full items-center gap-3 border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-panel2"
                 >
-                  <Avatar label={token.monogram} accent={token.accent} className="h-10 w-10 text-[11px]" />
+                  <Avatar label={token.monogram} accent={token.accent} className="h-10 w-10 text-[0.6875rem]" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline gap-2">
                       <span className="font-display text-sm uppercase tracking-wider2 text-ivory">
@@ -68,7 +68,7 @@ export default function TrendingSection() {
                       <span className="truncate font-body text-xs text-bronze">{token.name}</span>
                       {token.boost != null && <BoosterBadge value={token.boost} className="self-center" />}
                     </div>
-                    <p className="mt-1 truncate font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                    <p className="mt-1 truncate font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                       MC {formatCompactUsd(token.marketCap)} · VOL {formatCompactUsd(token.volume24h)} · LIQ{" "}
                       {formatCompactUsd(token.liquidity)}
                     </p>
@@ -81,7 +81,7 @@ export default function TrendingSection() {
                   <div className="shrink-0 text-right">
                     <p className="font-mono text-xs text-ivory">{formatPrice(token.priceUsd)}</p>
                     <p
-                      className={`mt-1 flex items-center justify-end gap-1 font-mono text-[10px] ${
+                      className={`mt-1 flex items-center justify-end gap-1 font-mono text-[0.625rem] ${
                         positive ? "text-emeraldLight" : "text-garnetLight"
                       }`}
                     >

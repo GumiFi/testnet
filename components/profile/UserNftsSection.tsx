@@ -60,7 +60,7 @@ export default function UserNftsSection({
             key={tab.id}
             type="button"
             onClick={() => setCategory(tab.id)}
-            className={`rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`rounded-full border px-3 py-1 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               category === tab.id
                 ? "border-gold bg-gold/10 text-goldLight"
                 : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -74,11 +74,11 @@ export default function UserNftsSection({
       {isOwnedTab ? (
         ownedLoading && owned.length === 0 ? (
           <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Loading NFTs…</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Loading NFTs…</p>
           </div>
         ) : owned.length === 0 ? (
           <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
           </div>
         ) : (
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -88,13 +88,13 @@ export default function UserNftsSection({
                   label={nft.tokenId.slice(0, 3)}
                   accent="gold"
                   src={nft.image}
-                  className="h-12 w-12 text-[10px]"
+                  className="h-12 w-12 text-[0.625rem]"
                   shape="square"
                 />
-                <p className="mt-2 truncate font-display text-[11px] uppercase tracking-wider2 text-ivory">
+                <p className="mt-2 truncate font-display text-[0.6875rem] uppercase tracking-wider2 text-ivory">
                   {nft.name}
                 </p>
-                <p className="mt-0.5 truncate font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+                <p className="mt-0.5 truncate font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
                   Gumi Custom NFT
                 </p>
               </div>
@@ -103,11 +103,11 @@ export default function UserNftsSection({
         )
       ) : collectionsLoading && collections.length === 0 ? (
         <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Loading collections…</p>
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Loading collections…</p>
         </div>
       ) : collections.length === 0 ? (
         <div className="mt-3 border border-line bg-panel px-4 py-8 text-center">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
         </div>
       ) : (
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -117,13 +117,13 @@ export default function UserNftsSection({
                 label={monogramFor(collection.symbol)}
                 accent="gold"
                 src={collection.image}
-                className="h-12 w-12 text-[10px]"
+                className="h-12 w-12 text-[0.625rem]"
                 shape="square"
               />
-              <p className="mt-2 truncate font-display text-[11px] uppercase tracking-wider2 text-ivory">
+              <p className="mt-2 truncate font-display text-[0.6875rem] uppercase tracking-wider2 text-ivory">
                 {collection.name}
               </p>
-              <p className="mt-0.5 truncate font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+              <p className="mt-0.5 truncate font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
                 {collection.symbol}
               </p>
             </div>

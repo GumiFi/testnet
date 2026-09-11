@@ -29,7 +29,7 @@ export default function LiquiditySuccessModal({
           <button
             type="button"
             onClick={onPrimary}
-            className="mt-6 w-full border border-gold px-4 py-2 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+            className="mt-6 w-full border border-gold px-4 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
           >
             {primaryLabel}
           </button>
@@ -37,7 +37,7 @@ export default function LiquiditySuccessModal({
         <button
           type="button"
           onClick={onClose}
-          className="mt-2 w-full border border-line px-4 py-2 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
+          className="mt-2 w-full border border-line px-4 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
         >
           Close
         </button>

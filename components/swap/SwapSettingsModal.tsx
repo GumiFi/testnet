@@ -71,7 +71,7 @@ export default function SwapSettingsModal({
         </div>
 
         <div className="mt-6">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
             Slippage Tolerance
           </p>
           <div className="mt-3 grid grid-cols-4 gap-2">
@@ -84,7 +84,7 @@ export default function SwapSettingsModal({
                   setCustomValue("");
                   setSlippage(preset);
                 }}
-                className={`rounded-lg border px-2 py-2 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+                className={`rounded-lg border px-2 py-2 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
                   !customOpen && settings.slippagePct === preset
                     ? "border-gold bg-gold/10 text-goldLight"
                     : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -96,7 +96,7 @@ export default function SwapSettingsModal({
             <button
               type="button"
               onClick={() => setCustomOpen(true)}
-              className={`rounded-lg border px-2 py-2 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+              className={`rounded-lg border px-2 py-2 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
                 customOpen
                   ? "border-gold bg-gold/10 text-goldLight"
                   : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -124,14 +124,14 @@ export default function SwapSettingsModal({
           )}
 
           {highPriceRisk && (
-            <p className="mt-2 font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+            <p className="mt-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-garnetLight">
               High slippage — your trade may be frontrun
             </p>
           )}
         </div>
 
         <div className="mt-6">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
             Transaction Deadline
           </p>
           <div className="mt-3 flex items-center gap-2 rounded-lg border border-line bg-panel2 px-3 py-2 focus-within:border-gold/60">
@@ -149,7 +149,7 @@ export default function SwapSettingsModal({
 
         <div className="mt-6 flex items-center justify-between gap-4 rounded-xl border border-line bg-panel2 px-3 py-3">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">
               MEV Protection
             </p>
             <p className="mt-1 font-body text-xs text-bronze">
@@ -173,7 +173,7 @@ export default function SwapSettingsModal({
         <button
           type="button"
           onClick={onClose}
-          className="mt-6 w-full rounded-lg border border-gold px-4 py-2.5 font-mono text-[11px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+          className="mt-6 w-full rounded-lg border border-gold px-4 py-2.5 font-mono text-[0.6875rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
         >
           Done
         </button>

@@ -333,7 +333,7 @@ export default function AdvancedTokenGeneratorApp() {
           <BoltIcon className="h-4 w-4" />
         </span>
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-wider2 text-ivory">Live On-Chain Deploy</p>
+          <p className="font-mono text-[0.6875rem] uppercase tracking-wider2 text-ivory">Live On-Chain Deploy</p>
           <p className="mt-1 font-body text-xs text-bronze">
             Deploys a real ERC-20 contract on {NETWORK.name} via the Gumifi Advanced Token Factory. Fields
             marked <span className="text-bronze">Soon</span> aren&apos;t supported by any deployed Advanced
@@ -383,12 +383,12 @@ export default function AdvancedTokenGeneratorApp() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <span className="flex items-center gap-1.5">
-                  <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Decimals</p>
+                  <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Decimals</p>
                 </span>
                 <div className="mt-2 flex h-11 items-center rounded-lg border border-line bg-panel2 px-4 font-display text-base text-ivory">
                   {ADVANCED_TOKEN_DECIMALS}
                 </div>
-                <p className="mt-1 font-body text-[10px] text-bronze">Fixed on-chain, not adjustable.</p>
+                <p className="mt-1 font-body text-[0.625rem] text-bronze">Fixed on-chain, not adjustable.</p>
               </div>
               <div>
                 <FieldHeader label="Total Supply" counter="Units" />
@@ -416,7 +416,7 @@ export default function AdvancedTokenGeneratorApp() {
             </div>
 
             <div className="border-t border-line pt-4">
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Token Standard</p>
+              <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Token Standard</p>
               <div className="mt-2">
                 <TokenStandardSelector
                   value={advanced.tokenStandard}
@@ -490,7 +490,7 @@ export default function AdvancedTokenGeneratorApp() {
             </SectionCard>
 
             <div className="rounded-xl border border-gold/30 bg-panel2 px-4 py-4">
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Review</p>
+              <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Review</p>
               <div className="mt-3 flex items-center gap-3">
                 {tokenImage ? (
                   <img src={tokenImage} alt="" className="h-11 w-11 rounded-lg border border-gold/40 object-cover" />
@@ -499,12 +499,12 @@ export default function AdvancedTokenGeneratorApp() {
                 )}
                 <div>
                   <p className="font-display text-sm text-ivory">{tokenName || "Untitled Token"}</p>
-                  <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                  <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                     ${tokenSymbol || "SYMBOL"} • {supplyNum.toLocaleString()} Supply
                   </p>
                 </div>
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 font-mono text-[10px] uppercase tracking-wider2">
+              <div className="mt-3 grid grid-cols-2 gap-2 font-mono text-[0.625rem] uppercase tracking-wider2">
                 <span className="text-emeraldLight">Buy Tax {advanced.buyTaxPct.toFixed(1)}%</span>
                 <span className="text-emeraldLight">Sell Tax {advanced.sellTaxPct.toFixed(1)}%</span>
                 <span className={teamTotalPct <= 100 ? "text-emeraldLight" : "text-garnetLight"}>
@@ -520,7 +520,7 @@ export default function AdvancedTokenGeneratorApp() {
               type="button"
               disabled={ctaDisabled}
               onClick={ctaAction}
-              className={`w-full rounded-lg border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+              className={`w-full rounded-lg border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
                 ctaDisabled
                   ? "cursor-not-allowed border-line bg-panel2 text-bronze"
                   : "border-gold text-goldLight hover:bg-gold hover:text-void"
@@ -529,11 +529,11 @@ export default function AdvancedTokenGeneratorApp() {
               {ctaLabel}
             </button>
             {deployError && (
-              <p className="text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+              <p className="text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-garnetLight">
                 {deployError}
               </p>
             )}
-            <p className="text-center font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+            <p className="text-center font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
               Deploys On {NETWORK.name} • Takes A Few Seconds
             </p>
           </div>
@@ -544,7 +544,7 @@ export default function AdvancedTokenGeneratorApp() {
             <button
               type="button"
               onClick={goBack}
-              className="flex items-center gap-1 rounded-lg border border-line px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
+              className="flex items-center gap-1 rounded-lg border border-line px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
             >
               <ChevronLeftIcon className="h-3.5 w-3.5" />
               Back
@@ -555,7 +555,7 @@ export default function AdvancedTokenGeneratorApp() {
               type="button"
               disabled={(step === 1 && !step1Valid) || (step === 2 && !step2Valid) || (step === 3 && !step3Valid)}
               onClick={goNext}
-              className={`flex flex-1 items-center justify-center gap-1 rounded-lg border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+              className={`flex flex-1 items-center justify-center gap-1 rounded-lg border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
                 (step === 1 && !step1Valid) || (step === 2 && !step2Valid) || (step === 3 && !step3Valid)
                   ? "cursor-not-allowed border-line bg-panel2 text-bronze"
                   : "border-gold text-goldLight hover:bg-gold hover:text-void"
@@ -597,8 +597,8 @@ export default function AdvancedTokenGeneratorApp() {
 function FieldHeader({ label, counter }: { label: string; counter: string }) {
   return (
     <div className="flex items-center justify-between">
-      <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">{label}</p>
-      <span className="font-mono text-[9px] text-bronze">{counter}</span>
+      <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">{label}</p>
+      <span className="font-mono text-[0.5625rem] text-bronze">{counter}</span>
     </div>
   );
 }

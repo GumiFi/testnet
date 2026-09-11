@@ -19,7 +19,7 @@ export default function LiquiditySettingsFields({
   return (
     <div className="space-y-4">
       <div>
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Initial Liquidity (ETH)</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Initial Liquidity (ETH)</p>
         <input
           value={value.initialLiquidityEth}
           onChange={(event) => set("initialLiquidityEth", event.target.value.replace(/[^0-9.]/g, ""))}
@@ -29,7 +29,7 @@ export default function LiquiditySettingsFields({
           disabled={!value.autoLiquidity}
           className="mt-2 w-full rounded-lg border border-line bg-panel px-4 py-3 font-display text-base text-ivory placeholder:text-bronze/50 focus:border-gold/60 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         />
-        <p className="mt-2 font-body text-[11px] text-bronze">
+        <p className="mt-2 font-body text-[0.6875rem] text-bronze">
           Sent with the deploy transaction to seed your token&apos;s opening liquidity pool on-chain.
           {!value.autoLiquidity && " Enable Seed Initial Liquidity in Tax & Fees to use this."}
         </p>
@@ -37,12 +37,12 @@ export default function LiquiditySettingsFields({
 
       <div className="border-t border-line pt-4">
         <div className="flex items-center justify-between">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">LP Lock</p>
-          <span className="font-mono text-[10px] text-goldLight">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">LP Lock</p>
+          <span className="font-mono text-[0.625rem] text-goldLight">
             {value.autoLiquidity ? "Auto-Locked" : "N/A"}
           </span>
         </div>
-        <p className="mt-1 font-body text-[11px] text-bronze">
+        <p className="mt-1 font-body text-[0.6875rem] text-bronze">
           {value.autoLiquidity
             ? "Seeded liquidity locks automatically on-chain — there's no path to seed liquidity without locking it."
             : "No liquidity is seeded, so there's nothing to lock."}
@@ -52,13 +52,13 @@ export default function LiquiditySettingsFields({
       {value.autoLiquidity && (
         <div>
           <span className="flex items-center gap-2">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Lock Duration</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Lock Duration</p>
             <SoonTag label="Network Default" />
           </span>
           <p className="mt-2 font-mono text-xs text-goldLight">
             {autoLiquidityLockDurationLabel ?? "Reading network default…"}
           </p>
-          <p className="mt-1 font-body text-[11px] text-bronze">
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">
             The lock duration is a network-wide setting on the factory contract, not customizable per token
             yet.
           </p>

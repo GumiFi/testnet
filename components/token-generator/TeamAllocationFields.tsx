@@ -34,7 +34,7 @@ export default function TeamAllocationFields({
 
   return (
     <div className="space-y-4">
-      <p className="font-body text-[11px] text-bronze">
+      <p className="font-body text-[0.6875rem] text-bronze">
         Reserve a share of total supply for team and advisor wallets, released on a vesting schedule. Only
         the first wallet below is enforced on-chain — the deployed factory supports a single team vesting
         schedule per token.
@@ -49,7 +49,7 @@ export default function TeamAllocationFields({
             <div key={row.id} className="rounded-xl border border-line bg-panel p-3">
               <div className="flex items-center gap-2">
                 {index === 0 ? (
-                  <span className="shrink-0 font-mono text-[9px] uppercase tracking-wider2 text-goldLight">
+                  <span className="shrink-0 font-mono text-[0.5625rem] uppercase tracking-wider2 text-goldLight">
                     On-Chain
                   </span>
                 ) : (
@@ -75,7 +75,7 @@ export default function TeamAllocationFields({
               </div>
               <div className="mt-2 grid grid-cols-3 gap-2">
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Percent</p>
+                  <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Percent</p>
                   <input
                     value={row.percent}
                     onChange={(event) => updateRow(row.id, { percent: event.target.value.replace(/[^0-9.]/g, "") })}
@@ -86,7 +86,7 @@ export default function TeamAllocationFields({
                   />
                 </div>
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Cliff (Days)</p>
+                  <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Cliff (Days)</p>
                   <input
                     value={row.cliffDays}
                     onChange={(event) => updateRow(row.id, { cliffDays: event.target.value.replace(/[^0-9]/g, "") })}
@@ -97,7 +97,7 @@ export default function TeamAllocationFields({
                   />
                 </div>
                 <div>
-                  <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Vesting (Days)</p>
+                  <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Vesting (Days)</p>
                   <input
                     value={row.vestingDays}
                     onChange={(event) =>
@@ -113,8 +113,8 @@ export default function TeamAllocationFields({
               {index === 0 && (
                 <div className="mt-3 flex items-center justify-between border-t border-line pt-3">
                   <div>
-                    <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Revocable</p>
-                    <p className="mt-0.5 font-body text-[10px] text-bronze">
+                    <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Revocable</p>
+                    <p className="mt-0.5 font-body text-[0.625rem] text-bronze">
                       Lets you cancel unvested tokens back to yourself later.
                     </p>
                   </div>
@@ -133,7 +133,7 @@ export default function TeamAllocationFields({
       <button
         type="button"
         onClick={addRow}
-        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-line py-2.5 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-goldLight"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-line py-2.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-goldLight"
       >
         <PlusIcon className="h-3 w-3" />
         Add Allocation
@@ -142,14 +142,14 @@ export default function TeamAllocationFields({
       {team.length > 0 && (
         <div className="border-t border-line pt-3">
           <p
-            className={`font-mono text-[10px] uppercase tracking-wider2 ${
+            className={`font-mono text-[0.625rem] uppercase tracking-wider2 ${
               total > 100 ? "text-garnetLight" : "text-ivory"
             }`}
           >
             Total Allocated: {total.toFixed(1)}%
           </p>
           {total > 100 && (
-            <p className="mt-1 font-body text-[11px] text-bronze">
+            <p className="mt-1 font-body text-[0.6875rem] text-bronze">
               Allocations can't exceed 100% of total supply.
             </p>
           )}

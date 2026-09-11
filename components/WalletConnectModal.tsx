@@ -29,7 +29,7 @@ export default function WalletConnectModal({
         <p className="text-center font-display text-sm tracking-wider2 text-ivory">
           Connect Wallet
         </p>
-        <p className="mt-1 text-center font-mono text-[9px] uppercase tracking-wider3 text-bronze">
+        <p className="mt-1 text-center font-mono text-[0.5625rem] uppercase tracking-wider3 text-bronze">
           Choose a provider
         </p>
 
@@ -49,7 +49,7 @@ export default function WalletConnectModal({
                   <WalletIcon className="h-3.5 w-3.5" />
                 </span>
               )}
-              <span className="min-w-0 flex-1 truncate font-mono text-[11px] uppercase tracking-wider2 text-ivory">
+              <span className="min-w-0 flex-1 truncate font-mono text-[0.6875rem] uppercase tracking-wider2 text-ivory">
                 {detail.info.name}
               </span>
             </button>
@@ -57,14 +57,14 @@ export default function WalletConnectModal({
 
           {providers.length === 0 && (
             <div className="border border-line bg-panel2 px-3.5 py-4 text-center">
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+              <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                 No wallet detected
               </p>
               <a
                 href="https://ethereum.org/wallets"
                 target="_blank"
                 rel="noreferrer"
-                className="mt-2 inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:text-gold"
+                className="mt-2 inline-flex items-center gap-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:text-gold"
               >
                 <GlobeIcon className="h-3 w-3" />
                 Get a Wallet
@@ -74,7 +74,7 @@ export default function WalletConnectModal({
         </div>
 
         {error && (
-          <p className="mt-4 text-center font-mono text-[9px] uppercase tracking-wider2 text-garnetLight">
+          <p className="mt-4 text-center font-mono text-[0.5625rem] uppercase tracking-wider2 text-garnetLight">
             {error}
           </p>
         )}
@@ -82,7 +82,7 @@ export default function WalletConnectModal({
         <button
           type="button"
           onClick={onClose}
-          className="mt-6 w-full border border-gold px-4 py-2 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+          className="mt-6 w-full border border-gold px-4 py-2 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
         >
           Cancel
         </button>

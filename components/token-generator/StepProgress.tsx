@@ -37,7 +37,7 @@ export default function StepProgress({
               <span
                 className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-all ${
                   isActive
-                    ? "border-gold bg-gold/15 text-goldLight shadow-[0_0_18px_rgba(201,162,39,0.4)]"
+                    ? "border-gold bg-gold/15 text-goldLight shadow-[0_0_1.125rem_rgba(201,162,39,0.4)]"
                     : isCompleted
                       ? "border-gold bg-gold text-void"
                       : "border-line bg-panel2 text-bronze"
@@ -46,7 +46,7 @@ export default function StepProgress({
                 {isCompleted ? <CheckIcon className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
               </span>
               <span
-                className={`font-mono text-[9px] uppercase tracking-wider2 ${
+                className={`font-mono text-[0.5625rem] uppercase tracking-wider2 ${
                   isActive ? "text-goldLight" : isCompleted ? "text-ivory" : "text-bronze"
                 }`}
               >
@@ -55,7 +55,7 @@ export default function StepProgress({
             </button>
             {index < ADVANCED_TOKEN_STEPS.length - 1 && (
               <span
-                className={`mx-2 mt-[18px] h-px flex-1 transition-colors ${
+                className={`mx-2 mt-[1.125rem] h-px flex-1 transition-colors ${
                   step.id < current ? "bg-gold" : "bg-line"
                 }`}
               />

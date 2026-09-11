@@ -15,7 +15,7 @@ export default function CoinDexLinksRow({ onAction }: { onAction: (label: string
           key={label}
           type="button"
           onClick={() => onAction(label)}
-          className="flex items-center justify-center gap-2 border border-line px-3 py-2.5 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
+          className="flex items-center justify-center gap-2 border border-line px-3 py-2.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
         >
           <Icon className="h-3.5 w-3.5" />
           {label}

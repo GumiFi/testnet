@@ -62,20 +62,20 @@ export default function HeaderSearch({
       <div className="flex-1 overflow-y-auto px-4 py-4 md:px-6">
         <div className="mx-auto max-w-2xl space-y-4">
           {q.length === 0 && (
-            <p className="px-1 py-6 text-center font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+            <p className="px-1 py-6 text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
               Start typing to search tokens, NFTs, pools, and creators
             </p>
           )}
 
           {q.length > 0 && total === 0 && (
-            <p className="rounded-xl border border-line bg-panel2 px-4 py-6 text-center font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+            <p className="rounded-xl border border-line bg-panel2 px-4 py-6 text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
               Nothing matched your search
             </p>
           )}
 
           {results.tokens.length > 0 && (
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Tokens</p>
+              <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Tokens</p>
               <div className="mt-2 overflow-hidden rounded-xl border border-line bg-panel2">
                 {results.tokens.slice(0, RESULT_LIMIT).map((token) => (
                   <button
@@ -87,13 +87,13 @@ export default function HeaderSearch({
                     }}
                     className="flex w-full items-center gap-3 border-b border-line px-3 py-2.5 text-left transition-colors last:border-b-0 hover:bg-panel"
                   >
-                    <Avatar label={token.monogram} accent={token.accent} className="h-7 w-7 text-[9px]" />
+                    <Avatar label={token.monogram} accent={token.accent} className="h-7 w-7 text-[0.5625rem]" />
                     <div className="min-w-0 flex-1">
                       <p className="font-display text-xs uppercase tracking-wider2 text-ivory">
                         {token.symbol}
                       </p>
                     </div>
-                    <div className="shrink-0 text-right font-mono text-[10px]">
+                    <div className="shrink-0 text-right font-mono text-[0.625rem]">
                       <p className="text-ivory">{formatPrice(token.priceUsd)}</p>
                       <p className={token.change24h >= 0 ? "text-emeraldLight" : "text-garnetLight"}>
                         {formatPct(token.change24h)}
@@ -107,7 +107,7 @@ export default function HeaderSearch({
 
           {results.collections.length > 0 && (
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+              <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                 NFT Collections
               </p>
               <div className="mt-2 overflow-hidden rounded-xl border border-line bg-panel2">
@@ -124,7 +124,7 @@ export default function HeaderSearch({
                     <Avatar
                       label={collection.monogram}
                       accent={collection.accent}
-                      className="h-7 w-7 text-[9px]"
+                      className="h-7 w-7 text-[0.5625rem]"
                       shape="square"
                     />
                     <div className="min-w-0 flex-1">
@@ -132,7 +132,7 @@ export default function HeaderSearch({
                         {collection.name}
                       </p>
                     </div>
-                    <p className="shrink-0 font-mono text-[10px] text-bronze">
+                    <p className="shrink-0 font-mono text-[0.625rem] text-bronze">
                       Floor {formatEth(collection.floorEth)}
                     </p>
                   </button>
@@ -143,7 +143,7 @@ export default function HeaderSearch({
 
           {results.pools.length > 0 && (
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Pools</p>
+              <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Pools</p>
               <div className="mt-2 overflow-hidden rounded-xl border border-line bg-panel2">
                 {results.pools.slice(0, RESULT_LIMIT).map((pool) => (
                   <button
@@ -158,7 +158,7 @@ export default function HeaderSearch({
                     <span className="font-display text-xs uppercase tracking-wider2 text-ivory">
                       {pool.pair}
                     </span>
-                    <span className="font-mono text-[10px] text-bronze">
+                    <span className="font-mono text-[0.625rem] text-bronze">
                       TVL {formatCompactUsd(pool.tvlUsd)}
                     </span>
                   </button>
@@ -169,7 +169,7 @@ export default function HeaderSearch({
 
           {results.creators.length > 0 && (
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Creators</p>
+              <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Creators</p>
               <div className="mt-2 overflow-hidden rounded-xl border border-line bg-panel2">
                 {results.creators.slice(0, RESULT_LIMIT).map((creator) => (
                   <button
@@ -184,7 +184,7 @@ export default function HeaderSearch({
                     <Avatar
                       label={creator.monogram}
                       accent={creator.accent}
-                      className="h-7 w-7 text-[9px]"
+                      className="h-7 w-7 text-[0.5625rem]"
                       shape="square"
                     />
                     <div className="min-w-0 flex-1">
@@ -202,7 +202,7 @@ export default function HeaderSearch({
             <button
               type="button"
               onClick={goToDiscover}
-              className="w-full rounded-lg border border-gold px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+              className="w-full rounded-lg border border-gold px-4 py-2.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
             >
               View all results ({total}) →
             </button>

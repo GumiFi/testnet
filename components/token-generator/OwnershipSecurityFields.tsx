@@ -22,10 +22,10 @@ export default function OwnershipSecurityFields({
       <div className="flex items-center justify-between">
         <div>
           <span className="flex items-center gap-2">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Renounce Ownership</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Renounce Ownership</p>
             <SoonTag />
           </span>
-          <p className="mt-1 font-body text-[11px] text-bronze">
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">
             Give up admin control right after deploy, permanently. Not yet supported — every deployed
             Advanced token contract requires ownership to transfer to a non-zero address, so it can&apos;t
             be renounced on-chain today.
@@ -36,8 +36,8 @@ export default function OwnershipSecurityFields({
 
       <div className="flex items-center justify-between border-t border-line pt-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Timelock Controller</p>
-          <p className="mt-1 font-body text-[11px] text-bronze">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Timelock Controller</p>
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">
             Routes ownership through a timelock so admin actions are delayed on-chain. Requires a team
             allocation with a cliff or vesting period below.
           </p>
@@ -51,11 +51,11 @@ export default function OwnershipSecurityFields({
       {value.timelockEnabled && (
         <div>
           <span className="flex items-center gap-2">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Timelock Delay</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Timelock Delay</p>
             <SoonTag label="Network Default" />
           </span>
           <p className="mt-2 font-mono text-xs text-goldLight">{timelockMinDelayLabel ?? "Reading network default…"}</p>
-          <p className="mt-1 font-body text-[11px] text-bronze">
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">
             The delay is a network-wide setting on the factory contract, not customizable per token yet.
           </p>
         </div>
@@ -63,8 +63,8 @@ export default function OwnershipSecurityFields({
 
       <div className="flex items-center justify-between border-t border-line pt-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Blacklist Function</p>
-          <p className="mt-1 font-body text-[11px] text-bronze">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Blacklist Function</p>
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">
             Lets the owner manually block a wallet from trading after launch, enforced on-chain.
           </p>
         </div>

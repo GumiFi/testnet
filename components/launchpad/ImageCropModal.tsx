@@ -187,7 +187,7 @@ export default function ImageCropModal({ src, aspect, title, onCancel, onConfirm
         </div>
 
         <div className="mt-5 flex items-center gap-3">
-          <span className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Zoom</span>
+          <span className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Zoom</span>
           <input
             type="range"
             min={1}
@@ -204,7 +204,7 @@ export default function ImageCropModal({ src, aspect, title, onCancel, onConfirm
           <button
             type="button"
             onClick={onCancel}
-            className="border border-line px-4 py-2.5 font-mono text-[11px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
+            className="border border-line px-4 py-2.5 font-mono text-[0.6875rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
           >
             Cancel
           </button>
@@ -212,7 +212,7 @@ export default function ImageCropModal({ src, aspect, title, onCancel, onConfirm
             type="button"
             onClick={handleConfirm}
             disabled={!naturalSize}
-            className={`border px-4 py-2.5 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+            className={`border px-4 py-2.5 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
               naturalSize
                 ? "border-gold text-goldLight hover:bg-gold hover:text-void"
                 : "cursor-not-allowed border-line text-bronze"

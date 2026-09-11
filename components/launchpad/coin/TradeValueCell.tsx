@@ -12,11 +12,11 @@ export default function TradeValueCell({
   const parts = getPriceDisplayParts(valueUsd);
 
   if (parts.leadingZeros === null) {
-    return <span className={`truncate font-mono text-[10px] text-ivory ${className}`}>{parts.plain}</span>;
+    return <span className={`truncate font-mono text-[0.625rem] text-ivory ${className}`}>{parts.plain}</span>;
   }
 
   return (
-    <span className={`truncate font-mono text-[10px] text-ivory ${className}`}>
+    <span className={`truncate font-mono text-[0.625rem] text-ivory ${className}`}>
       $0.0<sub className="text-[0.7em]">{parts.leadingZeros}</sub>
       {parts.digits}
     </span>

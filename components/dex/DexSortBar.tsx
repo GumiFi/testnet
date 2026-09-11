@@ -18,7 +18,7 @@ export default function DexSortBar({
             key={option}
             type="button"
             onClick={() => onChange(option)}
-            className={`shrink-0 border px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`shrink-0 border px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               isActive
                 ? "border-gold bg-gold/10 text-goldLight"
                 : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -32,7 +32,7 @@ export default function DexSortBar({
         type="button"
         onClick={() => onChange(null)}
         disabled={active === null}
-        className="shrink-0 border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:border-garnetLight/60 hover:text-garnetLight disabled:cursor-not-allowed disabled:opacity-30"
+        className="shrink-0 border border-line px-3 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-garnetLight/60 hover:text-garnetLight disabled:cursor-not-allowed disabled:opacity-30"
       >
         Reset
       </button>

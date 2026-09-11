@@ -36,9 +36,9 @@ export default function PortfolioChartSection({
   return (
     <div className="border border-line bg-panel p-4">
       <div className="flex items-center justify-between">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Value Trend</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Value Trend</p>
         <p
-          className={`font-mono text-[10px] uppercase tracking-wider2 ${
+          className={`font-mono text-[0.625rem] uppercase tracking-wider2 ${
             positive ? "text-emeraldLight" : "text-garnetLight"
           }`}
         >
@@ -54,7 +54,7 @@ export default function PortfolioChartSection({
             key={item}
             type="button"
             onClick={() => setRange(item)}
-            className={`rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`rounded-full border px-3 py-1 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               range === item
                 ? "border-gold bg-gold/10 text-goldLight"
                 : "border-line text-bronze hover:border-gold/40 hover:text-ivory"

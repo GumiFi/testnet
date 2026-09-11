@@ -26,7 +26,7 @@ export default function ActivitySection({
   if (loading && activity.length === 0) {
     return (
       <div className="border border-line bg-panel px-4 py-8 text-center">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Loading activity…</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Loading activity…</p>
       </div>
     );
   }
@@ -34,7 +34,7 @@ export default function ActivitySection({
   if (activity.length === 0) {
     return (
       <div className="border border-line bg-panel px-4 py-8 text-center">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
       </div>
     );
   }
@@ -54,7 +54,7 @@ export default function ActivitySection({
               <Icon className="h-3.5 w-3.5" />
             </span>
             <p className="min-w-0 flex-1 truncate font-body text-xs text-ivory">{entry.description}</p>
-            <span className="shrink-0 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+            <span className="shrink-0 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
               {formatTimeAgo(entry.timestampMs)}
             </span>
           </div>

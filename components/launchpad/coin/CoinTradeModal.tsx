@@ -84,7 +84,7 @@ export default function CoinTradeModal({
 
         <div className="mt-5">
           <div className="flex h-5 items-center justify-between">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
               {isBuy ? "Pay (ETH)" : `Sell (${symbol})`}
             </p>
             {balanceLabel && (
@@ -92,7 +92,7 @@ export default function CoinTradeModal({
                 type="button"
                 onClick={handleMaxClick}
                 disabled={isBusy}
-                className="font-mono text-[9px] uppercase tracking-wider2 text-bronze underline decoration-dotted hover:text-goldLight disabled:opacity-40"
+                className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze underline decoration-dotted hover:text-goldLight disabled:opacity-40"
               >
                 {balanceLabel}
               </button>
@@ -109,10 +109,10 @@ export default function CoinTradeModal({
             className="mt-2 w-full rounded-lg border border-line bg-panel2 px-4 py-3 font-display text-base text-ivory placeholder:text-bronze/50 focus:border-gold/60 focus:outline-none disabled:opacity-60"
           />
           <div className="mt-2 flex h-4 items-center justify-between">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
               {quoteLoading ? "Fetching quote..." : quoteLabel}
             </p>
-            <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze/70">{unitLabel} in</p>
+            <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze/70">{unitLabel} in</p>
           </div>
           {errorMessage && (
             <p className="mt-2 font-body text-xs leading-relaxed text-garnetLight">{errorMessage}</p>
@@ -123,7 +123,7 @@ export default function CoinTradeModal({
           type="button"
           disabled={draftNum <= 0 || isBusy}
           onClick={handleConfirm}
-          className={`mt-6 w-full rounded-lg border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+          className={`mt-6 w-full rounded-lg border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
             draftNum <= 0 || isBusy
               ? "cursor-not-allowed border-line bg-panel2 text-bronze"
               : isBuy

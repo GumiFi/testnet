@@ -37,12 +37,12 @@ export default function AdvancedNftSettings({
   return (
     <div className="space-y-5">
       <div>
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Token Standard</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Token Standard</p>
         <div className="mt-2 flex items-center gap-2">
           <button
             type="button"
             onClick={() => set("tokenStandard", "ERC721")}
-            className={`flex-1 border py-2 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`flex-1 border py-2 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               value.tokenStandard === "ERC721"
                 ? "border-gold bg-gold/10 text-goldLight"
                 : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -53,7 +53,7 @@ export default function AdvancedNftSettings({
           <button
             type="button"
             onClick={() => set("tokenStandard", "ERC721A")}
-            className={`flex-1 border py-2 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`flex-1 border py-2 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               value.tokenStandard === "ERC721A"
                 ? "border-gold bg-gold/10 text-goldLight"
                 : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -62,7 +62,7 @@ export default function AdvancedNftSettings({
             ERC-721A
           </button>
         </div>
-        <p className="mt-1 font-body text-[11px] text-bronze">
+        <p className="mt-1 font-body text-[0.6875rem] text-bronze">
           {value.tokenStandard === "ERC721"
             ? "Each NFT mints in its own transaction. Simple and widely supported."
             : "Mint many NFTs in one transaction, at a much lower gas cost per item."}
@@ -71,8 +71,8 @@ export default function AdvancedNftSettings({
 
       <div className="border-t border-line pt-4">
         <div className="flex items-center justify-between">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Creator Royalty</p>
-          <span className="font-mono text-[10px] text-goldLight">{value.royaltyPct.toFixed(1)}%</span>
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Creator Royalty</p>
+          <span className="font-mono text-[0.625rem] text-goldLight">{value.royaltyPct.toFixed(1)}%</span>
         </div>
         <input
           type="range"
@@ -83,13 +83,13 @@ export default function AdvancedNftSettings({
           onChange={(event) => set("royaltyPct", parseFloat(event.target.value))}
           className="mt-2 w-full accent-gold"
         />
-        <p className="mt-1 font-body text-[11px] text-bronze">Percentage you earn on every secondary sale.</p>
+        <p className="mt-1 font-body text-[0.6875rem] text-bronze">Percentage you earn on every secondary sale.</p>
       </div>
 
       <div className="flex items-center justify-between border-t border-line pt-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Max Per Wallet</p>
-          <p className="mt-1 font-body text-[11px] text-bronze">Limit how many a single wallet can mint.</p>
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Max Per Wallet</p>
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">Limit how many a single wallet can mint.</p>
         </div>
         <div className="flex shrink-0 items-center border border-line">
           <button
@@ -113,12 +113,12 @@ export default function AdvancedNftSettings({
       </div>
 
       <div className="border-t border-line pt-4">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Reveal</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Reveal</p>
         <div className="mt-2 flex items-center gap-2">
           <button
             type="button"
             onClick={() => set("revealMode", "instant")}
-            className={`flex-1 border py-2 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`flex-1 border py-2 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               value.revealMode === "instant"
                 ? "border-gold bg-gold/10 text-goldLight"
                 : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -129,7 +129,7 @@ export default function AdvancedNftSettings({
           <button
             type="button"
             onClick={() => set("revealMode", "delayed")}
-            className={`flex-1 border py-2 font-mono text-[10px] uppercase tracking-wider2 transition-colors ${
+            className={`flex-1 border py-2 font-mono text-[0.625rem] uppercase tracking-wider2 transition-colors ${
               value.revealMode === "delayed"
                 ? "border-gold bg-gold/10 text-goldLight"
                 : "border-line text-bronze hover:border-gold/40 hover:text-ivory"
@@ -140,7 +140,7 @@ export default function AdvancedNftSettings({
         </div>
         {value.revealMode === "delayed" && (
           <div className="mt-3">
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Reveal Date</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Reveal Date</p>
             <input
               type="datetime-local"
               value={value.revealDate}
@@ -152,20 +152,20 @@ export default function AdvancedNftSettings({
       </div>
 
       <div className="border-t border-line pt-4">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Provenance Hash</p>
-        <p className="mt-1 font-body text-[11px] text-bronze">
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Provenance Hash</p>
+        <p className="mt-1 font-body text-[0.6875rem] text-bronze">
           A fingerprint of your final artwork order. Generated automatically at deploy time so collectors can verify
           your reveal was never changed.
         </p>
-        <p className="mt-2 border border-line bg-panel2 px-3 py-2 font-mono text-[10px] text-bronze">
+        <p className="mt-2 border border-line bg-panel2 px-3 py-2 font-mono text-[0.625rem] text-bronze">
           Generated automatically on deploy
         </p>
       </div>
 
       <div className="flex items-center justify-between border-t border-line pt-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Whitelist Stage</p>
-          <p className="mt-1 font-body text-[11px] text-bronze">Give allowlisted wallets a head start before public mint.</p>
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Whitelist Stage</p>
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">Give allowlisted wallets a head start before public mint.</p>
         </div>
         <ToggleSwitch
           checked={value.allowlistEnabled}
@@ -176,7 +176,7 @@ export default function AdvancedNftSettings({
       {value.allowlistEnabled && (
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Whitelist Unit Price (ETH)</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Whitelist Unit Price (ETH)</p>
             <input
               value={value.presalePrice}
               onChange={(event) => set("presalePrice", event.target.value.replace(/[^0-9.]/g, ""))}
@@ -187,7 +187,7 @@ export default function AdvancedNftSettings({
             />
           </div>
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Whitelist Start Time</p>
+            <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Whitelist Start Time</p>
             <input
               type="datetime-local"
               value={value.presaleStart}
@@ -199,20 +199,20 @@ export default function AdvancedNftSettings({
       )}
 
       <div className="border-t border-line pt-4">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Public Mint Start</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Public Mint Start</p>
         <input
           type="datetime-local"
           value={value.publicSaleStart}
           onChange={(event) => set("publicSaleStart", event.target.value)}
           className={inputClasses}
         />
-        <p className="mt-1 font-body text-[11px] text-bronze">Leave blank to open public mint right at launch.</p>
+        <p className="mt-1 font-body text-[0.6875rem] text-bronze">Leave blank to open public mint right at launch.</p>
       </div>
 
       <div className="flex items-center justify-between border-t border-line pt-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Freeze Metadata</p>
-          <p className="mt-1 font-body text-[11px] text-bronze">Locks metadata permanently once minting completes.</p>
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Freeze Metadata</p>
+          <p className="mt-1 font-body text-[0.6875rem] text-bronze">Locks metadata permanently once minting completes.</p>
         </div>
         <ToggleSwitch
           checked={value.freezeMetadata}

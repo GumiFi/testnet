@@ -235,7 +235,7 @@ export default function NftMarketplaceApp() {
               <button
                 type="button"
                 onClick={openList}
-                className="inline-flex items-center justify-center gap-2 border border-line px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
+                className="inline-flex items-center justify-center gap-2 border border-line px-4 py-2.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-ivory"
               >
                 <PlusIcon className="h-3.5 w-3.5" />
                 List NFT
@@ -243,7 +243,7 @@ export default function NftMarketplaceApp() {
               <Link
                 href="/nft/create"
                 prefetch={false}
-                className="inline-flex items-center justify-center gap-2 border border-gold px-4 py-2.5 font-mono text-[10px] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
+                className="inline-flex items-center justify-center gap-2 border border-gold px-4 py-2.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight transition-colors hover:bg-gold hover:text-void"
               >
                 <PlusIcon className="h-3.5 w-3.5" />
                 Create Collection
@@ -303,15 +303,15 @@ export default function NftMarketplaceApp() {
                     <p className="mt-3 truncate font-display text-sm uppercase tracking-wider2 text-ivory">
                       {listing.name}
                     </p>
-                    <p className="mt-1 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                    <p className="mt-1 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                       Token #{listing.tokenId}
                     </p>
                     <div className="mt-3 flex items-center justify-between border-t border-line pt-3">
                       <div>
-                        <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Price</p>
+                        <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Price</p>
                         <p className="mt-0.5 font-mono text-xs text-goldLight">{formatEth(priceEth)}</p>
                       </div>
-                      <WalletTag address={listing.seller} className="max-w-[100px]" />
+                      <WalletTag address={listing.seller} className="max-w-[6.25rem]" />
                     </div>
                   </button>
                 );

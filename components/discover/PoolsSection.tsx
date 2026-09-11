@@ -30,7 +30,7 @@ export default function PoolsSection() {
                 className="flex w-full items-center justify-between gap-4 border-b border-line px-4 py-3 text-left transition-colors last:border-b-0 hover:bg-panel2"
               >
                 <span className="font-display text-xs uppercase tracking-wider2 text-ivory">{pool.pair}</span>
-                <div className="flex items-center gap-5 font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                <div className="flex items-center gap-5 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                   <span>
                     TVL <span className="text-ivory">{formatCompactUsd(pool.tvlUsd)}</span>
                   </span>

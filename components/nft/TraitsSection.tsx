@@ -40,7 +40,7 @@ export default function TraitsSection({ traits, onChange, collectionSize }: Trai
 
   return (
     <div className="space-y-4">
-      <p className="font-body text-[11px] text-bronze">
+      <p className="font-body text-[0.6875rem] text-bronze">
         Add trait types for a generative collection. Each NFT gets one value per trait, picked at random.
       </p>
 
@@ -73,7 +73,7 @@ export default function TraitsSection({ traits, onChange, collectionSize }: Trai
                 className="mt-2 w-full border border-line bg-panel2 px-3 py-2 font-mono text-xs text-ivory placeholder:text-bronze/50 focus:border-gold/60 focus:outline-none"
               />
               {row.values.trim() && (
-                <p className="mt-1 font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+                <p className="mt-1 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
                   {countValues(row.values)} value{countValues(row.values) === 1 ? "" : "s"}
                 </p>
               )}
@@ -85,7 +85,7 @@ export default function TraitsSection({ traits, onChange, collectionSize }: Trai
       <button
         type="button"
         onClick={addRow}
-        className="flex w-full items-center justify-center gap-2 border border-dashed border-line py-2.5 font-mono text-[10px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-goldLight"
+        className="flex w-full items-center justify-center gap-2 border border-dashed border-line py-2.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/40 hover:text-goldLight"
       >
         <PlusIcon className="h-3 w-3" />
         Add Trait Type
@@ -93,11 +93,11 @@ export default function TraitsSection({ traits, onChange, collectionSize }: Trai
 
       {activeTraits.length > 0 && (
         <div className="border-t border-line pt-3">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">
             Possible Combinations: {totalCombinations.toLocaleString()}
           </p>
           {showShortfall && (
-            <p className="mt-1 font-body text-[11px] text-bronze">
+            <p className="mt-1 font-body text-[0.6875rem] text-bronze">
               That is fewer than your collection size ({collectionSize.toLocaleString()}), so some NFTs will repeat.
               Add more values or trait types to keep every NFT unique.
             </p>

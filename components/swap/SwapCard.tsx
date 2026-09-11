@@ -365,7 +365,7 @@ export default function SwapCard({
       </div>
 
       <div className="mt-5">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">You Pay</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">You Pay</p>
         <div className="mt-2 rounded-xl border border-line bg-panel2 px-4 py-3 transition-colors focus-within:border-gold/60">
           <div className="flex items-center gap-3">
             <input
@@ -379,14 +379,14 @@ export default function SwapCard({
             <TokenSelectButton token={payToken} onClick={() => onOpenTokenSearch("pay")} />
           </div>
           <div className="mt-2 flex items-center justify-between">
-            <p className="font-mono text-[10px] text-bronze">
+            <p className="font-mono text-[0.625rem] text-bronze">
               Balance: {formatBalance(payBalance)} {payToken.symbol}
             </p>
             {isConnected && payBalance > 0 && (
               <button
                 type="button"
                 onClick={() => onPayAmountChange(payBalance.toString())}
-                className="font-mono text-[10px] uppercase tracking-wider2 text-goldLight hover:text-gold"
+                className="font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight hover:text-gold"
               >
                 Max
               </button>
@@ -407,7 +407,7 @@ export default function SwapCard({
       </div>
 
       <div>
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">You Receive</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">You Receive</p>
         <div className="mt-2 rounded-xl border border-line bg-panel2 px-4 py-3">
           <div className="flex items-center gap-3">
             <p className="w-full min-w-0 truncate font-display text-2xl text-ivory">
@@ -415,7 +415,7 @@ export default function SwapCard({
             </p>
             <TokenSelectButton token={receiveToken} onClick={() => onOpenTokenSearch("receive")} />
           </div>
-          <p className="mt-2 font-mono text-[10px] text-bronze">
+          <p className="mt-2 font-mono text-[0.625rem] text-bronze">
             Balance: {formatBalance(receiveBalance)} {receiveToken.symbol}
           </p>
         </div>
@@ -441,11 +441,11 @@ export default function SwapCard({
 
       {hasAmount && quote && (
         <div className="mt-4 rounded-xl border border-line bg-panel2 px-4 py-3">
-          <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Route</p>
+          <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Route</p>
           <p className="mt-2 font-display text-xs uppercase tracking-wider2 text-ivory">
             {quote.path.map((_, index) => describeHop(index, quote.path, payToken, receiveToken)).join(" → ")}
           </p>
-          {quote.path.length > 2 && <p className="mt-1 font-mono text-[10px] text-bronze">Via WETH</p>}
+          {quote.path.length > 2 && <p className="mt-1 font-mono text-[0.625rem] text-bronze">Via WETH</p>}
         </div>
       )}
 
@@ -453,7 +453,7 @@ export default function SwapCard({
         type="button"
         disabled={ctaDisabled}
         onClick={ctaAction}
-        className={`mt-6 w-full rounded-lg border px-4 py-3 font-mono text-[11px] uppercase tracking-wider2 transition-colors ${
+        className={`mt-6 w-full rounded-lg border px-4 py-3 font-mono text-[0.6875rem] uppercase tracking-wider2 transition-colors ${
           ctaDisabled
             ? "cursor-not-allowed border-line bg-panel2 text-bronze"
             : "border-gold text-goldLight hover:bg-gold hover:text-void"
@@ -463,7 +463,7 @@ export default function SwapCard({
       </button>
 
       {actionError && (
-        <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-wider2 text-garnetLight">
+        <p className="mt-3 text-center font-mono text-[0.625rem] uppercase tracking-wider2 text-garnetLight">
           {actionError}
         </p>
       )}
@@ -491,7 +491,7 @@ function DetailRow({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">{label}</p>
+      <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">{label}</p>
       <p className={`font-mono text-xs ${valueClassName}`}>{value}</p>
     </div>
   );

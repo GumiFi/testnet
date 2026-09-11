@@ -52,7 +52,7 @@ export default function TrendingLaunchesSection() {
         {!liveReady ? (
           <div className="mt-5 flex gap-4 overflow-x-hidden pb-2">
             {Array.from({ length: 3 }).map((_, index) => (
-              <Skel key={index} className="h-64 w-[75%] shrink-0 sm:w-[320px]" />
+              <Skel key={index} className="h-64 w-[75%] shrink-0 sm:w-[20rem]" />
             ))}
           </div>
         ) : trending.length === 0 ? (
@@ -70,7 +70,7 @@ export default function TrendingLaunchesSection() {
               <Link
                 key={coin.id}
                 href={`/launchpad/coin/${coin.id}`}
-                className="group relative w-[75%] shrink-0 snap-start overflow-hidden border border-gold/50 bg-panel text-left transition-colors hover:border-gold sm:w-[320px]"
+                className="group relative w-[75%] shrink-0 snap-start overflow-hidden border border-gold/50 bg-panel text-left transition-colors hover:border-gold sm:w-[20rem]"
               >
                 <div className="relative aspect-[4/3] w-full overflow-hidden">
                   <Avatar
@@ -85,7 +85,7 @@ export default function TrendingLaunchesSection() {
                     {formatCompactUsd(coin.marketCap)}
                   </span>
                   <span
-                    className={`absolute right-3 top-3 font-mono text-[10px] uppercase tracking-wider2 ${
+                    className={`absolute right-3 top-3 font-mono text-[0.625rem] uppercase tracking-wider2 ${
                       positive ? "text-emeraldLight" : "text-garnetLight"
                     }`}
                   >
@@ -93,7 +93,7 @@ export default function TrendingLaunchesSection() {
                   </span>
 
                   <div className="absolute inset-x-0 bottom-0 z-10 bg-void/90 px-3 py-1.5">
-                    <div className="flex items-center justify-between font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+                    <div className="flex items-center justify-between font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
                       <span>Bonding</span>
                       <span className={coin.bondingProgress >= 100 ? "text-emeraldLight" : "text-goldLight"}>
                         {Math.min(100, coin.bondingProgress)}%
@@ -111,22 +111,22 @@ export default function TrendingLaunchesSection() {
                 </div>
                 <div className="p-4">
                   <p className="font-display text-sm uppercase tracking-wider2 text-ivory">{coin.name}</p>
-                  <p className="mt-1 truncate font-mono text-[10px] uppercase tracking-wider2 text-bronze">
+                  <p className="mt-1 truncate font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">
                     ${coin.symbol}
                   </p>
                   <p className="mt-2 h-4 truncate font-body text-xs text-ivory/60">
                     {coin.tagline || "\u00A0"}
                   </p>
                   <div className="mt-1 flex items-end justify-between gap-2">
-                    <p className="font-mono text-[10px] text-goldLight">{formatPrice(coin.priceUsd)}</p>
+                    <p className="font-mono text-[0.625rem] text-goldLight">{formatPrice(coin.priceUsd)}</p>
                     <div className="flex shrink-0 flex-col items-end gap-1">
-                      <div className="flex h-[15px] items-center">
+                      <div className="flex h-[0.9375rem] items-center">
                         {coin.boost != null && <BoosterBadge value={coin.boost} />}
                       </div>
                       {isGumiHandle(coin.creator) ? (
-                        <GumiTag handle={coin.creator} className="max-w-[140px]" />
+                        <GumiTag handle={coin.creator} className="max-w-[8.75rem]" />
                       ) : (
-                        <WalletTag address={coin.creator} className="max-w-[140px]" />
+                        <WalletTag address={coin.creator} className="max-w-[8.75rem]" />
                       )}
                     </div>
                   </div>

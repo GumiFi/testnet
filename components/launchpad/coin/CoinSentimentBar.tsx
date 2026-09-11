@@ -8,8 +8,8 @@ export default function CoinSentimentBar({ votesUp, votesDown }: { votesUp: numb
   return (
     <div className="border border-line bg-panel p-4">
       <div className="flex items-center justify-between">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-ivory">Community Sentiment</p>
-        <span className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-ivory">Community Sentiment</p>
+        <span className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">
           {total} vote{total === 1 ? "" : "s"}
         </span>
       </div>
@@ -23,7 +23,7 @@ export default function CoinSentimentBar({ votesUp, votesDown }: { votesUp: numb
         <ArrowDownIcon className="h-3.5 w-3.5 shrink-0 text-garnetLight" />
       </div>
 
-      <div className="mt-1.5 flex items-center justify-between font-mono text-[10px]">
+      <div className="mt-1.5 flex items-center justify-between font-mono text-[0.625rem]">
         <span className="text-emeraldLight">{bullishPct}%</span>
         <span className="text-garnetLight">{100 - bullishPct}%</span>
       </div>

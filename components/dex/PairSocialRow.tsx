@@ -16,7 +16,7 @@ export default function PairSocialRow({ onAction }: { onAction: (label: string) 
           key={label}
           type="button"
           onClick={() => onAction(label)}
-          className="flex shrink-0 items-center gap-1.5 border border-line px-3 py-1.5 font-mono text-[9px] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/50 hover:text-goldLight"
+          className="flex shrink-0 items-center gap-1.5 border border-line px-3 py-1.5 font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze transition-colors hover:border-gold/50 hover:text-goldLight"
         >
           <Icon className="h-3 w-3" />
           {label}

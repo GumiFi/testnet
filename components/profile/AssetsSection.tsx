@@ -14,7 +14,7 @@ export default function AssetsSection({
   if (loading && sorted.length === 0) {
     return (
       <div className="border border-line bg-panel px-4 py-8 text-center">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Loading assets…</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Loading assets…</p>
       </div>
     );
   }
@@ -22,7 +22,7 @@ export default function AssetsSection({
   if (sorted.length === 0) {
     return (
       <div className="border border-line bg-panel px-4 py-8 text-center">
-        <p className="font-mono text-[10px] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
+        <p className="font-mono text-[0.625rem] uppercase tracking-wider2 text-bronze">Nothing here yet</p>
       </div>
     );
   }
@@ -36,12 +36,12 @@ export default function AssetsSection({
             index === sorted.length - 1 ? "" : "border-b border-line"
           }`}
         >
-          <Avatar label={asset.monogram} accent={asset.accent} className="h-8 w-8 shrink-0 text-[9px]" />
+          <Avatar label={asset.monogram} accent={asset.accent} className="h-8 w-8 shrink-0 text-[0.5625rem]" />
           <div className="min-w-0 flex-1">
             <p className="truncate font-display text-xs uppercase tracking-wider2 text-ivory">
               {asset.symbol}
             </p>
-            <p className="mt-0.5 font-mono text-[10px] text-bronze">
+            <p className="mt-0.5 font-mono text-[0.625rem] text-bronze">
               {formatBalance(asset.balance)} {asset.symbol}
             </p>
           </div>

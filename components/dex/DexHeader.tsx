@@ -26,19 +26,19 @@ export default function DexHeader() {
 
         <div className="mt-8 grid grid-cols-3 gap-3">
           <div className="border border-line bg-panel px-3 py-3 text-center sm:px-4">
-            <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">24H Volume</p>
+            <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">24H Volume</p>
             <p className="mt-1 font-display text-sm text-ivory sm:text-base">
               {formatCompactUsd(stats.volume24h)}
             </p>
           </div>
           <div className="border border-line bg-panel px-3 py-3 text-center sm:px-4">
-            <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">24H Txns</p>
+            <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">24H Txns</p>
             <p className="mt-1 font-display text-sm text-ivory sm:text-base">
               {formatCompactNumber(stats.txns24h)}
             </p>
           </div>
           <div className="border border-line bg-panel px-3 py-3 text-center sm:px-4">
-            <p className="font-mono text-[9px] uppercase tracking-wider2 text-bronze">Pairs Tracked</p>
+            <p className="font-mono text-[0.5625rem] uppercase tracking-wider2 text-bronze">Pairs Tracked</p>
             <p className="mt-1 font-display text-sm text-ivory sm:text-base">{dexPairs.length}</p>
           </div>
         </div>
