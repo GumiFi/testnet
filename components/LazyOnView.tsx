@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 export default function LazyOnView({
   children,
   fallback,
-  rootMargin = "12.5rem",
+  rootMargin = "200px",
 }: {
   children: ReactNode;
   fallback: ReactNode;

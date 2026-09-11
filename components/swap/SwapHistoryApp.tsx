@@ -91,7 +91,7 @@ export default function SwapHistoryApp() {
             {lazyChunks.map((rows, chunkIndex) => (
               <LazyOnView
                 key={`${safePage}-${chunkIndex}`}
-                rootMargin="9.375rem"
+                rootMargin="150px"
                 fallback={<SwapHistoryChunkSkeleton rows={rows.length} />}
               >
                 <div>
