@@ -8,6 +8,7 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: clamp(13.333px, 4.1667vw, 20px);
 }
 
 body {
