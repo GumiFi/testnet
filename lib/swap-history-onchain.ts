@@ -1,6 +1,7 @@
 import type { DexPair } from "./dex-data";
 import type { Accent } from "./discover-data";
-import { CONTRACT_ADDRESSES, NETWORK } from "@/config/contracts.config";
+import { NETWORK } from "@/config/contracts.config";
+import { getEthUsdRateWithFallback } from "./eth-oracle";
 
 export type SwapHistoryItem = {
   id: string;
@@ -219,10 +220,5 @@ export async function fetchSwapByTxHash(
 }
 
 export async function fetchEthUsdRateForHistory(): Promise<number | null> {
-  const raw = await rpcRequest<string>("eth_call", [
-    { to: CONTRACT_ADDRESSES.priceOracle, data: "0x679aefce" },
-    "latest",
-  ]);
-  if (!raw || raw === "0x") return null;
-  return Number(BigInt(raw)) / 1e18;
+  return getEthUsdRateWithFallback((to, data) => rpcRequest<string>("eth_call", [{ to, data }, "latest"]));
 }

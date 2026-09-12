@@ -29,3 +29,4 @@ export function getClientDb(): Firestore {
 
 export const LAUNCHPAD_COINS_COLLECTION = "launchpadCoins";
 export const NFT_COLLECTIONS_COLLECTION = "nftCollections";
+export const TOKEN_GENERATOR_TOKENS_COLLECTION = "tokenGeneratorTokens";

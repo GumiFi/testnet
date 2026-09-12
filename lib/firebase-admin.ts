@@ -36,3 +36,6 @@ export function getAdminDb(): Firestore {
 
 export const LAUNCHPAD_COINS_COLLECTION = "launchpadCoins";
 export const NFT_COLLECTIONS_COLLECTION = "nftCollections";
+export const TOKEN_GENERATOR_TOKENS_COLLECTION = "tokenGeneratorTokens";
+export const ETH_ORACLE_CACHE_COLLECTION = "ethOracleCache";
+export const ETH_ORACLE_CACHE_DOC_ID = "latest";

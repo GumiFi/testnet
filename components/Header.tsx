@@ -6,6 +6,7 @@ import Logo from "./Logo";
 import HeaderSearch from "./HeaderSearch";
 import ComingSoonModal from "./ComingSoonModal";
 import GumiBadge from "./GumiBadge";
+import Avatar from "./discover/Avatar";
 import { useWallet } from "@/lib/wallet-context";
 import { useNotifications } from "@/lib/notification-context";
 import WalletDropdown from "./WalletDropdown";
@@ -66,7 +67,7 @@ export default function Header() {
   const [mobileNftOpen, setMobileNftOpen] = useState(false);
   const [comingSoon, setComingSoon] = useState<string | null>(null);
 
-  const { isConnected, handle, isGumiHolder, connect } = useWallet();
+  const { isConnected, handle, monogram, avatarUrl, isGumiHolder, connect } = useWallet();
   const { unreadCount } = useNotifications();
   const walletRef = useRef<HTMLDivElement>(null);
   const nftMenuRef = useRef<HTMLDivElement>(null);
@@ -268,6 +269,12 @@ export default function Header() {
                   onClick={toggleWalletMenu}
                   className="flex max-w-full items-center gap-1.5 rounded-full bg-gradient-to-r from-goldDim/25 via-panel2 to-goldDim/25 px-2.5 py-1.5 font-mono text-[0.625rem] uppercase tracking-wider2 text-goldLight shadow-[0_0_0.3125rem_rgba(201,162,39,0.35)] ring-1 ring-inset ring-gold/50 transition-shadow hover:shadow-[0_0_0.625rem_rgba(201,162,39,0.5)] sm:gap-2 sm:px-3.5"
                 >
+                  <Avatar
+                    label={monogram ?? ""}
+                    accent="gold"
+                    src={avatarUrl}
+                    className="h-5 w-5 shrink-0 text-[0.5rem]"
+                  />
                   <span className="max-w-[4.5rem] truncate sm:max-w-[8.75rem]">{handle}</span>
                   {isGumiHolder && <GumiBadge className="hidden xs:inline-flex" />}
                   <ChevronDownIcon className="h-3 w-3 shrink-0" />

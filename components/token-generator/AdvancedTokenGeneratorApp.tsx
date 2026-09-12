@@ -276,6 +276,24 @@ export default function AdvancedTokenGeneratorApp() {
         throw new Error("Could not determine the created token address");
       }
 
+      fetch("/api/token-generator/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          address: tokenAddress,
+          creator: address,
+          kind: "advanced",
+          name: trimmedName,
+          symbol: trimmedSymbol,
+          description,
+          image: tokenImage,
+          website: website || null,
+          twitter: twitter || null,
+          telegram: telegram || null,
+          txHash,
+        }),
+      }).catch(() => {});
+
       setStage("idle");
       setDeployed({ symbol: trimmedSymbol, address: tokenAddress });
     } catch (caughtError) {

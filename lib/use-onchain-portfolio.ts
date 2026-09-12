@@ -6,8 +6,11 @@ import { createRpcCaller, type EthCaller } from "./nft-onchain";
 import { fetchErc20Balance, fetchNativeBalance } from "./token-onchain";
 import { readCurveSnapshot } from "./launchpad-onchain";
 import { fetchLaunchpadCoinRecords, type LaunchpadCoinRecord } from "./launchpad-realtime";
+import { fetchTokenGeneratorRecords, type TokenGeneratorTokenRecord } from "./token-generator-realtime";
 import { fetchNftCollectionRecordsByCreator, type NftCollectionRecord } from "./nft-collections-realtime";
 import { fetchWalletActivity, type ActivityEntry } from "./activity-onchain";
+import { getWethAddress, fetchSpotRate, fetchDecimals } from "./swap-onchain";
+import { getEthUsdRateWithFallback } from "./eth-oracle";
 import type { Accent } from "./discover-data";
 
 const MAX_HELD_TOKENS_CHECKED = 30;
@@ -87,6 +90,54 @@ async function buildHeldLaunchpadAssets(
   );
 }
 
+async function buildHeldTokenGeneratorAssets(
+  call: EthCaller,
+  address: string,
+  records: TokenGeneratorTokenRecord[],
+  ethUsdRate: number | null
+): Promise<OnchainAsset[]> {
+  const candidates = records.slice(0, MAX_HELD_TOKENS_CHECKED);
+
+  const withBalances = await Promise.all(
+    candidates.map(async (record) => ({
+      record,
+      balance: await fetchErc20Balance(call, record.address, address).catch(() => 0),
+    }))
+  );
+
+  const held = withBalances.filter((entry) => entry.balance > 0);
+  if (held.length === 0) return [];
+
+  const wethAddress = await getWethAddress(call).catch(() => null);
+
+  return Promise.all(
+    held.map(async ({ record, balance }) => {
+      let priceUsd: number | null = null;
+
+      if (wethAddress && ethUsdRate != null) {
+        try {
+          const decimals = await fetchDecimals(call, record.address, false);
+          const rateInEth = await fetchSpotRate(call, record.address, wethAddress, decimals, 18);
+          priceUsd = rateInEth != null ? rateInEth * ethUsdRate : null;
+        } catch {
+          priceUsd = null;
+        }
+      }
+
+      return {
+        id: record.address.toLowerCase(),
+        symbol: record.symbol,
+        name: record.name,
+        monogram: monogramFor(record.symbol),
+        accent: "gold" as Accent,
+        balance,
+        priceUsd,
+        valueUsd: priceUsd != null ? priceUsd * balance : null,
+      };
+    })
+  );
+}
+
 async function buildMyLaunches(call: EthCaller, records: LaunchpadCoinRecord[]): Promise<OnchainLaunch[]> {
   return Promise.all(
     records.map(async (record) => {
@@ -111,19 +162,8 @@ async function buildMyLaunches(call: EthCaller, records: LaunchpadCoinRecord[]):
   );
 }
 
-function decodeUint256(hex: string | null): bigint {
-  if (!hex || hex === "0x") return 0n;
-  return BigInt(hex);
-}
-
 async function fetchEthUsdRate(call: EthCaller): Promise<number | null> {
-  try {
-    const raw = await call(CONTRACT_ADDRESSES.priceOracle, "0x679aefce");
-    if (!raw || raw === "0x") return null;
-    return Number(decodeUint256(raw)) / 1e18;
-  } catch {
-    return null;
-  }
+  return getEthUsdRateWithFallback(call);
 }
 
 export function useOnchainPortfolio(address: string | null): OnchainPortfolio {
@@ -148,13 +188,15 @@ export function useOnchainPortfolio(address: string | null): OnchainPortfolio {
     const call = createRpcCaller(NETWORK.rpcUrl);
 
     async function run() {
-      const [ethBalance, gumiBalance, allLaunchpadRecords, myCollectionRecords, ethUsdRate] = await Promise.all([
-        fetchNativeBalance(null, NETWORK.rpcUrl, address as string),
-        fetchErc20Balance(call, CONTRACT_ADDRESSES.gumiToken, address as string),
-        fetchLaunchpadCoinRecords().catch(() => []),
-        fetchNftCollectionRecordsByCreator(address as string).catch(() => []),
-        fetchEthUsdRate(call),
-      ]);
+      const [ethBalance, gumiBalance, allLaunchpadRecords, allTokenGeneratorRecords, myCollectionRecords, ethUsdRate] =
+        await Promise.all([
+          fetchNativeBalance(null, NETWORK.rpcUrl, address as string),
+          fetchErc20Balance(call, CONTRACT_ADDRESSES.gumiToken, address as string),
+          fetchLaunchpadCoinRecords().catch(() => []),
+          fetchTokenGeneratorRecords().catch(() => []),
+          fetchNftCollectionRecordsByCreator(address as string).catch(() => []),
+          fetchEthUsdRate(call),
+        ]);
       if (cancelled) return;
 
       const gumiCurve = await readCurveSnapshot(
@@ -167,8 +209,9 @@ export function useOnchainPortfolio(address: string | null): OnchainPortfolio {
       const ownLaunchRecords = allLaunchpadRecords.filter(
         (record) => record.creator.toLowerCase() === (address as string).toLowerCase()
       );
-      const [heldAssets, launches] = await Promise.all([
+      const [heldAssets, heldTokenGeneratorAssets, launches] = await Promise.all([
         buildHeldLaunchpadAssets(call, address as string, allLaunchpadRecords),
+        buildHeldTokenGeneratorAssets(call, address as string, allTokenGeneratorRecords, ethUsdRate),
         buildMyLaunches(call, ownLaunchRecords),
       ]);
       if (cancelled) return;
@@ -195,6 +238,7 @@ export function useOnchainPortfolio(address: string | null): OnchainPortfolio {
           valueUsd: gumiCurve && gumiCurve.initialized ? gumiCurve.priceUsd * gumiBalance : null,
         },
         ...heldAssets,
+        ...heldTokenGeneratorAssets,
       ];
 
       const activityEntries = await fetchWalletActivity(address as string, {

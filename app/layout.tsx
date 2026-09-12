@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 import PageTransition from "@/components/PageTransition";
 import TransactionTray from "@/components/TransactionTray";
+import EthOracleHeartbeat from "@/components/EthOracleHeartbeat";
 import { WalletProvider } from "@/lib/wallet-context";
 import { NotificationProvider } from "@/lib/notification-context";
 import { TransactionProvider } from "@/lib/transaction-context";
@@ -56,6 +57,7 @@ export default function RootLayout({
         <WalletProvider>
           <NotificationProvider>
             <TransactionProvider>
+              <EthOracleHeartbeat />
               <Header />
               <main className="min-h-screen pb-[calc(5rem_+_env(safe-area-inset-bottom))] md:pb-0">
                 <PageTransition>{children}</PageTransition>

@@ -15,6 +15,7 @@ import { CONTRACT_ADDRESSES } from "@/config/contracts.config";
 import {
   createProviderCaller,
   fetchGumiCustomNftHoldings,
+  fetchGumiHandleForWallet,
   type OwnedNft,
 } from "./nft-onchain";
 
@@ -48,6 +49,7 @@ type WalletContextValue = {
   monogram: string | null;
   chainId: string | null;
   isGumiHolder: boolean;
+  gumiHandle: string | null;
   gumiNftBalance: number;
   ownedGumiNfts: OwnedNft[];
   gumiNftsLoading: boolean;
@@ -71,6 +73,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<string | null>(null);
   const [chainId, setChainId] = useState<string | null>(null);
   const [isGumiHolder, setIsGumiHolder] = useState(false);
+  const [gumiHandle, setGumiHandle] = useState<string | null>(null);
   const [gumiNftBalance, setGumiNftBalance] = useState(0);
   const [ownedGumiNfts, setOwnedGumiNfts] = useState<OwnedNft[]>([]);
   const [gumiNftsLoading, setGumiNftsLoading] = useState(false);
@@ -184,22 +187,36 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!address || !activeProvider || !GUMI_NFT_CONTRACT_ADDRESS) {
       setIsGumiHolder(false);
+      setGumiHandle(null);
       setGumiNftBalance(0);
       setOwnedGumiNfts([]);
       return;
     }
     let cancelled = false;
     setGumiNftsLoading(true);
-    fetchGumiCustomNftHoldings(createProviderCaller(activeProvider), GUMI_NFT_CONTRACT_ADDRESS, address)
+    const call = createProviderCaller(activeProvider);
+    fetchGumiCustomNftHoldings(call, GUMI_NFT_CONTRACT_ADDRESS, address)
       .then((holdings) => {
         if (cancelled) return;
         setIsGumiHolder(holdings.balance > 0);
         setGumiNftBalance(holdings.balance);
         setOwnedGumiNfts(holdings.items);
+        if (holdings.balance <= 0) {
+          setGumiHandle(null);
+          return;
+        }
+        fetchGumiHandleForWallet(call, GUMI_NFT_CONTRACT_ADDRESS, address)
+          .then((found) => {
+            if (!cancelled) setGumiHandle(found);
+          })
+          .catch(() => {
+            if (!cancelled) setGumiHandle(null);
+          });
       })
       .catch(() => {
         if (cancelled) return;
         setIsGumiHolder(false);
+        setGumiHandle(null);
         setGumiNftBalance(0);
         setOwnedGumiNfts([]);
       })
@@ -219,11 +236,19 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const refreshGumiHoldings = useCallback(() => {
     if (!address || !activeProvider || !GUMI_NFT_CONTRACT_ADDRESS) return;
     setGumiNftsLoading(true);
-    fetchGumiCustomNftHoldings(createProviderCaller(activeProvider), GUMI_NFT_CONTRACT_ADDRESS, address)
+    const call = createProviderCaller(activeProvider);
+    fetchGumiCustomNftHoldings(call, GUMI_NFT_CONTRACT_ADDRESS, address)
       .then((holdings) => {
         setIsGumiHolder(holdings.balance > 0);
         setGumiNftBalance(holdings.balance);
         setOwnedGumiNfts(holdings.items);
+        if (holdings.balance <= 0) {
+          setGumiHandle(null);
+          return;
+        }
+        fetchGumiHandleForWallet(call, GUMI_NFT_CONTRACT_ADDRESS, address)
+          .then((found) => setGumiHandle(found))
+          .catch(() => setGumiHandle(null));
       })
       .catch(() => {})
       .finally(() => setGumiNftsLoading(false));
@@ -269,15 +294,20 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setActiveUuid(null);
     setChainId(null);
     setIsGumiHolder(false);
+    setGumiHandle(null);
     setGumiNftBalance(0);
     setOwnedGumiNfts([]);
     window.localStorage.removeItem(STORAGE_KEY);
   }, []);
 
   const isConnected = address !== null;
-  const handle = address ? truncateAddress(address) : null;
+  const handle = gumiHandle ?? (address ? truncateAddress(address) : null);
   const name = handle;
-  const monogram = address ? address.slice(2, 4).toUpperCase() : null;
+  const monogram = gumiHandle
+    ? gumiHandle.charAt(0).toUpperCase()
+    : address
+      ? address.slice(2, 4).toUpperCase()
+      : null;
 
   const value = useMemo<WalletContextValue>(
     () => ({
@@ -289,6 +319,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       monogram,
       chainId,
       isGumiHolder,
+      gumiHandle,
       gumiNftBalance,
       ownedGumiNfts,
       gumiNftsLoading,
@@ -312,6 +343,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       monogram,
       chainId,
       isGumiHolder,
+      gumiHandle,
       gumiNftBalance,
       ownedGumiNfts,
       gumiNftsLoading,

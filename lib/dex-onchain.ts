@@ -3,7 +3,7 @@ import { getWethAddress, fetchSymbol, fetchDecimals, nameCalldata } from "./swap
 import { CONTRACT_ADDRESSES, NETWORK } from "@/config/contracts.config";
 import type { Accent } from "./discover-data";
 import type { DexPair } from "./dex-data";
-
+import { getEthUsdRateWithFallback } from "./eth-oracle";
 
 async function rpcRequest<T>(method: string, params: unknown[]): Promise<T | null> {
   try {
@@ -64,10 +64,6 @@ function allPairsLengthCalldata(): string {
 
 function getReservesCalldata(): string {
   return "0x0902f1ac";
-}
-
-function getRateCalldata(): string {
-  return "0x679aefce";
 }
 
 function totalSupplyCalldata(): string {
@@ -243,8 +239,7 @@ export async function fetchAllDexPairsOnchain(): Promise<DexPair[]> {
   const avgBlockTime = sampleBack > 0 && latestBlockTs > refTs ? (latestBlockTs - refTs) / sampleBack : 2;
   const blocksIn24h = Math.max(1, Math.round(86400 / Math.max(avgBlockTime, 0.1)));
 
-  const rateRaw = await ethCall(CONTRACT_ADDRESSES.priceOracle, getRateCalldata());
-  const ethUsdRateNum = rateRaw ? toUnits(decodeUint256(rateRaw), 18) : null;
+  const ethUsdRateNum = await getEthUsdRateWithFallback(ethCall);
 
   const tokenMetaCache = new Map<string, TokenMeta>();
   const nowSeconds = Math.floor(Date.now() / 1000);

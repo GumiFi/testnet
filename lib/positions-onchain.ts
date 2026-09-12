@@ -1,6 +1,7 @@
 import type { EthCaller } from "./nft-onchain";
 import { decodeAddress, decodeUint256, getReservesCalldata } from "./swap-onchain";
 import { CONTRACT_ADDRESSES } from "@/config/contracts.config";
+import { getEthUsdRateWithFallback } from "./eth-oracle";
 
 function padHex(value: string, bytes = 32): string {
   return value.replace(/^0x/, "").padStart(bytes * 2, "0");
@@ -128,11 +129,7 @@ export async function fetchTotalSupply(call: EthCaller, tokenAddress: string): P
 }
 
 export async function fetchEthUsdRate(call: EthCaller): Promise<number | null> {
-  const raw = await call(CONTRACT_ADDRESSES.priceOracle, priceOracleRateCalldata());
-  if (!raw || raw === "0x") return null;
-  const rate = decodeUint256(raw);
-  if (rate <= 0n) return null;
-  return Number(rate) / 1e18;
+  return getEthUsdRateWithFallback(call);
 }
 
 export async function fetchIsBoostValid(call: EthCaller, lockId: bigint): Promise<boolean> {
